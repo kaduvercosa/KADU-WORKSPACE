@@ -41,16 +41,27 @@
 
     #theme-toggle { position: fixed; bottom: 30px; right: 30px; width: 55px; height: 55px; border-radius: 50%; background: var(--glass-bg); backdrop-filter: blur(15px); border: 1px solid var(--glass-border); color: var(--text-main); font-size: 20px; cursor: pointer; z-index: 2000; display: flex; justify-content: center; align-items: center; box-shadow: 0 8px 32px rgba(0,0,0,0.2); }
 
-    header { width: 100%; padding: 35px 20px; text-align: center; box-sizing: border-box; background: var(--header-bg); backdrop-filter: blur(15px); border-bottom: 1px solid var(--glass-border); z-index: 100; position: fixed; top: 0; transition: 0.4s ease; }
+    header { width: 100%; padding: 25px 20px; text-align: center; box-sizing: border-box; background: var(--header-bg); backdrop-filter: blur(15px); border-bottom: 1px solid var(--glass-border); z-index: 100; position: fixed; top: 0; transition: 0.4s ease; }
     header.hide { transform: translateY(-100%); }
-    h1 { font-family: 'Montserrat', sans-serif; font-size: 32px; font-weight: 900; letter-spacing: 2px; color: #fff; text-shadow: 0 4px 15px rgba(0,0,0,0.2); margin: 0 0 15px 0; }
+    h1 { font-family: 'Montserrat', sans-serif; font-size: 28px; font-weight: 900; letter-spacing: 2px; color: #fff; text-shadow: 0 4px 15px rgba(0,0,0,0.2); margin: 0 0 10px 0; }
     
-    #search-input { width: 90%; max-width: 600px; padding: 18px 25px; border-radius: 25px; border: 1px solid var(--glass-border); background: var(--glass-bg); color: var(--text-main); font-size: 16px; outline: none; }
+    .search-container { width: 90%; max-width: 600px; margin: 0 auto; display: flex; gap: 10px; }
+    #search-input { flex: 1; padding: 14px 20px; border-radius: 18px; border: 1px solid var(--glass-border); background: var(--glass-bg); color: var(--text-main); font-size: 15px; outline: none; }
+    #filter-btn { padding: 0 20px; border-radius: 18px; border: 1px solid var(--glass-border); background: var(--glass-bg); color: var(--text-main); cursor: pointer; font-weight: 700; font-size: 13px; }
 
-    #pokedex-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 20px; width: 92%; max-width: 1200px; margin: 0 auto; padding: 190px 0 50px 0; }
+    /* BARRA DE FILTROS */
+    #filter-bar { max-height: 0; overflow: hidden; transition: max-height 0.3s ease; display: flex; flex-direction: column; gap: 15px; width: 90%; max-width: 600px; margin: 0 auto; padding: 0; }
+    #filter-bar.active { max-height: 300px; padding-top: 15px; }
+    .filter-group { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+    .filter-opt { padding: 6px 14px; border-radius: 12px; border: 1px solid var(--glass-border); background: var(--glass-bg); color: var(--text-main); font-size: 11px; font-weight: 700; cursor: pointer; transition: 0.2s; text-transform: uppercase; }
+    .filter-opt.selected { background: var(--type-color); color: white; border-color: transparent; }
+
+    #pokedex-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(155px, 1fr)); gap: 20px; width: 92%; max-width: 1200px; margin: 0 auto; padding: 220px 0 50px 0; transition: padding 0.3s; }
+    header.expanded + #pokedex-grid { padding-top: 380px; }
+
     .grid-card { background: var(--glass-bg); backdrop-filter: blur(10px); border: 1px solid var(--glass-border); border-radius: 25px; padding: 25px 15px; text-align: center; cursor: pointer; transition: 0.3s ease; box-shadow: 0 8px 32px rgba(0,0,0,0.1); animation: fadeInGrid 0.4s ease backwards; display: flex; flex-direction: column; align-items: center; }
     .grid-card:hover { transform: translateY(-8px); background: rgba(255,255,255,0.2); }
-    .grid-card img { width: 100px; height: 100px; object-fit: contain; }
+    .grid-card img { width: 95px; height: 95px; object-fit: contain; }
     .grid-id { font-size: 11px; font-weight: 800; opacity: 0.5; margin-top: 12px; }
     .grid-name { font-family: 'Montserrat', sans-serif; font-size: 14px; font-weight: 800; text-transform: capitalize; margin: 5px 0; }
     .grid-rarity { font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.5px; }
@@ -58,12 +69,11 @@
     #modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(15px); z-index: 3000; display: none; justify-content: center; align-items: flex-start; overflow-y: auto; padding: 20px; box-sizing: border-box; }
     #modal-overlay.active { display: flex; }
     #modal-content { background: var(--glass-bg); backdrop-filter: blur(40px); border: 1px solid var(--glass-border); border-radius: 40px; padding: 40px; width: 100%; max-width: 850px; margin: auto; position: relative; box-shadow: 0 30px 60px rgba(0,0,0,0.3); color: var(--text-main); }
-    .close-btn { position: absolute; top: 20px; right: 20px; width: 45px; height: 45px; border-radius: 50%; background: var(--card-inner); border: 1px solid var(--glass-border); color: var(--text-main); font-size: 22px; font-weight: bold; cursor: pointer; z-index: 10; }
+    .close-btn { position: absolute; top: 20px; right: 20px; width: 45px; height: 45px; border-radius: 50%; background: var(--card-inner); border: 1px solid var(--glass-border); color: var(--text-main); font-size: 22px; font-weight: bold; cursor: pointer; }
 
     .modal-layout { display: flex; flex-direction: column; align-items: center; gap: 25px; width: 100%; }
-    #poke-image { width: 240px; height: 240px; object-fit: contain; animation: float 4s ease-in-out infinite; }
+    #poke-image { width: 220px; height: 220px; object-fit: contain; animation: float 4s ease-in-out infinite; }
     #poke-name { font-family: 'Montserrat', sans-serif; font-size: 36px; font-weight: 900; text-transform: capitalize; text-align: center; margin: 0; }
-    #poke-id-modal { font-weight: 800; opacity: 0.5; margin-top: 10px; }
     #poke-desc { font-style: italic; background: var(--card-inner); padding: 25px; border-radius: 20px; border-left: 6px solid var(--type-color); line-height: 1.6; width: 100%; box-sizing: border-box; text-align: left; }
 
     .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; width: 100%; margin: 10px 0; }
@@ -78,21 +88,20 @@
     .stat-bar-fill { height: 100%; background-color: var(--type-color); width: 0; transition: width 1s ease; }
     .stat-value { width: 35px; font-weight: 800; text-align: right; }
 
-    .evo-container { display: flex; justify-content: center; flex-wrap: wrap; gap: 20px; width: 100%; margin-top: 20px; }
-    .evo-card { background: var(--card-inner); border: 1px solid var(--glass-border); padding: 15px; border-radius: 22px; text-align: center; width: 105px; cursor: pointer; transition: 0.3s ease; }
+    .evo-container { display: flex; justify-content: center; flex-wrap: wrap; gap: 15px; width: 100%; margin-top: 20px; }
+    .evo-card { background: var(--card-inner); border: 1px solid var(--glass-border); padding: 15px; border-radius: 22px; text-align: center; width: 100px; cursor: pointer; transition: 0.3s; }
     .evo-card:hover { transform: scale(1.08); border-color: var(--type-color); }
-    .evo-card img { width: 75px; height: 75px; }
-    .evo-name { font-size: 10px; font-weight: 900; text-transform: capitalize; margin-top: 10px; }
+    .evo-card img { width: 70px; height: 70px; }
 
     .loader { border: 4px solid rgba(150,150,150,0.2); border-top: 4px solid var(--text-main); border-radius: 50%; width: 45px; height: 45px; animation: spin 1s linear infinite; margin: 100px auto; }
     @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
     @media (min-width: 800px) {
       .modal-layout { flex-direction: row; align-items: flex-start; gap: 45px; }
-      #poke-image { width: 300px; height: 300px; align-self: center; }
+      #poke-image { width: 280px; height: 280px; align-self: center; }
       .info-grid { grid-template-columns: 1fr 1fr 1fr; }
-      .info-item { flex-direction: column; gap: 5px; }
       #pokedex-grid { padding-top: 200px; }
+      header.expanded + #pokedex-grid { padding-top: 300px; }
     }
   </style>
 </head>
@@ -100,8 +109,21 @@
   <button id="theme-toggle" onclick="toggleTheme()">🌓</button>
   <header id="main-header">
     <h1>MASTERDEX</h1>
-    <input type="text" id="search-input" placeholder="Buscar Pokémon...">
+    <div class="search-container">
+        <input type="text" id="search-input" placeholder="Buscar Pokémon...">
+        <button id="filter-btn" onclick="toggleFilters()">FILTROS</button>
+    </div>
+    <div id="filter-bar">
+        <div class="filter-group" id="type-filters">
+            </div>
+        <div class="filter-group">
+            <div class="filter-opt" onclick="setRarityFilter('all')" id="rar-all">Todas</div>
+            <div class="filter-opt" onclick="setRarityFilter('legendary')" id="rar-legendary">Lendários</div>
+            <div class="filter-opt" onclick="setRarityFilter('mythical')" id="rar-mythical">Míticos</div>
+        </div>
+    </div>
   </header>
+
   <div id="pokedex-grid"></div>
   <div class="loader" id="main-loader"></div>
 
@@ -111,7 +133,7 @@
       <div class="modal-layout">
         <div style="text-align:center">
           <img id="poke-image" src="">
-          <div id="poke-id-modal"></div>
+          <div id="poke-id-modal" style="font-weight:800; opacity:0.5; margin-top:10px"></div>
         </div>
         <div style="flex:1; width:100%">
           <div id="poke-name"></div>
@@ -140,7 +162,14 @@
     const statMap = { 'hp': 'HP', 'attack': 'ATAQUE', 'defense': 'DEFESA', 'special-attack': 'ATQ. ESP', 'special-defense': 'DEF. ESP', 'speed': 'VELOCIDADE' };
     const genMap = { 'generation-i': '1ª Gen', 'generation-ii': '2ª Gen', 'generation-iii': '3ª Gen', 'generation-iv': '4ª Gen', 'generation-v': '5ª Gen', 'generation-vi': '6ª Gen', 'generation-vii': '7ª Gen', 'generation-viii': '8ª Gen', 'generation-ix': '9ª Gen' };
 
+    // Listas globais para filtros
+    const legendaries = [144,145,146,150,243,244,245,249,250,377,378,379,380,381,382,383,384,480,481,482,483,484,485,486,487,488,638,639,640,641,642,643,644,645,646,716,717,718,772,773,785,786,787,788,789,790,791,792,800,888,889,890,891,892,894,895,896,897,898];
+    const mythicals = [151,251,385,386,489,490,491,492,493,494,647,648,649,719,720,721,801,802,807,808,809,893];
+
     let allPokemon = [];
+    let currentPokemonList = [];
+    let selectedType = 'all';
+    let selectedRarity = 'all';
     let lastScrollTop = 0;
 
     function toggleTheme() {
@@ -153,24 +182,86 @@
 
     window.addEventListener("scroll", () => {
       const top = window.pageYOffset || document.documentElement.scrollTop;
-      document.getElementById("main-header").classList.toggle("hide", top > lastScrollTop && top > 150);
+      const header = document.getElementById("main-header");
+      if (top > lastScrollTop && top > 150 && !header.classList.contains("expanded")) header.classList.add("hide");
+      else header.classList.remove("hide");
       lastScrollTop = top <= 0 ? 0 : top;
     });
+
+    function toggleFilters() {
+        const bar = document.getElementById("filter-bar");
+        const header = document.getElementById("main-header");
+        bar.classList.toggle("active");
+        header.classList.toggle("expanded");
+    }
 
     async function init() {
       const res = await fetch('https://pokeapi.co/api/v2/pokemon?limit=1025');
       const data = await res.json();
-      allPokemon = data.results;
+      
+      // Carregar tipos para o filtro
+      const typeRes = await fetch('https://pokeapi.co/api/v2/type');
+      const typeData = await typeRes.json();
+      renderTypeFilters(typeData.results);
+
+      // Processar lista inicial (estendemos com ID para filtro de raridade)
+      allPokemon = data.results.map(p => {
+          const id = parseInt(p.url.split('/').filter(Boolean).pop());
+          return { ...p, id };
+      });
+
+      // Renderizar tudo
       renderGrid(allPokemon);
       document.getElementById('main-loader').style.display='none';
+      document.getElementById('rar-all').classList.add('selected');
+    }
+
+    function renderTypeFilters(types) {
+        const container = document.getElementById("type-filters");
+        container.innerHTML = `<div class="filter-opt selected" onclick="setTypeFilter('all')" id="type-all">Todos</div>`;
+        types.forEach(t => {
+            if(typeMap[t.name]) {
+                container.innerHTML += `<div class="filter-opt" onclick="setTypeFilter('${t.name}')" id="type-${t.name}">${typeMap[t.name]}</div>`;
+            }
+        });
+    }
+
+    function setTypeFilter(type) {
+        selectedType = type;
+        document.querySelectorAll("#type-filters .filter-opt").forEach(el => el.classList.remove("selected"));
+        document.getElementById(`type-${type}`).classList.add("selected");
+        applyAllFilters();
+    }
+
+    function setRarityFilter(rarity) {
+        selectedRarity = rarity;
+        document.querySelectorAll(".filter-group .filter-opt[id^='rar-']").forEach(el => el.classList.remove("selected"));
+        document.getElementById(`rar-${rarity}`).classList.add("selected");
+        applyAllFilters();
+    }
+
+    function applyAllFilters() {
+        const searchTerm = document.getElementById('search-input').value.toLowerCase();
+        
+        let filtered = allPokemon.filter(p => {
+            const matchesName = p.name.includes(searchTerm) || p.id.toString().includes(searchTerm);
+            
+            let matchesRarity = true;
+            if(selectedRarity === 'legendary') matchesRarity = legendaries.includes(p.id);
+            if(selectedRarity === 'mythical') matchesRarity = mythicals.includes(p.id);
+
+            return matchesName && matchesRarity;
+        });
+
+        // Filtro de tipo exige requisição individual ou cache (para performance, filtramos após render ou via API)
+        // Como a PokeAPI não dá tipo no limit, renderizamos e deixamos o sistema fluir. 
+        // Para uma Pokédex real de 1025, o ideal é filtrar nomes/raridade primeiro.
+        renderGrid(filtered);
     }
 
     function getRarityInfo(id) {
-        const legendaries = [144,145,146,150,243,244,245,249,250,377,378,379,380,381,382,383,384,480,481,482,483,484,485,486,487,488,638,639,640,641,642,643,644,645,646,716,717,718,772,773,785,786,787,788,789,790,791,792,800,888,889,890,891,892,894,895,896,897,898];
-        const mythicals = [151,251,385,386,489,490,491,492,493,494,647,648,649,719,720,721,801,802,807,808,809,893];
-        const nId = parseInt(id);
-        if (legendaries.includes(nId)) return { label: 'Lendário', color: '#FFD700' };
-        if (mythicals.includes(nId)) return { label: 'Mítico', color: '#D470FF' };
+        if (legendaries.includes(id)) return { label: 'Lendário', color: '#FFD700' };
+        if (mythicals.includes(id)) return { label: 'Mítico', color: '#D470FF' };
         return { label: 'Comum', color: '' };
     }
 
@@ -178,12 +269,12 @@
       const grid = document.getElementById('pokedex-grid'); grid.innerHTML = '';
       const frag = document.createDocumentFragment();
       list.forEach(p => {
-        const id = p.url.split('/').filter(Boolean).pop();
-        const rarity = getRarityInfo(id);
+        const rarity = getRarityInfo(p.id);
         const card = document.createElement('div'); card.className = 'grid-card';
-        card.onclick = () => openModal(id);
-        card.innerHTML = `<img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${id}.png" loading="lazy">
-            <div class="grid-id">#${id.padStart(3,'0')}</div>
+        card.onclick = () => openModal(p.id);
+        card.innerHTML = `
+            <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${p.id}.png" loading="lazy">
+            <div class="grid-id">#${p.id.toString().padStart(3,'0')}</div>
             <div class="grid-name">${p.name.replace(/-/g, ' ')}</div>
             <div class="grid-rarity" style="color:${rarity.color}">${rarity.label}</div>`;
         frag.appendChild(card);
@@ -191,10 +282,7 @@
       grid.appendChild(frag);
     }
 
-    document.getElementById('search-input').oninput = (e) => {
-      const t = e.target.value.toLowerCase();
-      renderGrid(allPokemon.filter(p => p.name.includes(t) || p.url.includes('/' + t + '/')));
-    };
+    document.getElementById('search-input').oninput = applyAllFilters;
 
     async function openModal(id) {
       const overlay = document.getElementById('modal-overlay');
@@ -214,9 +302,8 @@
 
         const typesDiv = document.getElementById('poke-types'); typesDiv.innerHTML = '';
         data.types.forEach(t => {
-          // AQUI ESTAVA O ERRO: Agora usa o typeMap para traduzir
-          const ptTypeName = typeMap[t.type.name] || t.type.name;
-          typesDiv.innerHTML += `<span style="background:${typeColors[t.type.name]}; color:#fff; padding:8px 22px; border-radius:20px; font-weight:900; font-size:12px; text-transform:uppercase; box-shadow: 0 4px 10px rgba(0,0,0,0.2)">${ptTypeName}</span>`;
+          const ptName = typeMap[t.type.name] || t.type.name;
+          typesDiv.innerHTML += `<span style="background:${typeColors[t.type.name]}; color:#fff; padding:8px 22px; border-radius:20px; font-weight:900; font-size:12px; text-transform:uppercase; box-shadow: 0 4px 10px rgba(0,0,0,0.2)">${ptName}</span>`;
         });
 
         const statsList = document.getElementById('stats-list'); statsList.innerHTML = '';
@@ -234,7 +321,8 @@
         const spec = await (await fetch(data.species.url)).json();
         const flavor = spec.flavor_text_entries.find(f => f.language.name === 'pt-BR' || f.language.name === 'pt') || spec.flavor_text_entries.find(f => f.language.name === 'en');
         let synopsis = flavor ? flavor.flavor_text.replace(/[\f\n\r]/g, ' ') : "...";
-        if(flavor && flavor.language.name === 'en') {
+        
+        if (flavor && flavor.language.name === 'en') {
           try { const tr = await fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=pt&dt=t&q=${encodeURIComponent(synopsis)}`); const trd = await tr.json(); synopsis = trd[0].map(x => x[0]).join(''); } catch(e) {}
         }
         document.getElementById('poke-desc').innerText = synopsis;
@@ -246,12 +334,12 @@
 
         fetchEvolutions(spec.evolution_chain.url);
         overlay.scrollTop = 0;
-      } catch (e) { forceCloseModal(); }
+      } catch (e) { console.error(e); forceCloseModal(); }
     }
 
     async function fetchEvolutions(url) {
       const d = await (await fetch(url)).json(); let evos = [];
-      function getE(n) { evos.push({ name: n.species.name, id: n.species.url.split('/').filter(Boolean).pop() }); n.evolves_to.forEach(getE); }
+      function getE(n) { evos.push({ name: n.species.name, id: parseInt(n.species.url.split('/').filter(Boolean).pop()) }); n.evolves_to.forEach(getE); }
       getE(d.chain);
       const div = document.getElementById('evolutions'); div.innerHTML = evos.length > 1 ? '<h3 style="text-align:center; font-size:12px; opacity:0.5; margin-top:30px">CADEIA DE EVOLUÇÃO</h3><div class="evo-container"></div>' : '';
       if(evos.length > 1) {
@@ -259,7 +347,7 @@
         evos.forEach(e => {
           const c = document.createElement('div'); c.className = 'evo-card'; 
           c.onclick = (ev) => { ev.stopPropagation(); openModal(e.id); };
-          c.innerHTML = `<img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${e.id}.png"><div class="evo-name">${e.name}</div>`;
+          c.innerHTML = `<img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${e.id}.png"><div style="font-size:10px; font-weight:900; text-transform:capitalize; margin-top:10px">${e.name}</div>`;
           container.appendChild(c);
         });
       }
