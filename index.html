@@ -37,72 +37,28 @@
     @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
     @keyframes fadeInGrid { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     
-    body { 
-      margin: 0; padding: 0; 
-      background: linear-gradient(135deg, var(--type-color) 0%, var(--type-dark) 100%); 
-      background-attachment: fixed; color: var(--text-main); 
-      font-family: 'Poppins', sans-serif; min-height: 100vh; 
-      transition: background 0.8s ease, color 0.3s ease; overflow-x: hidden;
-    }
+    body { margin: 0; padding: 0; background: linear-gradient(135deg, var(--type-color) 0%, var(--type-dark) 100%); background-attachment: fixed; color: var(--text-main); font-family: 'Poppins', sans-serif; min-height: 100vh; transition: background 0.8s ease, color 0.3s ease; overflow-x: hidden; }
 
-    #theme-toggle { 
-      position: fixed; bottom: 30px; right: 30px; width: 55px; height: 55px; border-radius: 50%; 
-      background: var(--glass-bg); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
-      border: 1px solid var(--glass-border); color: var(--text-main); 
-      font-size: 20px; cursor: pointer; z-index: 2000; box-shadow: 0 8px 32px rgba(0,0,0,0.2);
-      display: flex; justify-content: center; align-items: center;
-    }
+    #theme-toggle { position: fixed; bottom: 30px; right: 30px; width: 55px; height: 55px; border-radius: 50%; background: var(--glass-bg); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); border: 1px solid var(--glass-border); color: var(--text-main); font-size: 20px; cursor: pointer; z-index: 2000; display: flex; justify-content: center; align-items: center; box-shadow: 0 8px 32px rgba(0,0,0,0.2); }
 
-    header { 
-      width: 100%; padding: 35px 20px; text-align: center; box-sizing: border-box; 
-      background: var(--header-bg); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
-      border-bottom: 1px solid var(--glass-border); z-index: 100; position: fixed; top: 0; transition: 0.4s ease;
-    }
+    header { width: 100%; padding: 35px 20px; text-align: center; box-sizing: border-box; background: var(--header-bg); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); border-bottom: 1px solid var(--glass-border); z-index: 100; position: fixed; top: 0; transition: 0.4s ease; }
     header.hide { transform: translateY(-100%); }
     h1 { font-family: 'Montserrat', sans-serif; font-size: 32px; font-weight: 900; letter-spacing: 2px; color: #fff; text-shadow: 0 4px 15px rgba(0,0,0,0.2); margin: 0 0 15px 0; }
     
-    #search-input { 
-      width: 90%; max-width: 600px; padding: 18px 25px; border-radius: 25px; 
-      border: 1px solid var(--glass-border); background: var(--glass-bg); 
-      color: var(--text-main); font-size: 16px; outline: none;
-    }
+    #search-input { width: 90%; max-width: 600px; padding: 18px 25px; border-radius: 25px; border: 1px solid var(--glass-border); background: var(--glass-bg); color: var(--text-main); font-size: 16px; outline: none; }
 
-    #pokedex-grid { 
-      display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); 
-      gap: 20px; width: 92%; max-width: 1200px; margin: 0 auto; padding: 190px 0 50px 0; 
-    }
-
-    .grid-card { 
-      background: var(--glass-bg); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-      border: 1px solid var(--glass-border); border-radius: 25px; padding: 25px 15px; 
-      text-align: center; cursor: pointer; transition: 0.3s ease; box-shadow: 0 8px 32px rgba(0,0,0,0.1);
-      animation: fadeInGrid 0.4s ease backwards; display: flex; flex-direction: column; align-items: center;
-    }
+    #pokedex-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 20px; width: 92%; max-width: 1200px; margin: 0 auto; padding: 190px 0 50px 0; }
+    .grid-card { background: var(--glass-bg); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 1px solid var(--glass-border); border-radius: 25px; padding: 25px 15px; text-align: center; cursor: pointer; transition: 0.3s ease; box-shadow: 0 8px 32px rgba(0,0,0,0.1); animation: fadeInGrid 0.4s ease backwards; display: flex; flex-direction: column; align-items: center; }
     .grid-card:hover { transform: translateY(-8px); background: rgba(255,255,255,0.2); }
-    .grid-card img { width: 100px; height: 100px; object-fit: contain; filter: drop-shadow(0 5px 10px rgba(0,0,0,0.2)); }
-    
+    .grid-card img { width: 100px; height: 100px; object-fit: contain; }
     .grid-id { font-size: 11px; font-weight: 800; opacity: 0.5; margin-top: 12px; }
     .grid-name { font-family: 'Montserrat', sans-serif; font-size: 14px; font-weight: 800; text-transform: capitalize; margin: 5px 0; }
     .grid-rarity { font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.5px; }
 
-    #modal-overlay { 
-      position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-      background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
-      z-index: 1000; display: none; justify-content: center; align-items: flex-start; 
-      overflow-y: auto; padding: 20px; box-sizing: border-box; 
-    }
+    #modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); z-index: 3000; display: none; justify-content: center; align-items: flex-start; overflow-y: auto; padding: 20px; box-sizing: border-box; }
     #modal-overlay.active { display: flex; }
-    #modal-content { 
-      background: var(--glass-bg); backdrop-filter: blur(40px); -webkit-backdrop-filter: blur(40px);
-      border: 1px solid var(--glass-border); border-radius: 40px; padding: 40px; 
-      width: 100%; max-width: 850px; margin: auto; position: relative; 
-      box-shadow: 0 30px 60px rgba(0,0,0,0.3); color: var(--text-main);
-    }
-    .close-btn { 
-      position: absolute; top: 20px; right: 20px; width: 45px; height: 45px; 
-      border-radius: 50%; background: var(--card-inner); border: 1px solid var(--glass-border); 
-      color: var(--text-main); font-size: 22px; font-weight: bold; cursor: pointer; z-index: 10;
-    }
+    #modal-content { background: var(--glass-bg); backdrop-filter: blur(40px); -webkit-backdrop-filter: blur(40px); border: 1px solid var(--glass-border); border-radius: 40px; padding: 40px; width: 100%; max-width: 850px; margin: auto; position: relative; box-shadow: 0 30px 60px rgba(0,0,0,0.3); color: var(--text-main); }
+    .close-btn { position: absolute; top: 20px; right: 20px; width: 45px; height: 45px; border-radius: 50%; background: var(--card-inner); border: 1px solid var(--glass-border); color: var(--text-main); font-size: 22px; font-weight: bold; cursor: pointer; z-index: 10; }
 
     .modal-layout { display: flex; flex-direction: column; align-items: center; gap: 25px; width: 100%; }
     #poke-image { width: 240px; height: 240px; object-fit: contain; animation: float 4s ease-in-out infinite; }
@@ -113,7 +69,7 @@
     .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; width: 100%; margin: 10px 0; }
     .info-item { display: flex; flex-direction: row; justify-content: space-between; align-items: center; background: var(--card-inner); padding: 15px 20px; border-radius: 20px; border: 1px solid var(--glass-border); flex-wrap: wrap; gap: 5px; }
     .info-label { font-size: 11px; font-weight: 800; opacity: 0.5; text-transform: uppercase; }
-    .info-value { font-size: 15px; font-weight: 700; }
+    .info-value { font-size: 16px; font-weight: 700; text-transform: capitalize; }
 
     #poke-stats-box { width: 100%; background: var(--card-inner); padding: 30px; border-radius: 30px; box-sizing: border-box; }
     .stat-row { display: flex; align-items: center; margin-bottom: 12px; }
@@ -141,14 +97,11 @@
   </style>
 </head>
 <body>
-
   <button id="theme-toggle" onclick="toggleTheme()">🌓</button>
-
   <header id="main-header">
     <h1>MASTERDEX</h1>
     <input type="text" id="search-input" placeholder="Buscar Pokémon...">
   </header>
-
   <div id="pokedex-grid"></div>
   <div class="loader" id="main-loader"></div>
 
@@ -164,20 +117,17 @@
           <div id="poke-name"></div>
           <div id="poke-types" style="display:flex; justify-content:center; gap:12px; margin:20px 0"></div>
           <div id="poke-desc"></div>
-          
           <div class="info-grid">
             <div class="info-item"><span class="info-label">Altura</span><span class="info-value" id="poke-height"></span></div>
             <div class="info-item"><span class="info-label">Peso</span><span class="info-value" id="poke-weight"></span></div>
-            <div class="info-item"><span class="info-label">Raridade</span><span class="info-value" id="poke-rarity-modal"></span></div>
+            <div class="info-item"><span class="info-label">Raridade</span><span class="info-value" id="poke-rarity"></span></div>
             <div class="info-item"><span class="info-label">Geração</span><span class="info-value" id="poke-gen"></span></div>
             <div class="info-item" style="grid-column: span 2;"><span class="info-label">Habilidades</span><span class="info-value" id="poke-abilities"></span></div>
           </div>
-          
           <div id="poke-stats-box">
              <h3 style="text-align:center; font-size:14px; margin-bottom:20px; opacity:0.6">ATRIBUTOS BASE</h3>
              <div id="stats-list"></div>
           </div>
-          
           <div id="evolutions"></div>
         </div>
       </div>
@@ -212,15 +162,9 @@
       allPokemon = data.results;
       renderGrid(allPokemon);
       document.getElementById('main-loader').style.display='none';
-      
-      const randId = Math.floor(Math.random() * 151) + 1;
-      fetch(`https://pokeapi.co/api/v2/pokemon/${randId}`).then(r => r.json()).then(d => {
-        document.documentElement.style.setProperty('--type-color', typeColors[d.types[0].type.name]);
-      });
     }
 
     function getRarityInfo(id) {
-        // IDs conhecidos de Lendários e Míticos
         const legendaries = [144,145,146,150,243,244,245,249,250,377,378,379,380,381,382,383,384,480,481,482,483,484,485,486,487,488,638,639,640,641,642,643,644,645,646,716,717,718,772,773,785,786,787,788,789,790,791,792,800,888,889,890,891,892,894,895,896,897,898];
         const mythicals = [151,251,385,386,489,490,491,492,493,494,647,648,649,719,720,721,801,802,807,808,809,893];
         const nId = parseInt(id);
@@ -237,12 +181,10 @@
         const rarity = getRarityInfo(id);
         const card = document.createElement('div'); card.className = 'grid-card';
         card.onclick = () => openModal(id);
-        card.innerHTML = `
-            <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${id}.png" loading="lazy">
+        card.innerHTML = `<img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${id}.png" loading="lazy">
             <div class="grid-id">#${id.padStart(3,'0')}</div>
             <div class="grid-name">${p.name.replace(/-/g, ' ')}</div>
-            <div class="grid-rarity" style="color:${rarity.color}">${rarity.label}</div>
-        `;
+            <div class="grid-rarity" style="color:${rarity.color}">${rarity.label}</div>`;
         frag.appendChild(card);
       });
       grid.appendChild(frag);
@@ -261,8 +203,7 @@
       try {
         const res = await fetch(`https://pokeapi.co/api/v2/pokemon/${id}`);
         const data = await res.json();
-        const color = typeColors[data.types[0].type.name];
-        document.documentElement.style.setProperty('--type-color', color);
+        document.documentElement.style.setProperty('--type-color', typeColors[data.types[0].type.name]);
 
         document.getElementById('poke-image').src = data.sprites.other['official-artwork'].front_default;
         document.getElementById('poke-name').innerText = data.name.replace(/-/g, ' ');
@@ -272,13 +213,13 @@
 
         const typesDiv = document.getElementById('poke-types'); typesDiv.innerHTML = '';
         data.types.forEach(t => {
-          typesDiv.innerHTML += `<span style="background:${typeColors[t.type.name]}; color:#fff; padding:8px 22px; border-radius:20px; font-weight:900; font-size:12px; text-transform:uppercase; box-shadow: 0 4px 10px rgba(0,0,0,0.2)">${typeMap[t.type.name]}</span>`;
+          typesDiv.innerHTML += `<span style="background:${typeColors[t.type.name]}; color:#fff; padding:8px 22px; border-radius:20px; font-weight:900; font-size:12px; text-transform:uppercase">${t.type.name}</span>`;
         });
 
-        const statsDiv = document.getElementById('stats-list'); statsDiv.innerHTML = '';
+        const statsList = document.getElementById('stats-list'); statsList.innerHTML = '';
         data.stats.forEach(s => {
           const pct = Math.min((s.base_stat / 200) * 100, 100);
-          statsDiv.innerHTML += `<div class="stat-row"><span class="stat-name">${statMap[s.stat.name] || s.stat.name}</span><div class="stat-bar-bg"><div class="stat-bar-fill" style="width:${pct}%"></div></div><span class="stat-value">${s.base_stat}</span></div>`;
+          statsList.innerHTML += `<div class="stat-row"><span class="stat-name">${statMap[s.stat.name] || s.stat.name}</span><div class="stat-bar-bg"><div class="stat-bar-fill" style="width:${pct}%"></div></div><span class="stat-value">${s.base_stat}</span></div>`;
         });
 
         let abilities = await Promise.all(data.abilities.map(async (a) => {
@@ -289,23 +230,19 @@
         const spec = await (await fetch(data.species.url)).json();
         const flavor = spec.flavor_text_entries.find(f => f.language.name === 'pt-BR' || f.language.name === 'pt') || spec.flavor_text_entries.find(f => f.language.name === 'en');
         let synopsis = flavor ? flavor.flavor_text.replace(/[\f\n\r]/g, ' ') : "...";
-        
-        if (flavor && flavor.language.name === 'en') {
-          try {
-            const tr = await fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=pt&dt=t&q=${encodeURIComponent(synopsis)}`);
-            const trd = await tr.json(); synopsis = trd[0].map(x => x[0]).join('');
-          } catch(e) {}
+        if(flavor && flavor.language.name === 'en') {
+          try { const tr = await fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=pt&dt=t&q=${encodeURIComponent(synopsis)}`); const trd = await tr.json(); synopsis = trd[0].map(x => x[0]).join(''); } catch(e) {}
         }
         document.getElementById('poke-desc').innerText = synopsis;
         
         const rarity = getRarityInfo(id);
-        document.getElementById('poke-rarity-modal').innerText = rarity.label;
-        document.getElementById('poke-rarity-modal').style.color = rarity.color;
+        document.getElementById('poke-rarity').innerText = rarity.label;
+        document.getElementById('poke-rarity').style.color = rarity.color;
         document.getElementById('poke-gen').innerText = genMap[spec.generation.name] || 'Desc.';
 
         fetchEvolutions(spec.evolution_chain.url);
         overlay.scrollTop = 0;
-      } catch (e) { console.error(e); forceCloseModal(); }
+      } catch (e) { forceCloseModal(); }
     }
 
     async function fetchEvolutions(url) {
