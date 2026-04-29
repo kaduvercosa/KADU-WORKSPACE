@@ -1,324 +1,157 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MasterDex V3</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pokedex Pro</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;700&family=Montserrat:wght@300;600&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@800;900&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        kanit: ['Kanit', 'sans-serif'],
+                        montserrat: ['Montserrat', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
 
-<style>
-:root {
-  --type-color:#4A90E2;
-  --type-dark:#1a1a2e;
-  --glass-bg:rgba(255,255,255,0.55);
-  --glass-border:rgba(255,255,255,0.7);
-  --text-main:#1a1a1a;
-  --card-inner:rgba(255,255,255,0.25);
-}
-
-/* BASE */
-body{
-margin:0;
-background:linear-gradient(135deg,var(--type-color),var(--type-dark));
-font-family:'Poppins',sans-serif;
-color:var(--text-main);
-overflow-x:hidden;
-}
-
-/* HEADER */
-header{
-position:fixed;
-top:0;
-width:100%;
-padding:25px;
-text-align:center;
-background:rgba(255,255,255,0.15);
-backdrop-filter:blur(15px);
-z-index:100;
-transition:.4s;
-}
-header.hide{transform:translateY(-100%);}
-
-h1{
-font-family:'Montserrat';
-color:#fff;
-margin:0;
-}
-
-/* GRID */
-#pokedex-grid{
-display:grid;
-grid-template-columns:repeat(auto-fill,minmax(155px,1fr));
-gap:15px;
-padding:180px 20px 50px;
-max-width:1200px;
-margin:auto;
-}
-
-.grid-card{
-background:var(--glass-bg);
-backdrop-filter:blur(10px);
-border-radius:25px;
-padding:20px 10px;
-text-align:center;
-cursor:pointer;
-transition:.3s;
-}
-.grid-card:hover{transform:translateY(-5px);}
-
-.grid-card img{width:90px;}
-
-.grid-id{font-size:10px;opacity:.5;}
-.grid-name{font-weight:800;text-transform:capitalize;}
-
-.grid-types{
-display:flex;
-justify-content:center;
-gap:5px;
-flex-wrap:wrap;
-margin-top:5px;
-}
-
-.type{
-font-size:9px;
-padding:4px 8px;
-border-radius:10px;
-color:#fff;
-font-weight:700;
-}
-
-.grid-rarity{
-font-size:10px;
-font-weight:800;
-margin-top:5px;
-}
-
-/* MODAL */
-#modal-overlay{
-position:fixed;
-inset:0;
-background:rgba(0,0,0,0.5);
-backdrop-filter:blur(15px);
-display:none;
-z-index:3000;
-padding:20px;
-}
-#modal-overlay.active{display:flex;}
-
-#modal-content{
-margin:auto;
-max-width:800px;
-width:100%;
-padding:35px;
-border-radius:40px;
-
-/* 💎 LIQUID GLASS MELHORADO */
-background:rgba(255,255,255,0.08);
-backdrop-filter:blur(50px) saturate(180%);
--webkit-backdrop-filter:blur(50px) saturate(180%);
-border:1px solid rgba(255,255,255,0.2);
-box-shadow:0 10px 40px rgba(0,0,0,0.3), inset 0 1px 1px rgba(255,255,255,0.2);
-}
-
-.modal-layout{
-display:flex;
-flex-direction:column;
-align-items:center;
-gap:20px;
-}
-
-@media(min-width:800px){
-.modal-layout{flex-direction:row;gap:40px;}
-}
-
-#poke-image{width:220px;}
-
-#poke-name{
-font-family:'Montserrat';
-font-size:32px;
-}
-
-/* INFO GRID */
-.info-grid{
-display:grid;
-grid-template-columns:1fr 1fr;
-gap:10px;
-margin-top:10px;
-}
-
-.info-item{
-display:flex;
-justify-content:space-between;
-padding:12px;
-border-radius:12px;
-background:var(--card-inner);
-}
-
-.info-label{
-font-size:11px;
-opacity:.6;
-}
-
-/* EVOLUÇÕES */
-.evo-container{
-display:flex;
-gap:10px;
-flex-wrap:wrap;
-justify-content:center;
-margin-top:15px;
-}
-
-.evo-card{
-text-align:center;
-cursor:pointer;
-}
-
-.evo-card img{width:70px;}
-
-.close-btn{
-position:absolute;
-top:20px;
-right:20px;
-cursor:pointer;
-font-size:20px;
-}
-</style>
+    <style>
+        body {
+            background-color: #0f172a;
+            color: white;
+            font-family: 'Montserrat', sans-serif;
+        }
+        .pokemon-card {
+            transition: all 0.3s ease;
+        }
+        .pokemon-card:hover {
+            transform: translateY(-8px);
+            border-color: #facc15;
+        }
+    </style>
 </head>
-
 <body>
+    <div id="root"></div>
 
-<header id="main-header">
-<h1>MASTERDEX</h1>
-</header>
+    <script type="text/babel">
+        const { useState, useEffect } = React;
 
-<div id="pokedex-grid"></div>
+        const colors = {
+            fire: 'bg-red-500',
+            grass: 'bg-green-500',
+            water: 'bg-blue-500',
+            bug: 'bg-lime-600',
+            normal: 'bg-slate-400',
+            poison: 'bg-purple-500',
+            electric: 'bg-yellow-400',
+            ground: 'bg-amber-600',
+            fairy: 'bg-pink-400',
+            fighting: 'bg-orange-700',
+            psychic: 'bg-rose-400',
+            rock: 'bg-stone-600',
+            ghost: 'bg-indigo-800',
+            ice: 'bg-cyan-300',
+            dragon: 'bg-violet-600',
+        };
 
-<div id="modal-overlay">
-<div id="modal-content">
-<div class="close-btn" onclick="closeModal()">✖</div>
+        function App() {
+            const [pokemon, setPokemon] = useState([]);
+            const [search, setSearch] = useState('');
+            const [loading, setLoading] = useState(true);
 
-<div class="modal-layout">
-<div>
-<img id="poke-image">
-</div>
+            useEffect(() => {
+                const fetchData = async () => {
+                    try {
+                        const res = await fetch('https://pokeapi.co/api/v2/pokemon?limit=151');
+                        const data = await res.json();
+                        
+                        const details = await Promise.all(
+                            data.results.map(async (p) => {
+                                const resDetails = await fetch(p.url);
+                                return await resDetails.json();
+                            })
+                        );
+                        setPokemon(details);
+                        setLoading(false);
+                    } catch (error) {
+                        console.error("Erro ao buscar dados:", error);
+                    }
+                };
+                fetchData();
+            }, []);
 
-<div style="flex:1">
-<div id="poke-name"></div>
-<div id="poke-types" class="grid-types"></div>
+            const filteredPokemon = pokemon.filter(p => 
+                p.name.toLowerCase().includes(search.toLowerCase())
+            );
 
-<div class="info-grid">
-<div class="info-item"><span class="info-label">Altura</span><span id="poke-height"></span></div>
-<div class="info-item"><span class="info-label">Peso</span><span id="poke-weight"></span></div>
-<div class="info-item"><span class="info-label">Raridade</span><span id="poke-rarity"></span></div>
-</div>
+            return (
+                <div className="min-h-screen p-4 md:p-10">
+                    <header className="max-w-6xl mx-auto text-center mb-10">
+                        <h1 className="text-5xl font-kanit font-bold text-yellow-400 mb-4 drop-shadow-lg">
+                            Pokedex Pro
+                        </h1>
+                        <input 
+                            type="text" 
+                            placeholder="Pesquisar pokemon..."
+                            className="w-full max-w-md p-3 rounded-full bg-slate-800 border-2 border-slate-700 focus:border-yellow-400 outline-none transition-all text-center text-white"
+                            onChange={(e) => setSearch(e.target.value)}
+                        />
+                    </header>
 
-<div id="poke-desc"></div>
-<div id="evolutions" class="evo-container"></div>
-</div>
-</div>
+                    {loading ? (
+                        <div className="text-center text-2xl font-kanit animate-pulse">Carregando dados...</div>
+                    ) : (
+                        <main className="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                            {filteredPokemon.map(p => (
+                                <div 
+                                    key={p.id} 
+                                    className="pokemon-card relative bg-slate-800 rounded-3xl p-5 border border-slate-700 shadow-xl overflow-hidden group"
+                                >
+                                    <span className="absolute top-4 left-4 text-slate-500 font-bold">#{String(p.id).padStart(3, '0')}</span>
+                                    
+                                    <img 
+                                        src={p.sprites.other['official-artwork'].front_default} 
+                                        alt={p.name} 
+                                        className="w-40 h-40 mx-auto drop-shadow-2xl group-hover:scale-110 transition-transform"
+                                    />
+                                    
+                                    <h2 className="text-2xl font-kanit font-bold capitalize text-center mt-4 mb-2">
+                                        {p.name}
+                                    </h2>
 
-</div>
-</div>
+                                    <div className="flex justify-center gap-2">
+                                        {p.types.map(t => (
+                                            <span 
+                                                key={t.type.name}
+                                                className={`px-3 py-1 rounded-full text-xs font-bold uppercase text-white ${colors[t.type.name] || 'bg-slate-500'}`}
+                                            >
+                                                {t.type.name}
+                                            </span>
+                                        ))}
+                                    </div>
+                                </div>
+                            ))}
+                        </main>
+                    )}
+                </div>
+            );
+        }
 
-<script>
-const cache = new Map();
-let lastScroll=0;
-
-/* HEADER SCROLL */
-window.addEventListener('scroll',()=>{
-const header=document.getElementById('main-header');
-const current=window.pageYOffset;
-if(current>lastScroll) header.classList.add('hide');
-else header.classList.remove('hide');
-lastScroll=current;
-});
-
-/* INIT */
-async function init(){
-const res=await fetch('https://pokeapi.co/api/v2/pokemon?limit=151');
-const data=await res.json();
-
-const grid=document.getElementById('pokedex-grid');
-
-data.results.forEach(p=>{
-const id=p.url.split('/').filter(Boolean).pop();
-
-const card=document.createElement('div');
-card.className='grid-card';
-
-card.innerHTML=`
-<img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${id}.png">
-<div class="grid-id">#${id}</div>
-<div class="grid-name">${p.name}</div>
-<div class="grid-rarity">Carregando...</div>
-`;
-
-card.onclick=()=>openModal(id);
-grid.appendChild(card);
-});
-}
-
-/* MODAL */
-async function openModal(id){
-const overlay=document.getElementById('modal-overlay');
-overlay.classList.add('active');
-
-let data=cache.get(id);
-
-if(!data){
-const p=await fetch(`https://pokeapi.co/api/v2/pokemon/${id}`).then(r=>r.json());
-const s=await fetch(p.species.url).then(r=>r.json());
-data={p,s};
-cache.set(id,data);
-}
-
-const {p,s}=data;
-
-document.getElementById('poke-image').src=p.sprites.other['official-artwork'].front_default;
-document.getElementById('poke-name').innerText=p.name;
-
-document.getElementById('poke-height').innerText=(p.height/10)+' m';
-document.getElementById('poke-weight').innerText=(p.weight/10)+' kg';
-
-/* 🔥 CORREÇÃO DO ESPAÇO */
-document.getElementById('poke-rarity').innerText=
-s.is_legendary ? 'Lendário' :
-s.is_mythical ? 'Mítico' :
-'Comum';
-
-/* DESCRIÇÃO */
-const flavor=s.flavor_text_entries.find(f=>f.language.name==='en');
-document.getElementById('poke-desc').innerText=flavor.flavor_text;
-
-/* EVOLUÇÕES */
-const evoData=await fetch(s.evolution_chain.url).then(r=>r.json());
-let evos=[];
-
-function walk(c){
-evos.push(c.species);
-c.evolves_to.forEach(walk);
-}
-walk(evoData.chain);
-
-const evoDiv=document.getElementById('evolutions');
-evoDiv.innerHTML="";
-evos.forEach(e=>{
-const id=e.url.split('/').filter(Boolean).pop();
-evoDiv.innerHTML+=`
-<div class="evo-card" onclick="openModal(${id})">
-<img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${id}.png">
-<div>${e.name}</div>
-</div>`;
-});
-}
-
-function closeModal(){
-document.getElementById('modal-overlay').classList.remove('active');
-}
-
-init();
-</script>
-
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
 </body>
 </html>
