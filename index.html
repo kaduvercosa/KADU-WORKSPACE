@@ -3,14 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pokedex Pro</title>
+    <title>Pokedex Pro - Eduardo Edition</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;700&family=Montserrat:wght@300;600&display=swap" rel="stylesheet">
     
     <script src="https://cdn.tailwindcss.com"></script>
-    
     <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -29,18 +28,15 @@
     </script>
 
     <style>
-        body {
-            background-color: #0f172a;
-            color: white;
-            font-family: 'Montserrat', sans-serif;
-        }
-        .pokemon-card {
-            transition: all 0.3s ease;
-        }
-        .pokemon-card:hover {
-            transform: translateY(-8px);
-            border-color: #facc15;
-        }
+        body { background-color: #0f172a; color: white; font-family: 'Montserrat', sans-serif; }
+        .pokemon-card { transition: all 0.3s ease; }
+        .pokemon-card:hover { transform: translateY(-8px); border-color: #facc15; }
+        select { cursor: pointer; }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #1e293b; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #facc15; }
     </style>
 </head>
 <body>
@@ -49,27 +45,28 @@
     <script type="text/babel">
         const { useState, useEffect } = React;
 
+        const typeTranslations = {
+            fire: 'Fogo', water: 'Agua', grass: 'Planta', bug: 'Inseto', 
+            normal: 'Normal', poison: 'Venenoso', electric: 'Eletrico', 
+            ground: 'Terra', fairy: 'Fada', fighting: 'Lutador', 
+            psychic: 'Psiquico', rock: 'Pedra', ghost: 'Fantasma', 
+            ice: 'Gelo', dragon: 'Dragao', steel: 'Aco', flying: 'Voador'
+        };
+
         const colors = {
-            fire: 'bg-red-500',
-            grass: 'bg-green-500',
-            water: 'bg-blue-500',
-            bug: 'bg-lime-600',
-            normal: 'bg-slate-400',
-            poison: 'bg-purple-500',
-            electric: 'bg-yellow-400',
-            ground: 'bg-amber-600',
-            fairy: 'bg-pink-400',
-            fighting: 'bg-orange-700',
-            psychic: 'bg-rose-400',
-            rock: 'bg-stone-600',
-            ghost: 'bg-indigo-800',
-            ice: 'bg-cyan-300',
-            dragon: 'bg-violet-600',
+            fire: 'bg-red-500', water: 'bg-blue-500', grass: 'bg-green-500', 
+            bug: 'bg-lime-600', normal: 'bg-slate-400', poison: 'bg-purple-500', 
+            electric: 'bg-yellow-400', ground: 'bg-amber-600', fairy: 'bg-pink-400', 
+            fighting: 'bg-orange-700', psychic: 'bg-rose-400', rock: 'bg-stone-600', 
+            ghost: 'bg-indigo-800', ice: 'bg-cyan-300', dragon: 'bg-violet-600',
+            steel: 'bg-gray-500', flying: 'bg-sky-400'
         };
 
         function App() {
             const [pokemon, setPokemon] = useState([]);
             const [search, setSearch] = useState('');
+            const [typeFilter, setTypeFilter] = useState('todos');
+            const [rarityFilter, setRarityFilter] = useState('todos');
             const [loading, setLoading] = useState(true);
 
             useEffect(() => {
@@ -81,7 +78,17 @@
                         const details = await Promise.all(
                             data.results.map(async (p) => {
                                 const resDetails = await fetch(p.url);
-                                return await resDetails.json();
+                                const pokeData = await resDetails.json();
+                                
+                                // Buscando informacoes de raridade
+                                const resSpecies = await fetch(pokeData.species.url);
+                                const speciesData = await resSpecies.json();
+                                
+                                return {
+                                    ...pokeData,
+                                    isLegendary: speciesData.is_legendary,
+                                    isMythical: speciesData.is_mythical
+                                };
                             })
                         );
                         setPokemon(details);
@@ -93,42 +100,84 @@
                 fetchData();
             }, []);
 
-            const filteredPokemon = pokemon.filter(p => 
-                p.name.toLowerCase().includes(search.toLowerCase())
-            );
+            const filteredPokemon = pokemon.filter(p => {
+                const matchesSearch = p.name.toLowerCase().includes(search.toLowerCase()) || 
+                                     p.id.toString() === search;
+                
+                const matchesType = typeFilter === 'todos' || 
+                                   p.types.some(t => t.type.name === typeFilter);
+                
+                const matchesRarity = rarityFilter === 'todos' || 
+                                     (rarityFilter === 'lendario' && p.isLegendary) ||
+                                     (rarityFilter === 'mitico' && p.isMythical) ||
+                                     (rarityFilter === 'comum' && !p.isLegendary && !p.isMythical);
+
+                return matchesSearch && matchesType && matchesRarity;
+            });
 
             return (
                 <div className="min-h-screen p-4 md:p-10">
                     <header className="max-w-6xl mx-auto text-center mb-10">
-                        <h1 className="text-5xl font-kanit font-bold text-yellow-400 mb-4 drop-shadow-lg">
-                            Pokedex Pro
+                        <h1 className="text-6xl font-kanit font-bold text-yellow-400 mb-6 drop-shadow-lg">
+                            Pokédex Pro
                         </h1>
-                        <input 
-                            type="text" 
-                            placeholder="Pesquisar pokemon..."
-                            className="w-full max-w-md p-3 rounded-full bg-slate-800 border-2 border-slate-700 focus:border-yellow-400 outline-none transition-all text-center text-white"
-                            onChange={(e) => setSearch(e.target.value)}
-                        />
+                        
+                        {/* Filtros e Busca */}
+                        <div className="flex flex-col md:flex-row gap-4 justify-center items-center bg-slate-800 p-6 rounded-3xl shadow-2xl border border-slate-700">
+                            <input 
+                                type="text" 
+                                placeholder="Nome ou ID (ex: 25)..."
+                                className="w-full md:w-1/3 p-3 rounded-xl bg-slate-900 border border-slate-600 focus:border-yellow-400 outline-none transition-all text-white"
+                                onChange={(e) => setSearch(e.target.value)}
+                            />
+                            
+                            <select 
+                                className="w-full md:w-1/4 p-3 rounded-xl bg-slate-900 border border-slate-600 text-white outline-none focus:border-yellow-400"
+                                onChange={(e) => setTypeFilter(e.target.value)}
+                            >
+                                <option value="todos">Todos os Tipos</option>
+                                {Object.keys(typeTranslations).map(key => (
+                                    <option key={key} value={key}>{typeTranslations[key]}</option>
+                                ))}
+                            </select>
+
+                            <select 
+                                className="w-full md:w-1/4 p-3 rounded-xl bg-slate-900 border border-slate-600 text-white outline-none focus:border-yellow-400"
+                                onChange={(e) => setRarityFilter(e.target.value)}
+                            >
+                                <option value="todos">Todas as Raridades</option>
+                                <option value="comum">Comum</option>
+                                <option value="lendario">Lendario</option>
+                                <option value="mitico">Mitico</option>
+                            </select>
+                        </div>
                     </header>
 
                     {loading ? (
-                        <div className="text-center text-2xl font-kanit animate-pulse">Carregando dados...</div>
+                        <div className="flex flex-col items-center justify-center mt-20">
+                            <div className="w-16 h-16 border-4 border-yellow-400 border-t-transparent rounded-full animate-spin"></div>
+                            <p className="mt-4 text-xl font-kanit">Carregando dados da PokeAPI...</p>
+                        </div>
                     ) : (
-                        <main className="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                            {filteredPokemon.map(p => (
+                        <main className="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+                            {filteredPokemon.length > 0 ? filteredPokemon.map(p => (
                                 <div 
                                     key={p.id} 
-                                    className="pokemon-card relative bg-slate-800 rounded-3xl p-5 border border-slate-700 shadow-xl overflow-hidden group"
+                                    className="pokemon-card relative bg-slate-800 rounded-3xl p-6 border border-slate-700 shadow-xl overflow-hidden group"
                                 >
-                                    <span className="absolute top-4 left-4 text-slate-500 font-bold">#{String(p.id).padStart(3, '0')}</span>
+                                    {/* Tag de Raridade */}
+                                    {p.isLegendary && <span className="absolute top-2 right-4 text-[10px] bg-yellow-500 text-black px-2 py-1 rounded-full font-bold">LENDARIO</span>}
+                                    {p.isMythical && <span className="absolute top-2 right-4 text-[10px] bg-purple-500 text-white px-2 py-1 rounded-full font-bold">MITICO</span>}
+                                    
+                                    <span className="absolute top-4 left-4 text-slate-500 font-bold text-lg">#{String(p.id).padStart(3, '0')}</span>
                                     
                                     <img 
                                         src={p.sprites.other['official-artwork'].front_default} 
                                         alt={p.name} 
-                                        className="w-40 h-40 mx-auto drop-shadow-2xl group-hover:scale-110 transition-transform"
+                                        className="w-44 h-44 mx-auto drop-shadow-2xl group-hover:scale-110 transition-transform duration-500"
                                     />
                                     
-                                    <h2 className="text-2xl font-kanit font-bold capitalize text-center mt-4 mb-2">
+                                    <h2 className="text-3xl font-kanit font-bold capitalize text-center mt-4 mb-3 text-white tracking-wide">
                                         {p.name}
                                     </h2>
 
@@ -136,16 +185,24 @@
                                         {p.types.map(t => (
                                             <span 
                                                 key={t.type.name}
-                                                className={`px-3 py-1 rounded-full text-xs font-bold uppercase text-white ${colors[t.type.name] || 'bg-slate-500'}`}
+                                                className={`px-4 py-1 rounded-lg text-xs font-bold uppercase text-white shadow-md ${colors[t.type.name] || 'bg-slate-500'}`}
                                             >
-                                                {t.type.name}
+                                                {typeTranslations[t.type.name] || t.type.name}
                                             </span>
                                         ))}
                                     </div>
                                 </div>
-                            ))}
+                            )) : (
+                                <div className="col-span-full text-center py-20 text-slate-400 text-xl">
+                                    Nenhum Pokemon encontrado com esses filtros.
+                                </div>
+                            )}
                         </main>
                     )}
+                    
+                    <footer className="mt-20 pb-10 text-center text-slate-500 text-sm">
+                        <p>Dados fornecidos pela PokéAPI • Criado com React e Tailwind</p>
+                    </footer>
                 </div>
             );
         }
