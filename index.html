@@ -29,13 +29,13 @@
     </script>
 
     <style>
-        /* Estimulos e Animacoes */
+        /* Animacoes e Estimulos */
         * { transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
-        body { font-family: 'Montserrat', sans-serif; -webkit-tap-highlight-color: transparent; scroll-behavior: smooth; }
+        body { font-family: 'Montserrat', sans-serif; -webkit-tap-highlight-color: transparent; }
         
         .pokedex-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
             gap: 12px;
             width: 100%;
         }
@@ -43,50 +43,33 @@
             .pokedex-grid { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 24px; }
         }
 
-        /* Efeito de Brilho no Card */
-        .pokemon-card { 
-            position: relative;
-            z-index: 1;
-            overflow: hidden;
-        }
+        .pokemon-card { position: relative; z-index: 1; overflow: hidden; }
         .pokemon-card:hover { transform: translateY(-8px) scale(1.02); }
         .pokemon-card:active { transform: scale(0.95); }
         
-        .type-glow {
-            position: absolute;
-            top: -20%;
-            right: -20%;
-            width: 80%;
-            height: 80%;
-            filter: blur(40px);
-            opacity: 0.15;
-            z-index: -1;
-        }
+        .type-glow { position: absolute; top: -20%; right: -20%; width: 80%; height: 80%; filter: blur(40px); opacity: 0.15; z-index: -1; }
 
         .modal-overlay { backdrop-filter: blur(20px); z-index: 100; animation: fadeIn 0.3s ease; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
         .hide-scroll::-webkit-scrollbar { display: none; }
         .stat-bar { height: 8px; border-radius: 10px; background: #e2e8f0; overflow: hidden; }
-        .stat-fill { height: 100%; border-radius: 10px; width: 0; animation: fillBar 1s forwards ease-out; }
-        @keyframes fillBar { to { width: var(--target-width); } }
+        .stat-fill { height: 100%; border-radius: 10px; }
         
-        /* Badges e Tags */
-        .tag-rare { font-size: 7px; font-weight: 800; padding: 2px 6px; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .tag-rare { font-size: 7px; font-weight: 800; padding: 2px 6px; border-radius: 4px; text-transform: uppercase; }
         .legendary { background: #facc15; color: #000; box-shadow: 0 4px 10px rgba(250, 204, 21, 0.3); }
         .mythical { background: #a855f7; color: #fff; box-shadow: 0 4px 10px rgba(168, 85, 247, 0.3); }
         .var-badge { font-size: 6px; font-weight: 900; padding: 1px 4px; border-radius: 3px; }
         
-        /* Skeleton Loader */
         .skeleton { background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%); background-size: 200% 100%; animation: skeletonLoad 1.5s infinite; }
         @keyframes skeletonLoad { from { background-position: 200% 0; } to { background-position: -200% 0; } }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-900 overflow-x-hidden">
+<body class="bg-slate-50 text-slate-900">
     <div id="root"></div>
 
     <script type="text/babel">
-        const { useState, useEffect, useMemo, useRef } = React;
+        const { useState, useEffect, useMemo } = React;
 
         const TRANSLATIONS = {
             types: {
@@ -147,15 +130,14 @@
                     }));
                     setPokemonList(list);
                     setFullLoading(false);
-                    loadFullMetadata(list);
+                    loadBackgroundMetadata(list);
                 };
                 init();
             }, []);
 
-            const loadFullMetadata = async (list) => {
-                const batchSize = 30;
-                for (let i = 0; i < list.length; i += batchSize) {
-                    const batch = list.slice(i, i + batchSize);
+            const loadBackgroundMetadata = async (list) => {
+                for (let i = 0; i < list.length; i += 40) {
+                    const batch = list.slice(i, i + 40);
                     const details = await Promise.all(batch.map(async p => {
                         try {
                             const r = await fetch(`https://pokeapi.co/api/v2/pokemon/${p.id}`);
@@ -227,25 +209,18 @@
             return (
                 <div className={`min-h-screen pb-10 ${theme === 'dark' ? 'bg-[#020617] text-white' : 'bg-slate-50 text-slate-900'}`}>
                     
-                    {/* Header Organizado e Fixo */}
                     <header className={`sticky top-0 z-[60] border-b backdrop-blur-xl ${theme === 'dark' ? 'bg-[#020617]/80 border-slate-800' : 'bg-white/80 border-slate-200'}`}>
-                        <div className="max-w-[1800px] mx-auto p-4 md:p-6">
+                        <div className="max-w-[1800px] mx-auto p-4 md:p-6 text-center md:text-left">
                             <div className="flex justify-between items-center mb-5">
-                                <div className="flex items-center gap-2">
-                                    <div className="w-8 h-8 bg-red-600 rounded-lg shadow-lg rotate-12 flex items-center justify-center">
-                                        <div className="w-2 h-2 bg-white rounded-full"></div>
-                                    </div>
-                                    <h1 className="text-xl md:text-2xl font-kanit font-bold tracking-tight">POKEDEX<span className="text-red-600">ELITE</span></h1>
-                                </div>
+                                <h1 className="text-xl md:text-2xl font-kanit font-bold tracking-tight">POKEDEX<span className="text-red-600">PRO</span></h1>
                                 <button 
                                     onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-                                    className={`p-2 rounded-xl border flex items-center gap-2 text-[10px] font-bold tracking-widest ${theme === 'dark' ? 'bg-slate-900 border-slate-700 text-white' : 'bg-white border-slate-200 text-slate-700'}`}
+                                    className={`px-4 py-2 rounded-2xl border text-[10px] font-bold tracking-widest ${theme === 'dark' ? 'bg-slate-900 border-slate-700 text-white' : 'bg-white border-slate-200 text-slate-700'}`}
                                 >
                                     {theme === 'dark' ? '☀️ CLARO' : '🌙 ESCURO'}
                                 </button>
                             </div>
                             
-                            {/* Filtros em Grid para Mobile e Linha para PC */}
                             <div className="grid grid-cols-2 md:flex flex-wrap gap-2 md:gap-3">
                                 <input 
                                     type="text" 
@@ -253,15 +228,15 @@
                                     className={`col-span-2 md:flex-1 p-3.5 rounded-2xl text-sm outline-none border focus:ring-2 ring-red-500 transition-all ${theme === 'dark' ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-100 shadow-sm'}`}
                                     onChange={e => setSearch(e.target.value)}
                                 />
-                                <select className={`p-3 rounded-2xl text-xs font-bold border outline-none cursor-pointer ${theme === 'dark' ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-100'}`} onChange={e => setTypeF(e.target.value)}>
+                                <select className={`p-3 rounded-2xl text-xs font-bold border outline-none ${theme === 'dark' ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-100'}`} onChange={e => setTypeF(e.target.value)}>
                                     <option value="todos">TIPOS</option>
                                     {Object.keys(TRANSLATIONS.types).map(k => <option key={k} value={k}>{TRANSLATIONS.types[k]}</option>)}
                                 </select>
-                                <select className={`p-3 rounded-2xl text-xs font-bold border outline-none cursor-pointer ${theme === 'dark' ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-100'}`} onChange={e => setGenF(e.target.value)}>
+                                <select className={`p-3 rounded-2xl text-xs font-bold border outline-none ${theme === 'dark' ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-100'}`} onChange={e => setGenF(e.target.value)}>
                                     <option value="todos">GERACOES</option>
                                     {Object.keys(GENERATIONS).map(k => <option key={k} value={k}>{GENERATIONS[k].name}</option>)}
                                 </select>
-                                <select className={`p-3 rounded-2xl text-xs font-bold border outline-none cursor-pointer text-red-500 ${theme === 'dark' ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-100'}`} onChange={e => setRareF(e.target.value)}>
+                                <select className={`p-3 rounded-2xl text-xs font-bold border outline-none text-red-500 ${theme === 'dark' ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-100'}`} onChange={e => setRareF(e.target.value)}>
                                     <option value="todos">RARIDADES</option>
                                     <option value="comum">COMUM</option>
                                     <option value="lendario">LENDARIO</option>
@@ -271,12 +246,11 @@
                         </div>
                     </header>
 
-                    {/* Main com Feedbacks de Interacao */}
                     <main className="max-w-[1800px] mx-auto p-4 md:p-8">
                         <div className="pokedex-grid">
                             {fullLoading ? (
-                                Array(20).fill(0).map((_, i) => (
-                                    <div key={i} className={`h-48 rounded-[32px] skeleton ${theme === 'dark' ? 'opacity-10' : 'opacity-100'}`}></div>
+                                Array(15).fill(0).map((_, i) => (
+                                    <div key={i} className="h-48 rounded-[32px] skeleton"></div>
                                 ))
                             ) : filtered.map(p => (
                                 <div 
@@ -286,120 +260,117 @@
                                 >
                                     <div className={`type-glow ${p.types ? COLORS[p.types[0]] : 'bg-slate-400'}`}></div>
                                     <div className="w-full flex justify-between items-start">
-                                        <span className="text-[10px] font-bold text-slate-400">#{p.id}</span>
+                                        <span className="text-[10px] font-bold text-slate-400 italic">#{p.id}</span>
                                         {p.rarity && p.rarity !== 'comum' && <span className={`tag-rare ${p.rarity === 'lendario' ? 'legendary' : 'mythical'}`}>{p.rarity}</span>}
                                     </div>
-                                    <div className="relative my-2">
-                                        <img src={p.img} className="w-24 h-24 md:w-36 md:h-36 object-contain drop-shadow-2xl z-10 group-hover:rotate-6 transition-transform" loading="lazy" />
-                                    </div>
-                                    <h2 className={`text-sm md:text-base font-kanit font-bold capitalize mt-2 ${theme === 'dark' ? 'text-white' : 'text-slate-800'}`}>{p.name}</h2>
-                                    <div className="flex flex-wrap justify-center gap-1.5 mt-4">
-                                        {p.types ? p.types.map(t => <span key={t} className={`${COLORS[t]} px-2.5 py-1 rounded-lg text-[8px] font-bold uppercase text-white`}>{TRANSLATIONS.types[t]}</span>) : <div className="h-4 w-12 skeleton rounded-md"></div>}
+                                    <img src={p.img} className="w-28 h-28 md:w-36 md:h-36 object-contain drop-shadow-2xl z-10 group-hover:scale-110 transition-transform" />
+                                    <h2 className={`text-sm md:text-base font-kanit font-bold capitalize mt-3 ${theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>{p.name}</h2>
+                                    <div className="flex flex-wrap justify-center gap-1.5 mt-3">
+                                        {p.types?.map(t => <span key={t} className={`${COLORS[t]} px-2.5 py-1 rounded-lg text-[8px] font-bold uppercase text-white shadow-sm`}>{TRANSLATIONS.types[t]}</span>)}
                                     </div>
                                 </div>
                             ))}
                         </div>
                     </main>
 
-                    {/* Modal Estilo Dashboard PC / Estilo Bottom Sheet Mobile */}
                     {selected && (
                         <div className="fixed inset-0 modal-overlay flex items-end md:items-center justify-center p-0 md:p-6" onClick={() => setSelected(null)}>
-                            <div className={`w-full max-w-6xl max-h-[92vh] md:rounded-[48px] rounded-t-[40px] overflow-y-auto border shadow-2xl relative ${theme === 'dark' ? 'bg-slate-950 border-slate-800 text-white' : 'bg-white border-slate-200 text-slate-900'}`} onClick={e => e.stopPropagation()}>
+                            <div className={`w-full max-w-6xl max-h-[92vh] md:rounded-[48px] rounded-t-[40px] border shadow-2xl relative flex flex-col overflow-hidden ${theme === 'dark' ? 'bg-slate-950 border-slate-800 text-white' : 'bg-white border-slate-200 text-slate-900'}`} onClick={e => e.stopPropagation()}>
                                 
-                                <div className={`sticky top-0 p-5 border-b flex justify-between items-center z-[70] backdrop-blur-xl ${theme === 'dark' ? 'bg-slate-950/90 border-slate-800' : 'bg-white/90 border-slate-200'}`}>
-                                    <button onClick={() => setSelected(null)} className="text-red-500 font-bold text-xs uppercase tracking-widest hover:scale-105 active:scale-95 transition-transform">← VOLTAR</button>
-                                    <div className="flex gap-2">
-                                        <span className={`tag-rare ${selected.rarity === 'lendario' ? 'legendary' : selected.rarity === 'mitico' ? 'mythical' : 'bg-slate-200 text-slate-600 dark:bg-slate-800 dark:text-slate-400'}`}>{selected.rarity}</span>
-                                    </div>
+                                {/* CABECALHO FIXO DO MODAL - CORRIGIDO PARA CELULAR */}
+                                <div className={`sticky top-0 w-full p-5 border-b flex justify-between items-center z-[110] backdrop-blur-xl ${theme === 'dark' ? 'bg-slate-950/95 border-slate-800' : 'bg-white/95 border-slate-200'}`}>
+                                    <button 
+                                        onClick={() => setSelected(null)} 
+                                        className="bg-red-500 text-white px-5 py-2.5 rounded-2xl text-[10px] font-bold uppercase tracking-widest shadow-lg shadow-red-500/20 active:scale-95"
+                                    >
+                                        ← VOLTAR
+                                    </button>
+                                    <span className={`tag-rare ${selected.rarity === 'lendario' ? 'legendary' : selected.rarity === 'mitico' ? 'mythical' : 'bg-slate-200 text-slate-700 dark:bg-slate-800 dark:text-slate-400'}`}>{selected.rarity}</span>
                                 </div>
 
-                                <div className="p-6 md:p-14 flex flex-col md:flex-row gap-12">
-                                    {/* Lateral Visual e Infos Basicas */}
-                                    <div className="w-full md:w-1/3 text-center">
-                                        <div className={`rounded-[40px] p-8 mb-8 border relative group overflow-hidden ${theme === 'dark' ? 'bg-slate-900 border-slate-800' : 'bg-slate-50 border-slate-100'}`}>
-                                            <div className={`absolute inset-0 opacity-20 blur-3xl ${COLORS[selected.types[0].type.name]}`}></div>
-                                            <img src={selected.sprites.other['official-artwork'].front_default} className="w-56 h-56 md:w-full mx-auto relative z-10 drop-shadow-2xl group-hover:scale-110 transition-transform duration-500" />
+                                {/* CONTEUDO SCROLLAVEL */}
+                                <div className="flex-1 overflow-y-auto p-6 md:p-12 hide-scroll">
+                                    <div className="flex flex-col md:flex-row gap-12">
+                                        <div className="w-full md:w-1/3 text-center">
+                                            <div className={`rounded-[40px] p-8 mb-8 border relative group overflow-hidden ${theme === 'dark' ? 'bg-slate-900 border-slate-800' : 'bg-slate-50 border-slate-100'}`}>
+                                                <div className={`absolute inset-0 opacity-10 blur-3xl ${COLORS[selected.types[0].type.name]}`}></div>
+                                                <img src={selected.sprites.other['official-artwork'].front_default} className="w-52 h-52 md:w-full mx-auto relative z-10 drop-shadow-2xl" />
+                                            </div>
+                                            <h2 className="text-4xl font-kanit font-bold capitalize mb-4 tracking-tight">{selected.name}</h2>
+                                            <div className="flex justify-center gap-2 mb-8">
+                                                {selected.types.map(t => <span key={t.type.name} className={`${COLORS[t.type.name]} px-5 py-2 rounded-xl text-xs font-bold uppercase text-white shadow-xl`}>{TRANSLATIONS.types[t.type.name]}</span>)}
+                                            </div>
+                                            <div className="grid grid-cols-2 gap-4 text-[10px] font-bold text-slate-400">
+                                                <div className="p-4 bg-slate-50 dark:bg-slate-900/50 rounded-2xl border border-slate-100 dark:border-slate-800">
+                                                    <p>ALTURA</p><p className="text-base text-red-500">{selected.height / 10}m</p>
+                                                </div>
+                                                <div className="p-4 bg-slate-50 dark:bg-slate-900/50 rounded-2xl border border-slate-100 dark:border-slate-800">
+                                                    <p>PESO</p><p className="text-base text-red-500">{selected.weight / 10}kg</p>
+                                                </div>
+                                            </div>
                                         </div>
-                                        <h2 className="text-4xl md:text-5xl font-kanit font-bold capitalize mb-4 tracking-tight">{selected.name}</h2>
-                                        <div className="flex justify-center gap-2 mb-8">
-                                            {selected.types.map(t => <span key={t.type.name} className={`${COLORS[t.type.name]} px-5 py-2 rounded-xl text-xs font-bold uppercase text-white shadow-lg`}>{TRANSLATIONS.types[t.type.name]}</span>)}
-                                        </div>
-                                        <div className="flex justify-center gap-6 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-                                            <div className="flex flex-col gap-1"><span>ALTURA</span><span className={theme === 'dark' ? 'text-white' : 'text-slate-900'}>{selected.height / 10}m</span></div>
-                                            <div className="w-px h-8 bg-slate-200 dark:bg-slate-800"></div>
-                                            <div className="flex flex-col gap-1"><span>PESO</span><span className={theme === 'dark' ? 'text-white' : 'text-slate-900'}>{selected.weight / 10}kg</span></div>
-                                        </div>
-                                    </div>
 
-                                    {/* Conteudo: Bio, Stats e Evolucoes Categorizadas */}
-                                    <div className="flex-1 space-y-12">
-                                        <div className={`p-6 rounded-[32px] border leading-relaxed ${theme === 'dark' ? 'bg-slate-900/50 border-slate-800 text-slate-400' : 'bg-slate-50 border-slate-100 text-slate-600'}`}>
-                                            <p className="text-sm italic">"{selected.desc}"</p>
+                                        <div className="flex-1 space-y-12">
+                                            <p className={`text-sm italic leading-relaxed border-l-4 pl-4 ${theme === 'dark' ? 'text-slate-400 border-slate-700' : 'text-slate-600 border-slate-200'}`}>"{selected.desc}"</p>
+                                            
+                                            <section>
+                                                <h3 className="text-red-500 font-kanit font-bold text-[10px] tracking-[0.3em] mb-6 uppercase">STATUS BASE</h3>
+                                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-10 gap-y-6">
+                                                    {selected.stats.map(s => (
+                                                        <div key={s.stat.name}>
+                                                            <div className="flex justify-between text-[10px] font-bold uppercase mb-2">
+                                                                <span className="text-slate-500">{TRANSLATIONS.stats[s.stat.name] || s.stat.name}</span>
+                                                                <span>{s.base_stat}</span>
+                                                            </div>
+                                                            <div className="stat-bar bg-slate-100 dark:bg-slate-800">
+                                                                <div className={`stat-fill ${COLORS[selected.types[0].type.name]}`} style={{width: `${(s.base_stat / 255) * 100}%`}}></div>
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </section>
+
+                                            <section>
+                                                <h3 className="text-red-500 font-kanit font-bold text-[10px] tracking-[0.3em] mb-8 uppercase">EVOLUCOES E VARIANTES</h3>
+                                                <div className="space-y-12">
+                                                    {evoChain.map((step, i) => (
+                                                        <div key={step.name} className="flex flex-col gap-6">
+                                                            <div className="flex items-center gap-3">
+                                                                <span className="text-[10px] font-bold text-slate-400">ESTAGIO {i + 1}</span>
+                                                                <div className="h-px flex-1 bg-slate-100 dark:bg-slate-800"></div>
+                                                            </div>
+                                                            <div className="flex flex-wrap gap-4 justify-center md:justify-start">
+                                                                {step.variants.map(v => {
+                                                                    let badge = "";
+                                                                    if(v.name.includes("-mega")) badge = "MEGA";
+                                                                    if(v.name.includes("-gmax")) badge = "G-MAX";
+                                                                    if(v.name.includes("-alola")) badge = "ALOLA";
+                                                                    if(v.name.includes("-galar")) badge = "GALAR";
+                                                                    if(v.name.includes("-hisui")) badge = "HISUI";
+                                                                    if(v.name.includes("-paldea")) badge = "PALDEA";
+
+                                                                    return (
+                                                                        <div 
+                                                                            key={v.id} 
+                                                                            onClick={() => loadDetails(v.id)} 
+                                                                            className={`cursor-pointer group relative p-4 rounded-[32px] border transition-all ${v.id === selected.id ? 'border-red-500 bg-red-500/5 shadow-xl' : theme === 'dark' ? 'border-slate-800 bg-slate-900/50 hover:border-slate-600' : 'border-slate-100 bg-white hover:border-slate-200 shadow-sm'}`}
+                                                                        >
+                                                                            <img src={v.img} className="w-16 h-16 md:w-20 md:h-20 mx-auto group-hover:scale-110 transition-transform" />
+                                                                            <p className="text-[9px] font-bold capitalize mt-3 text-center text-slate-500 truncate max-w-[80px]">{v.name.replace(/-/g, ' ')}</p>
+                                                                            {badge && (
+                                                                                <span className={`var-badge absolute top-2 right-2 text-white ${badge === 'G-MAX' ? 'bg-red-600' : badge === 'MEGA' ? 'bg-blue-600' : 'bg-slate-700'}`}>
+                                                                                    {badge}
+                                                                                </span>
+                                                                            )}
+                                                                        </div>
+                                                                    );
+                                                                })}
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </section>
                                         </div>
-                                        
-                                        <section>
-                                            <div className="flex items-center gap-4 mb-6">
-                                                <h3 className="text-red-500 font-kanit font-bold text-[10px] tracking-[0.3em] uppercase">STATUS BASE</h3>
-                                                <div className="flex-1 h-px bg-slate-100 dark:bg-slate-800"></div>
-                                            </div>
-                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-10 gap-y-6">
-                                                {selected.stats.map(s => (
-                                                    <div key={s.stat.name}>
-                                                        <div className="flex justify-between text-[10px] font-bold uppercase mb-2">
-                                                            <span className="text-slate-500">{TRANSLATIONS.stats[s.stat.name] || s.stat.name}</span>
-                                                            <span className="font-kanit">{s.base_stat}</span>
-                                                        </div>
-                                                        <div className="stat-bar">
-                                                            <div className={`stat-fill ${COLORS[selected.types[0].type.name]}`} style={{"--target-width": `${(s.base_stat / 255) * 100}%`}}></div>
-                                                        </div>
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        </section>
-
-                                        <section>
-                                            <div className="flex items-center gap-4 mb-8">
-                                                <h3 className="text-red-500 font-kanit font-bold text-[10px] tracking-[0.3em] uppercase">LINHA EVOLUTIVA & VARIANTES</h3>
-                                                <div className="flex-1 h-px bg-slate-100 dark:bg-slate-800"></div>
-                                            </div>
-                                            <div className="space-y-12">
-                                                {evoChain.map((step, i) => (
-                                                    <div key={step.name} className="flex flex-col gap-6">
-                                                        <div className="flex items-center gap-3">
-                                                            <span className="text-[10px] font-bold text-slate-400 bg-slate-100 dark:bg-slate-900 px-3 py-1 rounded-lg">ESTAGIO {i + 1}</span>
-                                                            <div className={`h-px flex-1 ${theme === 'dark' ? 'bg-slate-800' : 'bg-slate-100'}`}></div>
-                                                        </div>
-                                                        <div className="flex flex-wrap gap-4 justify-center md:justify-start">
-                                                            {step.variants.map(v => {
-                                                                let label = "";
-                                                                if(v.name.includes("-mega")) label = "MEGA";
-                                                                if(v.name.includes("-gmax")) label = "G-MAX";
-                                                                if(v.name.includes("-alola")) label = "ALOLA";
-                                                                if(v.name.includes("-galar")) label = "GALAR";
-                                                                if(v.name.includes("-hisui")) label = "HISUI";
-                                                                if(v.name.includes("-paldea")) label = "PALDEA";
-
-                                                                return (
-                                                                    <div 
-                                                                        key={v.id} 
-                                                                        onClick={() => loadDetails(v.id)} 
-                                                                        className={`cursor-pointer group relative p-4 rounded-[32px] border transition-all active:scale-95 ${v.id === selected.id ? 'border-red-500 bg-red-500/5 shadow-xl shadow-red-500/10' : theme === 'dark' ? 'border-slate-800 bg-slate-900/50 hover:border-slate-600' : 'border-slate-100 bg-white hover:border-slate-300 shadow-sm'}`}
-                                                                    >
-                                                                        <img src={v.img} className="w-16 h-16 md:w-20 md:h-20 mx-auto group-hover:scale-110 transition-transform" />
-                                                                        <p className="text-[9px] font-bold capitalize mt-3 text-center text-slate-500 truncate max-w-[80px]">{v.name.replace(/-/g, ' ')}</p>
-                                                                        {label && (
-                                                                            <span className={`var-badge absolute top-2 right-2 text-white ${label === 'G-MAX' ? 'bg-red-600' : label === 'MEGA' ? 'bg-blue-600' : 'bg-slate-700'}`}>
-                                                                                {label}
-                                                                            </span>
-                                                                        )}
-                                                                    </div>
-                                                                );
-                                                            })}
-                                                        </div>
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        </section>
                                     </div>
                                 </div>
                             </div>
