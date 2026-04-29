@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pokedex Pro - Eduardo Edition</title>
+    <title>Pokedex Pro Ultimate - Eduardo Edition</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -21,6 +21,9 @@
                     fontFamily: {
                         kanit: ['Kanit', 'sans-serif'],
                         montserrat: ['Montserrat', 'sans-serif'],
+                    },
+                    screens: {
+                        '3xl': '2000px',
                     }
                 }
             }
@@ -29,14 +32,16 @@
 
     <style>
         body { background-color: #020617; color: white; font-family: 'Montserrat', sans-serif; }
-        .pokemon-card { transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        .pokemon-card:hover { transform: translateY(-10px); border-color: #facc15; box-shadow: 0 25px 50px -12px rgba(250, 204, 21, 0.3); }
-        .modal-overlay { backdrop-filter: blur(25px); background: rgba(0,0,0,0.8); z-index: 100; }
+        .pokemon-card { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); height: 100%; }
+        .pokemon-card:hover { transform: translateY(-10px) scale(1.03); border-color: #facc15; box-shadow: 0 20px 40px -10px rgba(250, 204, 21, 0.2); }
+        .modal-overlay { backdrop-filter: blur(20px); background: rgba(0,0,0,0.85); z-index: 100; }
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: #facc15; }
-        .stat-bar { height: 6px; background: #1e293b; border-radius: 3px; overflow: hidden; }
+        .stat-bar { height: 8px; background: #1e293b; border-radius: 4px; overflow: hidden; }
         .stat-fill { height: 100%; transition: width 1s ease-in-out; }
+        .gmax-tag { background: linear-gradient(45deg, #ff0000, #ff7b00); animation: pulse 2s infinite; }
+        @keyframes pulse { 0% { opacity: 0.8; } 50% { opacity: 1; } 100% { opacity: 0.8; } }
     </style>
 </head>
 <body>
@@ -54,7 +59,7 @@
             },
             stats: {
                 hp: 'Vida', attack: 'Ataque', defense: 'Defesa', 
-                'special-attack': 'Atk. Esp', 'special-defense': 'Def. Esp', speed: 'Veloc'
+                'special-attack': 'Atk Esp', 'special-defense': 'Def Esp', speed: 'Veloc'
             }
         };
 
@@ -76,203 +81,239 @@
             const [selected, setSelected] = useState(null);
             const [evoChain, setEvoChain] = useState([]);
 
-            // Puxa TODOS os pokemons de uma vez (IDs e Nomes)
+            // Carrega TODAS as formas e variantes
             useEffect(() => {
-                const fetchAll = async () => {
+                const fetchEverything = async () => {
                     try {
-                        const res = await fetch('https://pokeapi.co/api/v2/pokemon?limit=1025');
+                        const res = await fetch('https://pokeapi.co/api/v2/pokemon?limit=2000');
                         const data = await res.json();
-                        const basicList = data.results.map((p, index) => ({
-                            name: p.name,
-                            id: index + 1,
-                            url: p.url,
-                            img: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${index + 1}.png`
-                        }));
-                        setAllPokemon(basicList);
-                        setLoading(false);
                         
-                        // Carrega detalhes (tipos e raridade) em background para os filtros funcionarem
-                        loadFullData(basicList);
+                        const fullList = data.results.map((p) => {
+                            const id = p.url.split('/').filter(Boolean).pop();
+                            return {
+                                name: p.name,
+                                id: parseInt(id),
+                                url: p.url,
+                                img: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${id}.png`
+                            };
+                        });
+                        setAllPokemon(fullList);
+                        setLoading(false);
+                        loadBackgroundDetails(fullList);
                     } catch (e) { console.error(e); }
                 };
-                fetchAll();
+                fetchEverything();
             }, []);
 
-            const loadFullData = async (list) => {
-                // Carrega em lotes para nao travar o navegador
-                for (let i = 0; i < list.length; i += 50) {
-                    const batch = list.slice(i, i + 50);
+            const loadBackgroundDetails = async (list) => {
+                for (let i = 0; i < list.length; i += 40) {
+                    const batch = list.slice(i, i + 40);
                     const details = await Promise.all(batch.map(async (p) => {
-                        const res = await fetch(p.url);
-                        const d = await res.json();
-                        const sRes = await fetch(d.species.url);
-                        const s = await sRes.json();
-                        return { 
-                            ...p, 
-                            types: d.types.map(t => t.type.name),
-                            isLegendary: s.is_legendary,
-                            isMythical: s.is_mythical
-                        };
+                        try {
+                            const res = await fetch(p.url);
+                            const d = await res.json();
+                            const sRes = await fetch(d.species.url);
+                            const s = await sRes.json();
+                            return { 
+                                ...p, 
+                                types: d.types.map(t => t.type.name),
+                                isLegendary: s.is_legendary,
+                                isMythical: s.is_mythical,
+                                isGmax: p.name.includes('-gmax'),
+                                isMega: p.name.includes('-mega')
+                            };
+                        } catch { return p; }
                     }));
                     setAllPokemon(prev => {
                         const newList = [...prev];
-                        details.forEach(d => { newList[d.id - 1] = d; });
+                        details.forEach(d => {
+                            const idx = newList.findIndex(item => item.id === d.id);
+                            if (idx !== -1) newList[idx] = d;
+                        });
                         return newList;
                     });
                 }
             };
 
-            const loadDetails = async (id) => {
-                const res = await fetch(`https://pokeapi.co/api/v2/pokemon/${id}`);
-                const data = await res.json();
-                const sRes = await fetch(data.species.url);
-                const sData = await sRes.json();
-                
-                // Evolucoes
-                const eRes = await fetch(sData.evolution_chain.url);
-                const eData = await eRes.json();
-                let chain = [];
-                let curr = eData.chain;
-                while(curr) {
-                    const pId = curr.species.url.split('/').filter(Boolean).pop();
-                    chain.push({
-                        name: curr.species.name,
-                        id: pId,
-                        img: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${pId}.png`
+            const loadDetails = async (idOrName) => {
+                try {
+                    const res = await fetch(`https://pokeapi.co/api/v2/pokemon/${idOrName}`);
+                    const data = await res.json();
+                    const sRes = await fetch(data.species.url);
+                    const sData = await sRes.json();
+                    
+                    const eRes = await fetch(sData.evolution_chain.url);
+                    const eData = await eRes.json();
+                    let chain = [];
+                    let curr = eData.chain;
+                    while(curr) {
+                        const pId = curr.species.url.split('/').filter(Boolean).pop();
+                        chain.push({
+                            name: curr.species.name,
+                            id: pId,
+                            img: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${pId}.png`
+                        });
+                        curr = curr.evolves_to[0];
+                    }
+                    setEvoChain(chain);
+                    setSelected({
+                        ...data,
+                        description: sData.flavor_text_entries.find(e => e.language.name === 'en')?.flavor_text.replace(/[\n\f]/g, ' '),
+                        isLegendary: sData.is_legendary,
+                        isMythical: sData.is_mythical,
+                        habitat: sData.habitat?.name || 'desconhecido',
+                        generation: sData.generation.name.toUpperCase(),
+                        isGmax: data.name.includes('-gmax')
                     });
-                    curr = curr.evolves_to[0];
-                }
-
-                setEvoChain(chain);
-                setSelected({
-                    ...data,
-                    description: sData.flavor_text_entries.find(e => e.language.name === 'en')?.flavor_text.replace(/[\n\f]/g, ' '),
-                    isLegendary: sData.is_legendary,
-                    isMythical: sData.is_mythical,
-                    habitat: sData.habitat?.name || 'desconhecido',
-                    generation: sData.generation.name.toUpperCase()
-                });
+                } catch (e) { console.error(e); }
             };
 
             const filtered = useMemo(() => {
                 return allPokemon.filter(p => {
-                    const matchesSearch = p.name.includes(search.toLowerCase()) || p.id.toString() === search;
+                    const matchesSearch = p.name.toLowerCase().includes(search.toLowerCase()) || p.id.toString() === search;
                     const matchesType = typeFilter === 'todos' || (p.types && p.types.includes(typeFilter));
                     let matchesRarity = true;
                     if (rarityFilter === 'lendario') matchesRarity = p.isLegendary;
                     else if (rarityFilter === 'mitico') matchesRarity = p.isMythical;
-                    else if (rarityFilter === 'comum') matchesRarity = !p.isLegendary && !p.isMythical;
+                    else if (rarityFilter === 'gmax') matchesRarity = p.isGmax;
+                    else if (rarityFilter === 'mega') matchesRarity = p.isMega;
                     return matchesSearch && matchesType && matchesRarity;
                 });
             }, [search, typeFilter, rarityFilter, allPokemon]);
 
             return (
                 <div className="min-h-screen">
-                    {/* Header com Filtros */}
-                    <header className="sticky top-0 z-50 bg-slate-900/90 border-b border-yellow-400/20 p-6 backdrop-blur-xl">
-                        <div className="max-w-7xl mx-auto flex flex-col lg:flex-row items-center gap-6">
-                            <div className="flex items-center gap-4">
-                                <div className="w-12 h-12 bg-red-600 rounded-full border-4 border-white shadow-lg flex items-center justify-center">
-                                    <div className="w-4 h-4 bg-white rounded-full animate-ping"></div>
+                    <header className="sticky top-0 z-50 bg-slate-950/80 border-b border-slate-800 p-4 md:p-6 backdrop-blur-xl">
+                        <div className="max-w-[1800px] mx-auto flex flex-col xl:flex-row items-center gap-6">
+                            <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 bg-red-500 rounded-full border-2 border-white flex items-center justify-center shadow-[0_0_15px_rgba(239,68,68,0.5)]">
+                                    <div className="w-3 h-3 bg-white rounded-full animate-pulse"></div>
                                 </div>
-                                <h1 className="text-3xl font-kanit font-bold text-white tracking-tighter">POKEDEX<span className="text-yellow-400">PRO</span></h1>
+                                <h1 className="text-2xl font-kanit font-bold tracking-tighter">POKEDEX<span className="text-yellow-400">ULTRA</span></h1>
                             </div>
-                            
+
                             <div className="flex flex-wrap w-full gap-3">
                                 <input 
                                     type="text" 
-                                    placeholder="Pesquisa instantanea (Nome ou ID)..."
-                                    className="flex-1 min-w-[200px] bg-slate-800 border border-slate-700 rounded-2xl p-4 outline-none focus:ring-2 ring-yellow-400 text-white"
+                                    placeholder="Pesquisa global (Nome, ID ou Forma)..."
+                                    className="flex-1 min-w-[280px] bg-slate-900 border border-slate-700 rounded-2xl p-4 outline-none focus:ring-2 ring-yellow-400 text-white transition-all"
                                     onChange={e => setSearch(e.target.value)}
                                 />
-                                <select className="bg-slate-800 border border-slate-700 rounded-2xl p-4 text-white outline-none" onChange={e => setTypeFilter(e.target.value)}>
+                                <select className="bg-slate-900 border border-slate-700 rounded-2xl p-4 text-white font-bold outline-none cursor-pointer" onChange={e => setTypeFilter(e.target.value)}>
                                     <option value="todos">Todos os Tipos</option>
                                     {Object.keys(TRANSLATIONS.types).map(k => <option key={k} value={k}>{TRANSLATIONS.types[k]}</option>)}
                                 </select>
-                                <select className="bg-slate-800 border border-slate-700 rounded-2xl p-4 text-white outline-none" onChange={e => setRarityFilter(e.target.value)}>
-                                    <option value="todos">Todas Raridades</option>
-                                    <option value="comum">Comum</option>
-                                    <option value="lendario">Lendario</option>
-                                    <option value="mitico">Mitico</option>
+                                <select className="bg-slate-900 border border-slate-700 rounded-2xl p-4 text-white font-bold outline-none cursor-pointer" onChange={e => setRarityFilter(e.target.value)}>
+                                    <option value="todos">Filtros Especiais</option>
+                                    <option value="lendario">Lendarios</option>
+                                    <option value="mitico">Miticos</option>
+                                    <option value="gmax">Gigantamax (GMax)</option>
+                                    <option value="mega">Mega Evolucoes</option>
                                 </select>
                             </div>
                         </div>
                     </header>
 
-                    {/* Grid de Cards Completos */}
-                    <main className="max-w-7xl mx-auto p-6 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6">
+                    {/* Grid Melhorado para PC e Mobile */}
+                    <main className="max-w-[1800px] mx-auto p-6 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-8 3xl:grid-cols-10 gap-5">
                         {filtered.map(p => (
                             <div 
-                                key={p.id} 
-                                onClick={() => loadDetails(p.id)}
-                                className={`pokemon-card bg-slate-800 border-2 border-slate-700 rounded-[30px] p-5 cursor-pointer relative flex flex-col items-center overflow-hidden`}
+                                key={`${p.id}-${p.name}`} 
+                                onClick={() => loadDetails(p.id > 10000 ? p.name : p.id)}
+                                className="pokemon-card bg-slate-900 border border-slate-800 rounded-[32px] p-5 cursor-pointer relative flex flex-col items-center justify-between group"
                             >
-                                <span className="absolute top-4 left-5 text-slate-500 font-bold text-xs italic">#{p.id}</span>
-                                {p.isLegendary && <span className="absolute top-4 right-4 w-2 h-2 bg-yellow-400 rounded-full shadow-[0_0_10px_#facc15]"></span>}
+                                <div className="w-full flex justify-between items-start mb-2">
+                                    <span className="text-slate-600 font-bold text-xs italic">#{p.id > 10000 ? 'VAR' : p.id}</span>
+                                    <div className="flex gap-1">
+                                        {p.isGmax && <span className="w-2 h-2 bg-red-500 rounded-full shadow-[0_0_8px_red]"></span>}
+                                        {p.isLegendary && <span className="w-2 h-2 bg-yellow-400 rounded-full shadow-[0_0_8px_yellow]"></span>}
+                                    </div>
+                                </div>
                                 
-                                <img src={p.img} className="w-32 h-32 md:w-40 md:h-40 drop-shadow-2xl z-10" />
+                                <div className="relative">
+                                    <div className="absolute inset-0 bg-white/5 rounded-full blur-2xl group-hover:bg-yellow-400/10 transition-colors"></div>
+                                    <img src={p.img} className="w-32 h-32 md:w-36 md:h-36 object-contain relative z-10 drop-shadow-2xl" loading="lazy" 
+                                         onError={(e) => e.target.src = 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/0.png'} />
+                                </div>
                                 
-                                <h2 className="font-kanit font-bold capitalize mt-4 text-lg text-white">{p.name}</h2>
-                                
-                                <div className="flex flex-wrap justify-center gap-1 mt-3">
-                                    {p.types ? p.types.map(t => (
-                                        <span key={t} className={`${COLORS[t]} text-[9px] px-2 py-1 rounded-lg font-bold uppercase`}>
-                                            {TRANSLATIONS.types[t]}
-                                        </span>
-                                    )) : <span className="text-[10px] text-slate-600 animate-pulse">Carregando...</span>}
+                                <div className="w-full text-center mt-4">
+                                    <h2 className="font-kanit font-bold capitalize text-sm md:text-base leading-tight truncate px-1">{p.name.replace(/-/g, ' ')}</h2>
+                                    <div className="flex flex-wrap justify-center gap-1 mt-2">
+                                        {p.types ? p.types.map(t => (
+                                            <span key={t} className={`${COLORS[t]} text-[8px] md:text-[9px] px-2 py-0.5 rounded-lg font-bold uppercase tracking-tighter`}>
+                                                {TRANSLATIONS.types[t]}
+                                            </span>
+                                        )) : <span className="text-[10px] text-slate-700 animate-pulse">Analizando...</span>}
+                                    </div>
                                 </div>
                             </div>
                         ))}
                     </main>
 
-                    {/* Modal com Navegacao por Evolucao */}
+                    {loading && (
+                        <div className="fixed inset-0 flex items-center justify-center bg-slate-950 z-[200]">
+                            <div className="text-center">
+                                <div className="w-20 h-20 border-4 border-yellow-400 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+                                <p className="font-kanit text-xl text-yellow-400 animate-pulse">Sincronizando 1300+ Pokemons...</p>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Modal Pro */}
                     {selected && (
-                        <div className="fixed inset-0 modal-overlay flex items-center justify-center p-4" onClick={() => setSelected(null)}>
-                            <div className="bg-slate-900 border border-slate-700 w-full max-w-5xl max-h-[90vh] rounded-[40px] overflow-y-auto" onClick={e => e.stopPropagation()}>
+                        <div className="fixed inset-0 modal-overlay flex items-center justify-center p-2 md:p-6" onClick={() => setSelected(null)}>
+                            <div className="bg-slate-950 border border-slate-800 w-full max-w-6xl max-h-[95vh] rounded-[48px] overflow-y-auto shadow-2xl" onClick={e => e.stopPropagation()}>
                                 
-                                <div className="sticky top-0 bg-slate-900/90 p-6 border-b border-slate-800 flex justify-between items-center z-30">
-                                    <button onClick={() => setSelected(null)} className="text-yellow-400 font-bold flex items-center gap-2 hover:bg-slate-800 p-2 rounded-xl transition-all">
-                                        ← VOLTAR PARA LISTA
+                                <div className="sticky top-0 bg-slate-950/90 p-6 border-b border-slate-800 flex justify-between items-center z-50 backdrop-blur-md">
+                                    <button onClick={() => setSelected(null)} className="text-yellow-400 font-bold flex items-center gap-2 hover:scale-105 transition-transform bg-slate-900 px-4 py-2 rounded-2xl">
+                                        ← VOLTAR
                                     </button>
                                     <div className="flex gap-2">
-                                        <span className="bg-slate-800 px-3 py-1 rounded-lg text-xs font-bold text-slate-400 uppercase">{selected.generation}</span>
-                                        <span className={`px-3 py-1 rounded-lg text-xs font-bold uppercase ${selected.isLegendary ? 'bg-yellow-500 text-black' : selected.isMythical ? 'bg-purple-600 text-white' : 'bg-slate-700 text-white'}`}>
-                                            {selected.isLegendary ? 'Lendario' : selected.isMythical ? 'Mitico' : 'Comum'}
-                                        </span>
+                                        {selected.isGmax && <span className="gmax-tag text-white text-[10px] px-4 py-1.5 rounded-full font-bold">GIGANTAMAX</span>}
+                                        <span className="bg-slate-800 px-4 py-1.5 rounded-full text-[10px] font-bold text-slate-400">{selected.generation}</span>
                                     </div>
                                 </div>
 
-                                <div className="p-8 md:p-12 flex flex-col lg:flex-row gap-12">
-                                    <div className="w-full lg:w-1/3 text-center">
-                                        <div className={`rounded-full p-10 mb-6 bg-gradient-to-b from-slate-800 to-transparent shadow-inner`}>
-                                            <img src={selected.sprites.other['official-artwork'].front_default} className="w-full drop-shadow-[0_20px_50px_rgba(0,0,0,0.5)]" />
+                                <div className="p-8 md:p-14 flex flex-col lg:flex-row gap-16">
+                                    {/* Esquerda: Visual e Bio */}
+                                    <div className="w-full lg:w-2/5 text-center">
+                                        <div className={`rounded-[60px] p-10 mb-8 bg-gradient-to-b from-white/5 to-transparent relative group`}>
+                                            <img src={selected.sprites.other['official-artwork'].front_default} className="w-full max-w-sm mx-auto drop-shadow-[0_20px_60px_rgba(255,255,255,0.1)] group-hover:scale-110 transition-transform duration-700" />
                                         </div>
-                                        <h2 className="text-5xl font-kanit font-bold capitalize mb-2">{selected.name}</h2>
-                                        <p className="text-slate-400 text-sm leading-relaxed italic mb-6">"{selected.description}"</p>
+                                        <h2 className="text-5xl font-kanit font-bold capitalize mb-4 tracking-tight">{selected.name.replace(/-/g, ' ')}</h2>
+                                        <div className="flex justify-center gap-3 mb-6">
+                                            {selected.types.map(t => (
+                                                <span key={t.type.name} className={`${COLORS[t.type.name]} px-6 py-2 rounded-2xl text-xs font-bold uppercase shadow-lg`}>
+                                                    {TRANSLATIONS.types[t.type.name]}
+                                                </span>
+                                            ))}
+                                        </div>
+                                        <p className="text-slate-400 italic text-base leading-relaxed mb-8">"{selected.description || 'Nenhuma descricao registrada para esta forma.'}"</p>
                                         
                                         <div className="grid grid-cols-2 gap-4">
-                                            <div className="bg-slate-800 p-4 rounded-3xl border border-slate-700">
-                                                <p className="text-[10px] text-slate-500 font-bold">ALTURA</p>
-                                                <p className="text-xl font-bold text-yellow-400">{selected.height / 10}m</p>
+                                            <div className="bg-slate-900 p-5 rounded-[30px] border border-slate-800">
+                                                <p className="text-[10px] text-slate-500 font-bold mb-1">ALTURA</p>
+                                                <p className="text-2xl font-bold text-yellow-400">{selected.height / 10}m</p>
                                             </div>
-                                            <div className="bg-slate-800 p-4 rounded-3xl border border-slate-700">
-                                                <p className="text-[10px] text-slate-500 font-bold">PESO</p>
-                                                <p className="text-xl font-bold text-yellow-400">{selected.weight / 10}kg</p>
+                                            <div className="bg-slate-900 p-5 rounded-[30px] border border-slate-800">
+                                                <p className="text-[10px] text-slate-500 font-bold mb-1">PESO</p>
+                                                <p className="text-2xl font-bold text-yellow-400">{selected.weight / 10}kg</p>
                                             </div>
                                         </div>
                                     </div>
 
-                                    <div className="flex-1 space-y-10">
-                                        <div>
-                                            <h3 className="text-yellow-400 font-kanit font-bold mb-6 uppercase text-xs tracking-widest flex items-center gap-4">
-                                                ESTATISTICAS BASE <span className="h-px bg-slate-800 flex-1"></span>
+                                    {/* Direita: Stats e Evolucoes */}
+                                    <div className="flex-1 space-y-12">
+                                        <section>
+                                            <h3 className="text-yellow-400 font-kanit font-bold mb-8 uppercase text-xs tracking-[0.4em] flex items-center gap-4">
+                                                STATUS DE BASE <span className="h-px bg-slate-800 flex-1"></span>
                                             </h3>
-                                            <div className="space-y-4">
+                                            <div className="space-y-5">
                                                 {selected.stats.map(s => (
                                                     <div key={s.stat.name}>
-                                                        <div className="flex justify-between text-[10px] font-bold uppercase mb-1">
-                                                            <span>{TRANSLATIONS.stats[s.stat.name] || s.stat.name}</span>
-                                                            <span className="text-yellow-400">{s.base_stat}</span>
+                                                        <div className="flex justify-between text-[11px] font-bold uppercase mb-2">
+                                                            <span className="text-slate-500">{TRANSLATIONS.stats[s.stat.name] || s.stat.name}</span>
+                                                            <span className="text-white">{s.base_stat}</span>
                                                         </div>
                                                         <div className="stat-bar">
                                                             <div className={`stat-fill ${COLORS[selected.types[0].type.name]}`} style={{ width: `${(s.base_stat / 255) * 100}%` }}></div>
@@ -280,42 +321,42 @@
                                                     </div>
                                                 ))}
                                             </div>
-                                        </div>
+                                        </section>
 
-                                        <div>
-                                            <h3 className="text-yellow-400 font-kanit font-bold mb-6 uppercase text-xs tracking-widest flex items-center gap-4">
+                                        <section>
+                                            <h3 className="text-yellow-400 font-kanit font-bold mb-8 uppercase text-xs tracking-[0.4em] flex items-center gap-4">
                                                 LINHA EVOLUTIVA <span className="h-px bg-slate-800 flex-1"></span>
                                             </h3>
-                                            <div className="flex flex-wrap items-center justify-center gap-6 bg-slate-800/30 p-6 rounded-[30px]">
-                                                {evoChain.map((evo, idx) => (
+                                            <div className="flex flex-wrap items-center justify-center gap-8 bg-slate-900/50 p-8 rounded-[40px] border border-slate-800">
+                                                {evoChain.length > 0 ? evoChain.map((evo, idx) => (
                                                     <React.Fragment key={evo.id}>
                                                         <div 
                                                             onClick={() => loadDetails(evo.id)}
-                                                            className={`cursor-pointer group flex flex-col items-center p-4 rounded-2xl transition-all ${evo.id == selected.id ? 'bg-yellow-400/10 border border-yellow-400/50' : 'hover:bg-slate-800'}`}
+                                                            className={`cursor-pointer group flex flex-col items-center p-4 rounded-3xl transition-all ${evo.id == selected.id ? 'bg-yellow-400/10 border border-yellow-400/50' : 'hover:bg-slate-800'}`}
                                                         >
-                                                            <img src={evo.img} className="w-20 h-20 group-hover:scale-110 transition-transform" />
-                                                            <p className="text-[10px] font-bold capitalize mt-2 text-slate-400">{evo.name}</p>
+                                                            <img src={evo.img} className="w-20 h-20 md:w-24 md:h-24 group-hover:scale-110 transition-transform" />
+                                                            <p className="text-[10px] font-bold capitalize mt-3 text-slate-500 group-hover:text-white">{evo.name}</p>
                                                         </div>
-                                                        {idx < evoChain.length - 1 && <span className="text-slate-700 text-2xl font-bold">➔</span>}
+                                                        {idx < evoChain.length - 1 && <span className="text-slate-800 text-3xl font-black">➔</span>}
                                                     </React.Fragment>
-                                                ))}
+                                                )) : <p className="text-slate-600 text-xs italic uppercase">Esta forma nao possui evolucoes lineares.</p>}
                                             </div>
-                                        </div>
+                                        </section>
 
-                                        <div className="grid grid-cols-2 gap-8">
-                                            <div>
-                                                <h3 className="text-yellow-400 font-kanit font-bold mb-4 uppercase text-xs tracking-widest">HABILIDADES</h3>
+                                        <div className="grid md:grid-cols-2 gap-8">
+                                            <div className="bg-slate-900 p-6 rounded-[32px] border border-slate-800">
+                                                <h3 className="text-yellow-400 font-kanit font-bold mb-4 uppercase text-[10px] tracking-widest">Habilidades</h3>
                                                 <div className="flex flex-wrap gap-2">
                                                     {selected.abilities.map(a => (
-                                                        <span key={a.ability.name} className="bg-slate-800 px-4 py-2 rounded-xl text-[10px] font-bold capitalize border border-slate-700">
+                                                        <span key={a.ability.name} className="bg-slate-800 px-4 py-2 rounded-xl text-[10px] font-bold capitalize text-slate-300">
                                                             {a.ability.name.replace('-', ' ')}
                                                         </span>
                                                     ))}
                                                 </div>
                                             </div>
-                                            <div>
-                                                <h3 className="text-yellow-400 font-kanit font-bold mb-4 uppercase text-xs tracking-widest">HABITAT</h3>
-                                                <span className="bg-slate-800 px-4 py-2 rounded-xl text-[10px] font-bold capitalize border border-slate-700 block text-center">
+                                            <div className="bg-slate-900 p-6 rounded-[32px] border border-slate-800">
+                                                <h3 className="text-yellow-400 font-kanit font-bold mb-4 uppercase text-[10px] tracking-widest">Habitat / Local</h3>
+                                                <span className="bg-slate-800 px-4 py-2 rounded-xl text-[10px] font-bold capitalize text-slate-300 block text-center">
                                                     {selected.habitat}
                                                 </span>
                                             </div>
