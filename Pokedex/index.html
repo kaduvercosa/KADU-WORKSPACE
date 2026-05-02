@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>MasterDex - PokeAPI</title>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@800;900&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="[https://fonts.googleapis.com/css2?family=Montserrat:wght@800;900&family=Poppins:wght@400;500;600;700;800&display=swap](https://fonts.googleapis.com/css2?family=Montserrat:wght@800;900&family=Poppins:wght@400;500;600;700;800&display=swap)" rel="stylesheet">
   <style>
     :root {
       --type-color: #6390F0; --type-dark: #3b5690;
@@ -278,7 +278,7 @@
       if(filterType === 'type') document.getElementById('gen-filter').value = '';
       const grid = document.getElementById('pokedex-grid'); grid.innerHTML = '';
       try {
-        let url = filterType === 'gen' ? `https://pokeapi.co/api/v2/generation/${val}` : `https://pokeapi.co/api/v2/type/${val}`;
+        let url = filterType === 'gen' ? `[https://pokeapi.co/api/v2/generation/$](https://pokeapi.co/api/v2/generation/$){val}` : `[https://pokeapi.co/api/v2/type/$](https://pokeapi.co/api/v2/type/$){val}`;
         const res = await fetch(url); const data = await res.json();
         let list = filterType === 'gen' ? data.pokemon_species : data.pokemon.map(p => p.pokemon);
         if(filterType === 'gen') list.sort((a,b) => parseInt(a.url.split('/')[6]) - parseInt(b.url.split('/')[6]));
@@ -290,12 +290,12 @@
            div.onclick = () => { document.getElementById('search-input').value = p.name; toggleView(); searchPokemon(); };
            
            div.innerHTML = `<div class='evo-id'>#${id.padStart(3,'0')}</div>
-                            <img loading='lazy' src='https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${id}.png' onerror='this.src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${id}.png"'>
+                            <img loading='lazy' src='[https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/$](https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/$){id}.png' onerror='this.src="[https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/$](https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/$){id}.png"'>
                             <div class='evo-name'>${p.name.replace(/-/g, ' ')}</div>
                             <div class='card-types' id='ptypes-${id}'><span style='font-size:10px; opacity:0.6; font-weight:600;'>...</span></div>`;
            grid.appendChild(div);
            
-           fetch('https://pokeapi.co/api/v2/pokemon/' + id).then(r => r.json()).then(pData => {
+           fetch('[https://pokeapi.co/api/v2/pokemon/](https://pokeapi.co/api/v2/pokemon/)' + id).then(r => r.json()).then(pData => {
                const pType = pData.types[0].type.name;
                const bgColor = typeColors[pType] || '#777';
                div.style.setProperty('--card-bg', bgColor);
@@ -317,7 +317,7 @@
       document.body.classList.add('loading');
       try {
         let cleanQuery = query.toString().toLowerCase().trim().replace(/\s+/g, '-');
-        const res = await fetch('https://pokeapi.co/api/v2/pokemon/' + cleanQuery);
+        const res = await fetch('[https://pokeapi.co/api/v2/pokemon/](https://pokeapi.co/api/v2/pokemon/)' + cleanQuery);
         if (!res.ok) throw new Error('Erro'); const data = await res.json();
         
         const primaryType = data.types[0].type.name; const baseColor = typeColors[primaryType] || '#777';
@@ -360,7 +360,7 @@
            
            if (needsTranslation && flavorEntry) {
              try {
-               const transUrl = 'https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=pt&dt=t&q=' + encodeURIComponent(synopsis);
+               const transUrl = '[https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=pt&dt=t&q=](https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=pt&dt=t&q=)' + encodeURIComponent(synopsis);
                const transRes = await fetch(transUrl); const transData = await transRes.json();
                let translated = ''; transData[0].forEach(part => { translated += part[0]; });
                synopsis = translated;
@@ -380,10 +380,10 @@
              varDiv.style.display = 'block'; altForms.forEach(v => {
                let varId = v.pokemon.url.split('/')[6]; let card = document.createElement('div'); card.className = 'evo-card liquid-glass';
                card.onclick = () => { document.getElementById('search-input').value = ''; fetchPokemon(v.pokemon.name); };
-               card.innerHTML = `<div class='evo-id'>#${varId}</div><img src='https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${varId}.png' onerror='this.src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${varId}.png"'><div class='evo-name'>${v.pokemon.name.replace(speciesData.name + '-', '').replace(/-/g, ' ')}</div>`;
+               card.innerHTML = `<div class='evo-id'>#${varId}</div><img src='[https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/$](https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/$){varId}.png' onerror='this.src="[https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/$](https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/$){varId}.png"'><div class='evo-name'>${v.pokemon.name.replace(speciesData.name + '-', '').replace(/-/g, ' ')}</div>`;
                varList.appendChild(card);
                
-               fetch('https://pokeapi.co/api/v2/pokemon/' + varId).then(r => r.json()).then(pData => {
+               fetch('[https://pokeapi.co/api/v2/pokemon/](https://pokeapi.co/api/v2/pokemon/)' + varId).then(r => r.json()).then(pData => {
                    const pType = pData.types[0].type.name; const bgColor = typeColors[pType] || '#777';
                    card.style.setProperty('--card-bg', bgColor); card.classList.add('colored-card');
                }).catch(e=>{});
@@ -412,10 +412,10 @@
           evoDiv.style.display = 'block'; evolutions.forEach(evo => {
             let card = document.createElement('div'); card.className = 'evo-card liquid-glass';
             card.onclick = () => { document.getElementById('search-input').value = ''; fetchPokemon(evo.id); };
-            card.innerHTML = `<div class='evo-id'>#${evo.id.padStart(3,'0')}</div><img src='https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${evo.id}.png'><div class='evo-name'>${evo.name.replace(/-/g, ' ')}</div>`;
+            card.innerHTML = `<div class='evo-id'>#${evo.id.padStart(3,'0')}</div><img src='[https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/$](https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/$){evo.id}.png'><div class='evo-name'>${evo.name.replace(/-/g, ' ')}</div>`;
             evoList.appendChild(card);
             
-            fetch('https://pokeapi.co/api/v2/pokemon/' + evo.id).then(r => r.json()).then(pData => {
+            fetch('[https://pokeapi.co/api/v2/pokemon/](https://pokeapi.co/api/v2/pokemon/)' + evo.id).then(r => r.json()).then(pData => {
                  const pType = pData.types[0].type.name; const bgColor = typeColors[pType] || '#777';
                  card.style.setProperty('--card-bg', bgColor); card.classList.add('colored-card');
             }).catch(e=>{});
@@ -428,8 +428,19 @@
     function randomPokemon() { if(currentMode === 'list') toggleView(); document.getElementById('search-input').value = ''; fetchPokemon(Math.floor(Math.random() * 1025) + 1); }
     document.getElementById('search-input').addEventListener('keypress', (e) => { if (e.key === 'Enter') searchPokemon(); });
     
-    // Inicia com um Pokémon aleatório
-    fetchPokemon(Math.floor(Math.random() * 1025) + 1);
+    // FUNÇÃO PARA PEGAR O ID OU NOME DA URL
+    function getPokemonFromUrl() {
+      const params = new URLSearchParams(window.location.search);
+      return params.get('id'); // Lê o que estiver depois de "?id="
+    }
+
+    // INICIALIZAÇÃO INTELIGENTE
+    const urlId = getPokemonFromUrl();
+    if (urlId) {
+      fetchPokemon(urlId); // Carrega o Pokémon do link
+    } else {
+      fetchPokemon(Math.floor(Math.random() * 1025) + 1); // Sorteia um aleatório se não houver link específico
+    }
     adjustSpacer();
   </script>
 </body>
