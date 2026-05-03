@@ -36,4 +36,7 @@ Check out the live Pokédex here: [https://kaduvercosa.github.io/KADU-S-REPOSITO
    ```bash
    python3 -m http.server --directory Pokedex/
    ```
-4. Open your browser and go to `http://localhost:8000`.
+4. Open your browser and go to
+   ```bash
+   http://localhost:8000
+   ```
