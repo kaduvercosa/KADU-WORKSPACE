@@ -1,6 +1,7 @@
 import SwiftUI
 import AVFoundation
 import UniformTypeIdentifiers
+import MediaPlayer
 
 // MARK: - Models
 
@@ -11,17 +12,33 @@ struct Track: Identifiable, Equatable {
     var artist: String
     var album: String
     var artworkData: Data?
+    var lyrics: [LyricLine]?
+}
+
+struct LyricLine: Identifiable, Equatable {
+    let id = UUID()
+    let time: Double
+    let text: String
 }
 
 // MARK: - Settings Manager
 
 class SettingsManager: ObservableObject {
     @Published var accentColor: Color = .black
+    @Published var useGlassButtons: Bool = false
+    @Published var fontDesign: Font.Design = .rounded
     @Published var autoPlayNext: Bool = true
     @Published var showArtworkInLibrary: Bool = true
 
     let availableColors: [Color] = [
         .black, .blue, .purple, .pink, .red, .orange, .yellow, .green, .mint, .teal, .cyan, .indigo, .gray
+    ]
+
+    let availableFonts: [(String, Font.Design)] = [
+        ("Default", .default),
+        ("Rounded", .rounded),
+        ("Serif", .serif),
+        ("Monospaced", .monospaced)
     ]
 }
 
@@ -70,6 +87,15 @@ class AudioPlayerManager: NSObject, ObservableObject, AVAudioPlayerDelegate {
                     do {
                         try FileManager.default.copyItem(at: fileURL, to: destURL)
 
+                        // Check for LRC
+                        let lrcURL = fileURL.deletingPathExtension().appendingPathExtension("lrc")
+                        var parsedLyrics: [LyricLine]? = nil
+                        if FileManager.default.fileExists(atPath: lrcURL.path) {
+                            if let lrcContent = try? String(contentsOf: lrcURL, encoding: .utf8) {
+                                parsedLyrics = parseLRC(lrcContent)
+                            }
+                        }
+
                         let asset = AVURLAsset(url: destURL)
                         var title = destURL.deletingPathExtension().lastPathComponent
                         var artist = "Unknown Artist"
@@ -104,7 +130,7 @@ class AudioPlayerManager: NSObject, ObservableObject, AVAudioPlayerDelegate {
                             print("Failed to load metadata: \(error.localizedDescription)")
                         }
 
-                        let track = Track(url: destURL, title: title, artist: artist, album: album, artworkData: artworkData)
+                        let track = Track(url: destURL, title: title, artist: artist, album: album, artworkData: artworkData, lyrics: parsedLyrics)
                         // Prevent duplicates by checking title and artist instead of temp URL
                         if !self.tracks.contains(where: { $0.title == track.title && $0.artist == track.artist && $0.album == track.album }) {
                             self.tracks.append(track)
@@ -129,6 +155,71 @@ class AudioPlayerManager: NSObject, ObservableObject, AVAudioPlayerDelegate {
         progress = 0.0
     }
 
+    override init() {
+        super.init()
+        setupRemoteTransportControls()
+    }
+
+    private func setupRemoteTransportControls() {
+        let commandCenter = MPRemoteCommandCenter.shared()
+
+        commandCenter.playCommand.addTarget { [unowned self] event in
+            if !self.isPlaying {
+                self.playPause()
+                return .success
+            }
+            return .commandFailed
+        }
+
+        commandCenter.pauseCommand.addTarget { [unowned self] event in
+            if self.isPlaying {
+                self.playPause()
+                return .success
+            }
+            return .commandFailed
+        }
+
+        commandCenter.nextTrackCommand.addTarget { [unowned self] event in
+            self.skipForward()
+            return .success
+        }
+
+        commandCenter.previousTrackCommand.addTarget { [unowned self] event in
+            self.skipBackward()
+            return .success
+        }
+
+        commandCenter.changePlaybackPositionCommand.addTarget { [unowned self] event in
+            if let event = event as? MPChangePlaybackPositionCommandEvent {
+                self.seek(to: event.positionTime)
+                return .success
+            }
+            return .commandFailed
+        }
+    }
+
+    private func updateNowPlaying() {
+        guard let track = currentTrack else {
+            MPNowPlayingInfoCenter.default().nowPlayingInfo = nil
+            return
+        }
+
+        var nowPlayingInfo = [String: Any]()
+        nowPlayingInfo[MPMediaItemPropertyTitle] = track.title
+        nowPlayingInfo[MPMediaItemPropertyArtist] = track.artist
+        nowPlayingInfo[MPMediaItemPropertyAlbumTitle] = track.album
+
+        if let artworkData = track.artworkData, let image = UIImage(data: artworkData) {
+            nowPlayingInfo[MPMediaItemPropertyArtwork] = MPMediaItemArtwork(boundsSize: image.size) { _ in image }
+        }
+
+        nowPlayingInfo[MPNowPlayingInfoPropertyElapsedPlaybackTime] = audioPlayer?.currentTime
+        nowPlayingInfo[MPMediaItemPropertyPlaybackDuration] = audioPlayer?.duration
+        nowPlayingInfo[MPNowPlayingInfoPropertyPlaybackRate] = isPlaying ? 1.0 : 0.0
+
+        MPNowPlayingInfoCenter.default().nowPlayingInfo = nowPlayingInfo
+    }
+
     func playTrack(_ track: Track) {
         currentTrack = track
 
@@ -145,6 +236,7 @@ class AudioPlayerManager: NSObject, ObservableObject, AVAudioPlayerDelegate {
             isPlaying = true
 
             startTimer()
+            updateNowPlaying()
         } catch {
             print("Failed to play audio: \(error.localizedDescription)")
         }
@@ -162,6 +254,7 @@ class AudioPlayerManager: NSObject, ObservableObject, AVAudioPlayerDelegate {
             isPlaying = true
             startTimer()
         }
+        updateNowPlaying()
     }
 
     func skipForward() {
@@ -187,6 +280,7 @@ class AudioPlayerManager: NSObject, ObservableObject, AVAudioPlayerDelegate {
     func seek(to time: Double) {
         audioPlayer?.currentTime = time
         progress = time
+        updateNowPlaying()
     }
 
     private func startTimer() {
@@ -225,7 +319,33 @@ struct PetrichorCloneApp: App {
     }
 }
 
-// MARK: - Formatters
+// MARK: - Formatters & Utilities
+
+func parseLRC(_ content: String) -> [LyricLine] {
+    var lines: [LyricLine] = []
+    let pattern = "\\[(\\d{2}):(\\d{2})\\.(\\d{2})\\](.*)"
+
+    guard let regex = try? NSRegularExpression(pattern: pattern, options: []) else { return lines }
+
+    let nsString = content as NSString
+    let results = regex.matches(in: content, options: [], range: NSRange(location: 0, length: nsString.length))
+
+    for match in results {
+        if match.numberOfRanges == 5 {
+            let minStr = nsString.substring(with: match.range(at: 1))
+            let secStr = nsString.substring(with: match.range(at: 2))
+            let msStr = nsString.substring(with: match.range(at: 3))
+            let text = nsString.substring(with: match.range(at: 4)).trimmingCharacters(in: .whitespacesAndNewlines)
+
+            if let min = Double(minStr), let sec = Double(secStr), let ms = Double(msStr) {
+                let time = (min * 60.0) + sec + (ms / 100.0)
+                lines.append(LyricLine(time: time, text: text))
+            }
+        }
+    }
+
+    return lines.sorted { $0.time < $1.time }
+}
 
 func formatTime(_ time: Double) -> String {
     guard !time.isNaN && !time.isInfinite else { return "0:00" }
@@ -258,6 +378,15 @@ struct SettingsView: View {
                         }
                     }
                     .pickerStyle(.navigationLink)
+
+                    Picker("Font Design", selection: $settings.fontDesign) {
+                        ForEach(settings.availableFonts, id: \.1) { font in
+                            Text(font.0).tag(font.1)
+                        }
+                    }
+
+                    Toggle("Glass Buttons", isOn: $settings.useGlassButtons)
+                        .tint(settings.accentColor)
 
                     Toggle("Show Artwork in Library", isOn: $settings.showArtworkInLibrary)
                         .tint(settings.accentColor)
@@ -311,36 +440,80 @@ struct PlayerView: View {
                     .frame(width: 40, height: 5)
                     .padding(.top, 10)
 
-                // Artwork
-                ZStack {
-                    RoundedRectangle(cornerRadius: 24, style: .continuous)
-                        .fill(Color(UIColor.secondarySystemBackground))
-                        .aspectRatio(1, contentMode: .fit)
-                        .shadow(color: Color.black.opacity(0.1), radius: 20, x: 0, y: 10)
-
-                    if let track = audioManager.currentTrack, let data = track.artworkData, let uiImage = UIImage(data: data) {
-                        Image(uiImage: uiImage)
-                            .resizable()
-                            .scaledToFill()
-                            .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
+                // Artwork OR Lyrics
+                TabView {
+                    // Artwork Tab
+                    ZStack {
+                        RoundedRectangle(cornerRadius: 24, style: .continuous)
+                            .fill(Color(UIColor.secondarySystemBackground))
                             .aspectRatio(1, contentMode: .fit)
+                            .shadow(color: Color.black.opacity(0.1), radius: 20, x: 0, y: 10)
+
+                        if let track = audioManager.currentTrack, let data = track.artworkData, let uiImage = UIImage(data: data) {
+                            Image(uiImage: uiImage)
+                                .resizable()
+                                .scaledToFill()
+                                .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
+                                .aspectRatio(1, contentMode: .fit)
+                        } else {
+                            Image(systemName: "music.note")
+                                .font(.system(size: 80, weight: .ultraLight))
+                                .foregroundColor(.gray.opacity(0.5))
+                        }
+                    }
+                    .padding(.horizontal, 40)
+                    .padding(.top, 20)
+
+                    // Lyrics Tab
+                    if let track = audioManager.currentTrack, let lyrics = track.lyrics, !lyrics.isEmpty {
+                        ScrollViewReader { proxy in
+                            ScrollView(showsIndicators: false) {
+                                VStack(spacing: 24) {
+                                    ForEach(lyrics.indices, id: \.self) { index in
+                                        let line = lyrics[index]
+                                        let isCurrent = (audioManager.progress >= line.time) &&
+                                                        (index == lyrics.count - 1 || audioManager.progress < lyrics[index + 1].time)
+
+                                        Text(line.text)
+                                            .font(.system(size: isCurrent ? 26 : 22, weight: isCurrent ? .bold : .medium, design: settings.fontDesign))
+                                            .foregroundColor(isCurrent ? settings.accentColor : .secondary)
+                                            .multilineTextAlignment(.center)
+                                            .animation(.spring(response: 0.3, dampingFraction: 0.7), value: isCurrent)
+                                            .id(line.id)
+                                            .onChange(of: isCurrent) { currentlyActive in
+                                                if currentlyActive {
+                                                    withAnimation(.easeInOut) {
+                                                        proxy.scrollTo(line.id, anchor: .center)
+                                                    }
+                                                }
+                                            }
+                                    }
+                                }
+                                .padding(.vertical, 100)
+                                .padding(.horizontal, 20)
+                            }
+                        }
                     } else {
-                        Image(systemName: "music.note")
-                            .font(.system(size: 80, weight: .ultraLight))
-                            .foregroundColor(.gray.opacity(0.5))
+                        VStack(spacing: 16) {
+                            Image(systemName: "text.quote")
+                                .font(.system(size: 40))
+                                .foregroundColor(.gray.opacity(0.5))
+                            Text("No lyrics available")
+                                .font(.system(size: 18, weight: .medium, design: settings.fontDesign))
+                                .foregroundColor(.secondary)
+                        }
                     }
                 }
-                .padding(.horizontal, 40)
-                .padding(.top, 20)
+                .tabViewStyle(PageTabViewStyle(indexDisplayMode: .always))
 
                 // Metadata
                 VStack(spacing: 8) {
                     Text(audioManager.currentTrack?.title ?? "Not Playing")
-                        .font(.system(size: 24, weight: .bold, design: .rounded))
+                        .font(.system(size: 24, weight: .bold, design: settings.fontDesign))
                         .lineLimit(1)
 
                     Text(audioManager.currentTrack?.artist ?? "Artist")
-                        .font(.system(size: 18, weight: .medium, design: .rounded))
+                        .font(.system(size: 18, weight: .medium, design: settings.fontDesign))
                         .foregroundColor(.secondary)
                         .lineLimit(1)
                 }
@@ -425,10 +598,10 @@ struct PlayerView: View {
                     // Metadata
                     VStack(alignment: .leading, spacing: 2) {
                         Text(audioManager.currentTrack?.title ?? "Not Playing")
-                            .font(.system(size: 16, weight: .semibold, design: .rounded))
+                            .font(.system(size: 16, weight: .semibold, design: settings.fontDesign))
                             .lineLimit(1)
                         Text(audioManager.currentTrack?.artist ?? "Artist")
-                            .font(.system(size: 14, weight: .regular, design: .rounded))
+                            .font(.system(size: 14, weight: .regular, design: settings.fontDesign))
                             .foregroundColor(.secondary)
                             .lineLimit(1)
                     }
@@ -487,9 +660,9 @@ struct LibraryView: View {
     @State private var showingSettings = false
 
     var body: some View {
-        NavigationView {
+        NavigationStack {
             ZStack {
-                Color(UIColor.systemBackground).edgesIgnoringSafeArea(.all)
+                Color(UIColor.systemBackground).ignoresSafeArea()
 
                 if audioManager.tracks.isEmpty {
                     VStack(spacing: 20) {
@@ -497,7 +670,7 @@ struct LibraryView: View {
                             .font(.system(size: 60, weight: .ultraLight))
                             .foregroundColor(.gray.opacity(0.5))
                         Text("Your library is empty.")
-                            .font(.system(.title3, design: .rounded).weight(.medium))
+                            .font(.system(.title3, design: settings.fontDesign).weight(.medium))
                             .foregroundColor(.secondary)
                         Button(action: { showingFilePicker = true }) {
                             Text("Add Music")
@@ -551,11 +724,11 @@ struct LibraryView: View {
 
                                     VStack(alignment: .leading, spacing: 4) {
                                         Text(track.title)
-                                            .font(.system(size: 16, weight: .semibold, design: .rounded))
+                                            .font(.system(size: 16, weight: .semibold, design: settings.fontDesign))
                                             .foregroundColor(.primary)
                                             .lineLimit(1)
                                         Text(track.artist)
-                                            .font(.system(size: 14, weight: .regular, design: .rounded))
+                                            .font(.system(size: 14, weight: .regular, design: settings.fontDesign))
                                             .foregroundColor(.secondary)
                                             .lineLimit(1)
                                     }
