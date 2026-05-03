@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>MasterDex - PokeAPI</title>
+  <title>POKEDEX ULTRA - *Kaduzin*</title>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@800;900&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     :root {
@@ -59,7 +59,6 @@
     .autocomplete-item:hover, .autocomplete-item:active { background: var(--type-color); color: #fff; }
     .ac-img { width: 40px; height: 40px; object-fit: contain; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2)); }
     
-    /* AJUSTES PARA OS 3 FILTROS NO MOBILE */
     select { flex: 1 1 calc(33.33% - 4px); min-width: calc(33.33% - 4px); order: 2; padding: 10px 4px; font-size: 11px; text-align: center; }
     .btn-action { flex: 1 1 calc(50% - 4px); order: 3; padding: 12px 10px; font-size: 11px; }
     .btn-nav { flex: 1 1 100%; order: 4; padding: 12px; font-size: 12px; }
@@ -163,7 +162,6 @@
       <option value="steel">Aço</option><option value="fairy">Fada</option>
     </select>
 
-    <!-- NOVO FILTRO DE RARIDADE -->
     <select id="rarity-filter" onchange="handleFilter(this.value, 'rarity')">
       <option value="">Raridade...</option>
       <option value="legendary">Lendário</option>
@@ -223,13 +221,11 @@
   </div>
 
   <script>
-    // Dicionários
     const typeMap = { normal: 'Normal', fire: 'Fogo', water: 'Água', electric: 'Elétrico', grass: 'Grama', ice: 'Gelo', fighting: 'Lutador', poison: 'Venenoso', ground: 'Terrestre', flying: 'Voador', psychic: 'Psíquico', bug: 'Inseto', rock: 'Pedra', ghost: 'Fantasma', dragon: 'Dragão', dark: 'Sombrio', steel: 'Aço', fairy: 'Fada' };
     const typeColors = { normal: '#9FA19F', fire: '#F45C19', water: '#3A8DE9', electric: '#F2D335', grass: '#53BA4E', ice: '#6CD4D0', fighting: '#CE426B', poison: '#AA6BC8', ground: '#D97944', flying: '#91A8E1', psychic: '#FB8886', bug: '#90C12B', rock: '#C6B78B', ghost: '#5269AD', dragon: '#0B6DC4', dark: '#5A5465', steel: '#5A8FA3', fairy: '#EC8FE6' };
     const statMap = { hp: 'HP', attack: 'ATQ', defense: 'DEF', 'special-attack': 'ATQ.E', 'special-defense': 'DEF.E', speed: 'VEL' };
     const genMap = { 'generation-i': '1ª Gen', 'generation-ii': '2ª Gen', 'generation-iii': '3ª Gen', 'generation-iv': '4ª Gen', 'generation-v': '5ª Gen', 'generation-vi': '6ª Gen', 'generation-vii': '7ª Gen', 'generation-viii': '8ª Gen', 'generation-ix': '9ª Gen' };
     
-    // BANCO DE DADOS DE RARIDADE
     const rarityLists = {
         legendary: ["144","145","146","150","243","244","245","249","250","377","378","379","380","381","382","383","384","480","481","482","483","484","485","486","487","488","638","639","640","641","642","643","644","645","646","716","717","718","772","773","785","786","787","788","789","790","791","792","800","888","889","890","891","892","894","895","896","897","898","905","1001","1002","1003","1004","1007","1008","1014","1015","1016","1017","1024"],
         mythical: ["151","251","385","386","489","490","491","492","493","494","647","648","649","719","720","721","801","802","807","808","809","893","1025"],
@@ -239,7 +235,6 @@
     let allPokemonList = [];
     let currentMode = 'detail';
 
-    // AUTOCOMPLETE
     async function loadAllPokemon() {
       try {
         const res = await fetch('https://pokeapi.co/api/v2/pokemon?limit=1025');
@@ -291,7 +286,6 @@
       }
     });
 
-    // LAYOUT FIXES
     function adjustSpacer() {
       requestAnimationFrame(() => {
         const header = document.getElementById('search-container');
@@ -354,7 +348,6 @@
     async function loadPokedex(val, filterType) {
       if(!val) return; document.body.classList.add('loading');
       
-      // Reseta os outros filtros
       if(filterType === 'gen') { document.getElementById('type-filter').value = ''; document.getElementById('rarity-filter').value = ''; }
       if(filterType === 'type') { document.getElementById('gen-filter').value = ''; document.getElementById('rarity-filter').value = ''; }
       if(filterType === 'rarity') { document.getElementById('type-filter').value = ''; document.getElementById('gen-filter').value = ''; }
@@ -362,8 +355,6 @@
       const grid = document.getElementById('pokedex-grid'); grid.innerHTML = '';
       try {
         let list = [];
-        
-        // Se for o filtro de Raridade que criamos:
         if (filterType === 'rarity') {
             if(allPokemonList.length === 0) await loadAllPokemon();
             const targetIds = rarityLists[val];
@@ -371,7 +362,6 @@
                 name: p.name,
                 url: `https://pokeapi.co/api/v2/pokemon/${p.id}/`
             }));
-        // Se for geração ou tipo:
         } else {
             let url = filterType === 'gen' ? `https://pokeapi.co/api/v2/generation/${val}` : `https://pokeapi.co/api/v2/type/${val}`;
             const res = await fetch(url); const data = await res.json();
@@ -379,7 +369,6 @@
             if(filterType === 'gen') list.sort((a,b) => parseInt(a.url.split('/')[6]) - parseInt(b.url.split('/')[6]));
         }
         
-        // Renderiza as cartas
         list.forEach(p => {
            let parts = p.url.split('/'); let id = parts[parts.length - 2];
            if(parseInt(id) > 10000) return; 
@@ -417,11 +406,7 @@
       let cleanQuery = "";
       try {
         cleanQuery = query.toString().toLowerCase().trim().replace(/[^a-z0-9-]/g, '');
-        
-        if(cleanQuery === "null" || cleanQuery === "") {
-            document.body.classList.remove('loading');
-            return;
-        }
+        if(cleanQuery === "null" || cleanQuery === "") { document.body.classList.remove('loading'); return; }
 
         const res = await fetch('https://pokeapi.co/api/v2/pokemon/' + cleanQuery);
         if (!res.ok) throw new Error('Status ' + res.status); 
@@ -436,10 +421,8 @@
         document.getElementById('poke-name').innerText = formattedName;
         document.getElementById('poke-id').innerText = '#' + data.id.toString().padStart(3, '0');
 
-        // ====== URL ATUALIZA COM NOME ======
         const novaUrl = window.location.pathname + '?id=' + data.name;
         window.history.pushState({ path: novaUrl }, '', novaUrl);
-        // ===================================
         
         const typesDiv = document.getElementById('poke-types'); typesDiv.innerHTML = '';
         data.types.forEach(t => {
@@ -451,15 +434,49 @@
         document.getElementById('poke-height').innerText = (data.height / 10).toFixed(1) + ' m';
         document.getElementById('poke-weight').innerText = (data.weight / 10).toFixed(1) + ' kg';
         document.getElementById('poke-exp').innerText = data.base_experience ? data.base_experience : 'N/A';
-        let itemsStr = data.held_items.length > 0 ? data.held_items.map(i => i.item.name.replace(/-/g, ' ')).join(', ') : 'Nenhum';
-        document.getElementById('poke-items').innerText = itemsStr;
-        let ptAbilities = data.abilities.map(a => (a.is_hidden ? '★ ' : '') + a.ability.name.replace(/-/g, ' '));
+
+        // ========================================================
+        // TRADUÇÃO EM LOTE: ITENS, HABILIDADES E MOVIMENTOS
+        // ========================================================
+        let itemsArr = data.held_items.length > 0 ? data.held_items.map(i => i.item.name.replace(/-/g, ' ')) : [];
+        let abilitiesArr = data.abilities.map(a => a.ability.name.replace(/-/g, ' '));
+        let movesArr = data.moves.slice(0, 40).map(m => m.move.name.replace(/-/g, ' '));
+        
+        let toTranslate = [...itemsArr, ...abilitiesArr, ...movesArr];
+        let translatedArr = toTranslate; // Se a tradução falhar, usa o inglês original
+        
+        if (toTranslate.length > 0) {
+          try {
+            let joined = toTranslate.join('\n');
+            const transUrl = 'https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=pt&dt=t&q=' + encodeURIComponent(joined);
+            const transRes = await fetch(transUrl); 
+            const transData = await transRes.json();
+            let translatedStr = '';
+            transData[0].forEach(part => { translatedStr += part[0]; });
+            let tempArr = translatedStr.split('\n').map(s => s.trim());
+            
+            // Só substitui se o Google não tiver comido nenhuma linha durante a tradução
+            if(tempArr.length === toTranslate.length) {
+                translatedArr = tempArr;
+            }
+          } catch(e) { console.log("Tradução automática falhou, usando inglês."); }
+        }
+        
+        // Distribui as palavras traduzidas de volta para as listas
+        let itemsTrans = translatedArr.slice(0, itemsArr.length);
+        let abilitiesTrans = translatedArr.slice(itemsArr.length, itemsArr.length + abilitiesArr.length);
+        let movesTrans = translatedArr.slice(itemsArr.length + abilitiesArr.length);
+
+        document.getElementById('poke-items').innerText = itemsTrans.length > 0 ? itemsTrans.join(', ') : 'Nenhum';
+        
+        let ptAbilities = abilitiesTrans.map((t, index) => (data.abilities[index].is_hidden ? '★ ' : '') + t);
         document.getElementById('poke-abilities').innerText = ptAbilities.join(', ');
         
         const movesDiv = document.getElementById('poke-moves'); movesDiv.innerHTML = '';
-        data.moves.slice(0, 40).forEach(m => {
-           let span = document.createElement('span'); span.className = 'move-badge'; span.innerText = m.move.name.replace(/-/g, ' '); movesDiv.appendChild(span);
+        movesTrans.forEach(m => {
+           let span = document.createElement('span'); span.className = 'move-badge'; span.innerText = m; movesDiv.appendChild(span);
         });
+        // ========================================================
         
         let speciesUrl = data.species.url; let speciesData = null;
         try { const specRes = await fetch(speciesUrl); speciesData = await specRes.json(); } catch(e){}
