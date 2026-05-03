@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Hi-Res Music Player</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Hi-Res Player">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="header">
+            <button id="library-btn" class="icon-btn">☰</button>
+            <div class="now-playing-info">
+                <h1 id="track-title">No Track Loaded</h1>
+                <h2 id="track-artist">Unknown Artist</h2>
+            </div>
+            <button id="eq-btn" class="icon-btn">⎍</button>
+        </header>
+
+        <!-- Main View (Player) -->
+        <main class="player-view" id="player-view">
+            <div class="album-art-container">
+                <div class="album-art" id="album-art">
+                    <span>♫</span>
+                </div>
+            </div>
+
+            <div class="controls-container">
+                <div class="progress-container">
+                    <span id="time-current">0:00</span>
+                    <input type="range" id="progress-bar" min="0" max="100" value="0">
+                    <span id="time-total">0:00</span>
+                </div>
+
+                <div class="transport-controls">
+                    <button id="prev-btn" class="transport-btn">⏮</button>
+                    <button id="play-pause-btn" class="transport-btn play-btn">▶</button>
+                    <button id="next-btn" class="transport-btn">⏭</button>
+                </div>
+            </div>
+        </main>
+
+        <!-- Library View (Hidden by default) -->
+        <aside class="library-view hidden" id="library-view">
+            <div class="library-header">
+                <h2>Library</h2>
+                <button id="close-library-btn" class="icon-btn">✕</button>
+            </div>
+            <div class="file-input-container">
+                <input type="file" id="file-input" multiple accept="audio/*">
+                <label for="file-input" class="file-input-label">Add Files</label>
+            </div>
+            <ul id="playlist" class="playlist">
+                <!-- Playlist items will go here -->
+            </ul>
+        </aside>
+
+        <!-- Equalizer View (Hidden by default) -->
+        <aside class="eq-view hidden" id="eq-view">
+            <div class="eq-header">
+                <h2>Equalizer</h2>
+                <button id="close-eq-btn" class="icon-btn">✕</button>
+            </div>
+            <div class="eq-controls" id="eq-controls">
+                <!-- EQ sliders will go here -->
+            </div>
+        </aside>
+
+        <audio id="audio-player"></audio>
+    </div>
+
+    <script src="app.js"></script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js')
+                .then(reg => console.log('Service Worker registered', reg))
+                .catch(err => console.error('Service Worker registration failed', err));
+        }
+    </script>
+</body>
+</html>
