@@ -302,8 +302,17 @@
           const div = document.createElement('div');
           div.className = 'autocomplete-item';
           const formatName = match.name.replace(/-/g, ' ');
-          div.innerHTML = `<img class="ac-img" src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${match.id}.png"> 
-                           <span>#${match.id.padStart(3,'0')} - ${formatName}</span>`;
+
+          const img = document.createElement('img');
+          img.className = 'ac-img';
+          img.src = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${match.id}.png`;
+
+          const span = document.createElement('span');
+          span.textContent = `#${match.id.padStart(3,'0')} - ${formatName}`;
+
+          div.appendChild(img);
+          div.appendChild(span);
+
           div.onclick = () => {
             searchInput.value = formatName;
             autocompleteList.style.display = 'none';
@@ -413,10 +422,34 @@
            let div = document.createElement('div'); div.className = 'pokedex-card liquid-glass';
            div.onclick = () => { document.getElementById('search-input').value = p.name; toggleView(); searchPokemon(); };
            
-           div.innerHTML = `<div class='evo-id'>#${id.padStart(3,'0')}</div>
-                            <img loading='lazy' src='https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${id}.png' onerror='this.src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${id}.png"'>
-                            <div class='evo-name'>${p.name.replace(/-/g, ' ')}</div>
-                            <div class='card-types' id='ptypes-${id}'><span style='font-size:10px; opacity:0.6; font-weight:600;'>...</span></div>`;
+           const idDiv = document.createElement('div');
+           idDiv.className = 'evo-id';
+           idDiv.textContent = `#${id.padStart(3,'0')}`;
+
+           const img = document.createElement('img');
+           img.loading = 'lazy';
+           img.src = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${id}.png`;
+           img.onerror = function() { this.src = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${id}.png`; };
+
+           const nameDiv = document.createElement('div');
+           nameDiv.className = 'evo-name';
+           nameDiv.textContent = p.name.replace(/-/g, ' ');
+
+           const typesDiv = document.createElement('div');
+           typesDiv.className = 'card-types';
+           typesDiv.id = `ptypes-${id}`;
+           const loadingSpan = document.createElement('span');
+           loadingSpan.style.fontSize = '10px';
+           loadingSpan.style.opacity = '0.6';
+           loadingSpan.style.fontWeight = '600';
+           loadingSpan.textContent = '...';
+           typesDiv.appendChild(loadingSpan);
+
+           div.appendChild(idDiv);
+           div.appendChild(img);
+           div.appendChild(nameDiv);
+           div.appendChild(typesDiv);
+
            grid.appendChild(div);
            
            fetch('https://pokeapi.co/api/v2/pokemon/' + id).then(r => r.json()).then(pData => {
@@ -424,13 +457,24 @@
                const bgColor = typeColors[pType] || '#777';
                div.style.setProperty('--card-bg', bgColor);
                div.classList.add('colored-card');
-               let typesHtml = pData.types.map(t => {
-                 let ptName = typeMap[t.type.name] || t.type.name;
-                 let tColor = typeColors[t.type.name] || '#777';
-                 return `<span class='mini-type' style='background:${tColor};'>${ptName}</span>`;
-               }).join('');
-               document.getElementById('ptypes-' + id).innerHTML = typesHtml;
-           }).catch(e => { document.getElementById('ptypes-' + id).innerHTML = ''; });
+
+               const typesContainer = document.getElementById('ptypes-' + id);
+               if (typesContainer) {
+                   typesContainer.textContent = '';
+                   pData.types.forEach(t => {
+                       let ptName = typeMap[t.type.name] || t.type.name;
+                       let tColor = typeColors[t.type.name] || '#777';
+                       const typeSpan = document.createElement('span');
+                       typeSpan.className = 'mini-type';
+                       typeSpan.style.background = tColor;
+                       typeSpan.textContent = ptName;
+                       typesContainer.appendChild(typeSpan);
+                   });
+               }
+           }).catch(e => {
+               const typesContainer = document.getElementById('ptypes-' + id);
+               if (typesContainer) typesContainer.textContent = '';
+           });
         });
       } catch(e) { grid.innerHTML = 'Erro ao carregar lista.'; }
       document.body.classList.remove('loading');
@@ -547,7 +591,23 @@
              varDiv.style.display = 'block'; altForms.forEach(v => {
                let varId = v.pokemon.url.split('/')[6]; let card = document.createElement('div'); card.className = 'evo-card liquid-glass';
                card.onclick = () => { document.getElementById('search-input').value = ''; fetchPokemon(v.pokemon.name); };
-               card.innerHTML = `<div class='evo-id'>#${varId}</div><img src='https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${varId}.png' onerror='this.src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${varId}.png"'><div class='evo-name'>${v.pokemon.name.replace(speciesData.name + '-', '').replace(/-/g, ' ')}</div>`;
+
+               const idDiv = document.createElement('div');
+               idDiv.className = 'evo-id';
+               idDiv.textContent = `#${varId}`;
+
+               const img = document.createElement('img');
+               img.src = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${varId}.png`;
+               img.onerror = function() { this.src = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${varId}.png`; };
+
+               const nameDiv = document.createElement('div');
+               nameDiv.className = 'evo-name';
+               nameDiv.textContent = v.pokemon.name.replace(speciesData.name + '-', '').replace(/-/g, ' ');
+
+               card.appendChild(idDiv);
+               card.appendChild(img);
+               card.appendChild(nameDiv);
+
                varList.appendChild(card);
                
                fetch('https://pokeapi.co/api/v2/pokemon/' + varId).then(r => r.json()).then(pData => {
@@ -562,8 +622,27 @@
         data.stats.forEach(s => {
           let statName = statMap[s.stat.name] || s.stat.name; let pct = Math.min((s.base_stat / 200) * 100, 100);
           let row = document.createElement('div'); row.className = 'stat-row';
-          row.innerHTML = `<span class='stat-name'>${statName}</span><div class='stat-bar-bg'><div class='stat-bar-fill' style='width: 0;'></div></div><span class='stat-value'>${s.base_stat}</span>`;
-          statsList.appendChild(row); setTimeout(() => { row.querySelector('.stat-bar-fill').style.width = pct + '%'; }, 50);
+
+          const nameSpan = document.createElement('span');
+          nameSpan.className = 'stat-name';
+          nameSpan.textContent = statName;
+
+          const barBg = document.createElement('div');
+          barBg.className = 'stat-bar-bg';
+          const barFill = document.createElement('div');
+          barFill.className = 'stat-bar-fill';
+          barFill.style.width = '0';
+          barBg.appendChild(barFill);
+
+          const valSpan = document.createElement('span');
+          valSpan.className = 'stat-value';
+          valSpan.textContent = s.base_stat;
+
+          row.appendChild(nameSpan);
+          row.appendChild(barBg);
+          row.appendChild(valSpan);
+
+          statsList.appendChild(row); setTimeout(() => { barFill.style.width = pct + '%'; }, 50);
         });
         
         setTimeout(() => { document.body.classList.remove('loading'); window.scrollTo({ top: 0, behavior: 'smooth' }); adjustSpacer(); }, 100);
@@ -582,7 +661,22 @@
           evoDiv.style.display = 'block'; evolutions.forEach(evo => {
             let card = document.createElement('div'); card.className = 'evo-card liquid-glass';
             card.onclick = () => { document.getElementById('search-input').value = ''; fetchPokemon(evo.id); };
-            card.innerHTML = `<div class='evo-id'>#${evo.id.padStart(3,'0')}</div><img src='https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${evo.id}.png'><div class='evo-name'>${evo.name.replace(/-/g, ' ')}</div>`;
+
+            const idDiv = document.createElement('div');
+            idDiv.className = 'evo-id';
+            idDiv.textContent = `#${evo.id.padStart(3,'0')}`;
+
+            const img = document.createElement('img');
+            img.src = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${evo.id}.png`;
+
+            const nameDiv = document.createElement('div');
+            nameDiv.className = 'evo-name';
+            nameDiv.textContent = evo.name.replace(/-/g, ' ');
+
+            card.appendChild(idDiv);
+            card.appendChild(img);
+            card.appendChild(nameDiv);
+
             evoList.appendChild(card);
             
             fetch('https://pokeapi.co/api/v2/pokemon/' + evo.id).then(r => r.json()).then(pData => {
