@@ -87,7 +87,7 @@
     button:active { transform: scale(0.94); }
     .btn-nav { background: var(--nav-bg); color: #ffffff; border: 1px solid rgba(255,255,255,0.4); text-shadow: 0 1px 3px rgba(0,0,0,0.3); transition: background 0.6s ease; }
     
-    #input-wrapper { flex: 1 1 100%; min-width: 100%; order: 1; position: relative; }
+    #input-wrapper { flex: 1 1 100%; min-width: 100%; order: 1; position: relative; z-index:101; }
     #search-input { width: 100%; padding: 12px 15px; font-size: 14px; }
     
     #autocomplete-list { position: absolute; top: 100%; left: 0; right: 0; margin-top: 8px; max-height: 220px; overflow-y: auto; border-radius: 18px; z-index: 200; display: none; flex-direction: column; background: var(--ac-bg); color: var(--ac-text); backdrop-filter: blur(25px); border: 1px solid var(--glass-border); box-shadow: 0 15px 40px rgba(0,0,0,0.4); padding: 5px; }
