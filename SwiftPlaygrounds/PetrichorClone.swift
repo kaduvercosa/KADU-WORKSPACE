@@ -17,6 +17,8 @@ struct Track: Identifiable, Equatable {
 
 class SettingsManager: ObservableObject {
     @Published var accentColor: Color = .black
+    @Published var autoPlayNext: Bool = true
+    @Published var showArtworkInLibrary: Bool = true
 
     let availableColors: [Color] = [
         .black, .blue, .purple, .pink, .red, .orange, .yellow, .green, .mint, .teal, .cyan, .indigo, .gray
@@ -32,6 +34,8 @@ class AudioPlayerManager: NSObject, ObservableObject, AVAudioPlayerDelegate {
     @Published var progress: Double = 0.0
     @Published var duration: Double = 0.0
 
+    var settings: SettingsManager? // To access autoPlayNext
+
     private var audioPlayer: AVAudioPlayer?
     private var timer: Timer?
 
@@ -40,63 +44,89 @@ class AudioPlayerManager: NSObject, ObservableObject, AVAudioPlayerDelegate {
             for url in urls {
                 guard url.startAccessingSecurityScopedResource() else { continue }
 
-                let tempDir = FileManager.default.temporaryDirectory
-                let destURL = tempDir.appendingPathComponent(url.lastPathComponent)
+                var filesToProcess: [URL] = []
+                var isDirectory: ObjCBool = false
 
-                do {
-                    if FileManager.default.fileExists(atPath: destURL.path) {
-                        try FileManager.default.removeItem(at: destURL)
-                    }
-                    try FileManager.default.copyItem(at: url, to: destURL)
-
-                    url.stopAccessingSecurityScopedResource()
-
-                    let asset = AVURLAsset(url: destURL)
-                    var title = destURL.deletingPathExtension().lastPathComponent
-                    var artist = "Unknown Artist"
-                    var album = "Unknown Album"
-                    var artworkData: Data? = nil
-
-                    do {
-                        let metadata = try await asset.load(.commonMetadata)
-                        for item in metadata {
-                            if let commonKey = item.commonKey {
-                                switch commonKey {
-                                case .commonKeyTitle:
-                                    if let value = try? await item.load(.stringValue) {
-                                        title = value
-                                    }
-                                case .commonKeyArtist:
-                                    if let value = try? await item.load(.stringValue) {
-                                        artist = value
-                                    }
-                                case .commonKeyAlbumName:
-                                    if let value = try? await item.load(.stringValue) {
-                                        album = value
-                                    }
-                                case .commonKeyArtwork:
-                                    if let value = try? await item.load(.dataValue) {
-                                        artworkData = value
-                                    }
-                                default:
-                                    break
+                if FileManager.default.fileExists(atPath: url.path, isDirectory: &isDirectory) {
+                    if isDirectory.boolValue {
+                        let keys: [URLResourceKey] = [.isDirectoryKey]
+                        if let enumerator = FileManager.default.enumerator(at: url, includingPropertiesForKeys: keys, options: [.skipsHiddenFiles]) {
+                            for case let fileURL as URL in enumerator {
+                                let ext = fileURL.pathExtension.lowercased()
+                                if ["mp3", "m4a", "wav", "flac", "aac", "aiff", "alac"].contains(ext) {
+                                    filesToProcess.append(fileURL)
                                 }
                             }
                         }
-                    } catch {
-                        print("Failed to load metadata: \(error.localizedDescription)")
+                    } else {
+                        filesToProcess.append(url)
                     }
-
-                    let track = Track(url: destURL, title: title, artist: artist, album: album, artworkData: artworkData)
-                    if !self.tracks.contains(where: { $0.url == track.url }) {
-                        self.tracks.append(track)
-                    }
-                } catch {
-                    print("Failed to copy or read file: \(error.localizedDescription)")
-                    url.stopAccessingSecurityScopedResource()
                 }
+
+                for fileURL in filesToProcess {
+                    let tempDir = FileManager.default.temporaryDirectory
+                    let destURL = tempDir.appendingPathComponent(UUID().uuidString + "-" + fileURL.lastPathComponent)
+
+                    do {
+                        try FileManager.default.copyItem(at: fileURL, to: destURL)
+
+                        let asset = AVURLAsset(url: destURL)
+                        var title = destURL.deletingPathExtension().lastPathComponent
+                        var artist = "Unknown Artist"
+                        var album = "Unknown Album"
+                        var artworkData: Data? = nil
+
+                        do {
+                            var allMetadata: [AVMetadataItem] = try await asset.load(.commonMetadata)
+                            let formats = try await asset.load(.availableMetadataFormats)
+                            for format in formats {
+                                let formatMetadata = try await asset.loadMetadata(for: format)
+                                allMetadata.append(contentsOf: formatMetadata)
+                            }
+
+                            for item in allMetadata {
+                                if let commonKey = item.commonKey {
+                                    switch commonKey {
+                                    case .commonKeyTitle:
+                                        if let value = try? await item.load(.value) as? String { title = value }
+                                    case .commonKeyArtist:
+                                        if let value = try? await item.load(.value) as? String { artist = value }
+                                    case .commonKeyAlbumName:
+                                        if let value = try? await item.load(.value) as? String { album = value }
+                                    case .commonKeyArtwork:
+                                        if let value = try? await item.load(.value) as? Data { artworkData = value }
+                                    default:
+                                        break
+                                    }
+                                }
+                            }
+                        } catch {
+                            print("Failed to load metadata: \(error.localizedDescription)")
+                        }
+
+                        let track = Track(url: destURL, title: title, artist: artist, album: album, artworkData: artworkData)
+                        // Prevent duplicates by checking title and artist instead of temp URL
+                        if !self.tracks.contains(where: { $0.title == track.title && $0.artist == track.artist && $0.album == track.album }) {
+                            self.tracks.append(track)
+                        }
+                    } catch {
+                        print("Failed to copy or read file: \(error.localizedDescription)")
+                    }
+                }
+
+                url.stopAccessingSecurityScopedResource()
             }
         }
+    }
+
+    func clearLibrary() {
+        stopTimer()
+        audioPlayer?.stop()
+        audioPlayer = nil
+        isPlaying = false
+        currentTrack = nil
+        tracks.removeAll()
+        progress = 0.0
     }
 
     func playTrack(_ track: Track) {
@@ -173,7 +203,13 @@ class AudioPlayerManager: NSObject, ObservableObject, AVAudioPlayerDelegate {
 
     func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
         if flag {
-            skipForward()
+            if settings?.autoPlayNext ?? true {
+                skipForward()
+            } else {
+                isPlaying = false
+                stopTimer()
+                progress = 0.0
+            }
         }
     }
 }
@@ -202,7 +238,9 @@ func formatTime(_ time: Double) -> String {
 
 struct SettingsView: View {
     @EnvironmentObject var settings: SettingsManager
+    @EnvironmentObject var audioManager: AudioPlayerManager
     @Environment(\.dismiss) var dismiss
+    @State private var showingClearConfirm = false
 
     var body: some View {
         NavigationView {
@@ -220,6 +258,29 @@ struct SettingsView: View {
                         }
                     }
                     .pickerStyle(.navigationLink)
+
+                    Toggle("Show Artwork in Library", isOn: $settings.showArtworkInLibrary)
+                        .tint(settings.accentColor)
+                }
+
+                Section(header: Text("Playback").font(.subheadline.weight(.medium))) {
+                    Toggle("Auto-Play Next Track", isOn: $settings.autoPlayNext)
+                        .tint(settings.accentColor)
+                }
+
+                Section(header: Text("Library").font(.subheadline.weight(.medium))) {
+                    Button(role: .destructive, action: {
+                        showingClearConfirm = true
+                    }) {
+                        Text("Clear Library")
+                    }
+                    .confirmationDialog("Are you sure you want to clear the library?", isPresented: $showingClearConfirm, titleVisibility: .visible) {
+                        Button("Clear All", role: .destructive) {
+                            audioManager.clearLibrary()
+                            dismiss()
+                        }
+                        Button("Cancel", role: .cancel) { }
+                    }
                 }
             }
             .navigationTitle("Settings")
@@ -455,28 +516,36 @@ struct LibraryView: View {
                                 audioManager.playTrack(track)
                             }) {
                                 HStack(spacing: 16) {
-                                    // Thumbnail
-                                    ZStack {
-                                        RoundedRectangle(cornerRadius: 8, style: .continuous)
-                                            .fill(Color(UIColor.secondarySystemBackground))
-                                            .frame(width: 50, height: 50)
-
-                                        if let data = track.artworkData, let uiImage = UIImage(data: data) {
-                                            Image(uiImage: uiImage)
-                                                .resizable()
-                                                .scaledToFill()
+                                    if settings.showArtworkInLibrary {
+                                        // Thumbnail
+                                        ZStack {
+                                            RoundedRectangle(cornerRadius: 8, style: .continuous)
+                                                .fill(Color(UIColor.secondarySystemBackground))
                                                 .frame(width: 50, height: 50)
-                                                .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
-                                        } else {
-                                            Image(systemName: "music.note")
-                                                .foregroundColor(.gray.opacity(0.5))
-                                        }
 
+                                            if let data = track.artworkData, let uiImage = UIImage(data: data) {
+                                                Image(uiImage: uiImage)
+                                                    .resizable()
+                                                    .scaledToFill()
+                                                    .frame(width: 50, height: 50)
+                                                    .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+                                            } else {
+                                                Image(systemName: "music.note")
+                                                    .foregroundColor(.gray.opacity(0.5))
+                                            }
+
+                                            if audioManager.currentTrack == track && audioManager.isPlaying {
+                                                Image(systemName: "waveform")
+                                                    .foregroundColor(settings.accentColor)
+                                                    .font(.system(size: 20, weight: .bold))
+                                                    .shadow(color: .black.opacity(0.5), radius: 2)
+                                            }
+                                        }
+                                    } else {
                                         if audioManager.currentTrack == track && audioManager.isPlaying {
                                             Image(systemName: "waveform")
                                                 .foregroundColor(settings.accentColor)
                                                 .font(.system(size: 20, weight: .bold))
-                                                .shadow(color: .black.opacity(0.5), radius: 2)
                                         }
                                     }
 
@@ -519,7 +588,7 @@ struct LibraryView: View {
                     }
                 }
             }
-            .fileImporter(isPresented: $showingFilePicker, allowedContentTypes: [.audio], allowsMultipleSelection: true) { result in
+            .fileImporter(isPresented: $showingFilePicker, allowedContentTypes: [.audio, .folder], allowsMultipleSelection: true) { result in
                 switch result {
                 case .success(let urls):
                     audioManager.addTracks(urls: urls)
@@ -530,6 +599,7 @@ struct LibraryView: View {
             .sheet(isPresented: $showingSettings) {
                 SettingsView()
                     .environmentObject(settings)
+                    .environmentObject(audioManager)
             }
         }
     }
@@ -542,7 +612,10 @@ public struct ContentView: View {
     @StateObject private var settings = SettingsManager()
     @State private var isPlayerExpanded = false
 
-    public init() {}
+    public init() {
+        // Link settings to audioManager initially doesn't work here due to StateObject,
+        // we handle it in onAppear.
+    }
 
     public var body: some View {
         ZStack(alignment: .bottom) {
@@ -561,6 +634,9 @@ public struct ContentView: View {
                     .animation(.spring(response: 0.5, dampingFraction: 0.8), value: isPlayerExpanded)
                     .edgesIgnoringSafeArea(isPlayerExpanded ? .all : .bottom)
             }
+        }
+        .onAppear {
+            audioManager.settings = settings
         }
     }
 }
