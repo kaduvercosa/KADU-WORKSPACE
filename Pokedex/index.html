@@ -83,10 +83,10 @@
     button:active { transform: scale(0.94); }
     .btn-nav { background: var(--nav-bg); color: #ffffff; border: 1px solid rgba(255,255,255,0.4); text-shadow: 0 1px 3px rgba(0,0,0,0.3); transition: background 0.6s ease; }
     
-    #input-wrapper { flex: 1 1 100%; min-width: 100%; order: 1; position: relative; }
+    #input-wrapper { flex: 1 1 100%; min-width: 100%; order: 1; position: relative; z-index: 9999 !important; }
     #search-input { width: 100%; padding: 12px 15px; font-size: 14px; }
     
-    #autocomplete-list { position: absolute; top: 100%; left: 0; right: 0; margin-top: 8px; max-height: 220px; overflow-y: auto; border-radius: 18px; z-index: 200; display: none; flex-direction: column; background: var(--glass-panel); backdrop-filter: blur(20px); border: 1px solid var(--glass-border); box-shadow: 0 10px 30px rgba(0,0,0,0.2); padding: 5px; }
+    #autocomplete-list { position: absolute; top: 100%; left: 0; right: 0; margin-top: 8px; max-height: 220px; overflow-y: auto; border-radius: 18px; z-index: 9999; display: none; flex-direction: column; background: var(--glass-panel); backdrop-filter: blur(20px); border: 1px solid var(--glass-border); box-shadow: 0 10px 30px rgba(0,0,0,0.2); padding: 5px; }
     .autocomplete-item { padding: 8px 12px; cursor: pointer; border-radius: 12px; font-size: 13px; font-weight: 700; text-transform: capitalize; display: flex; align-items: center; gap: 12px; transition: background 0.2s ease; }
     .autocomplete-item:hover, .autocomplete-item:active { background: var(--nav-bg); color: #fff; }
     .ac-img { width: 40px; height: 40px; object-fit: contain; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2)); }
@@ -125,7 +125,7 @@
     .info-value { font-size: 14px; font-weight: 800; text-transform: capitalize; line-height: 1.3; }
     .full-width { grid-column: 1 / -1; }
     
-    .stats-container, .moves-wrapper { width: 100%; background: var(--glass-panel); padding: 20px; border-radius: 20px; border: 1px solid var(--glass-border); margin-bottom: 20px; }
+    .stats-container, .moves-wrapper { width: 100%; background: var(--glass-panel); padding: 20px; border-radius: 16px; border: 1px solid var(--glass-border); margin-bottom: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
     .section-title { margin: 0 0 15px 0; font-size: 14px; text-align: center; text-transform: uppercase; font-family: 'Montserrat', sans-serif; font-weight: 900; letter-spacing: 1.5px; opacity: 0.9; color: var(--type-color); transition: color 0.6s ease;}
     .stat-row { display: flex; align-items: center; margin-bottom: 10px; }
     .stat-name { width: 70px; font-weight: 900; text-transform: uppercase; font-size: 10px; letter-spacing: 1px; color: var(--type-color); transition: color 0.6s ease; }
@@ -159,12 +159,19 @@
     .card-types { display: flex; gap: 4px; justify-content: center; flex-wrap: wrap; width: 100%; min-height: 18px; }
     .mini-type { padding: 3px 8px; border-radius: 10px; font-size: 9px; font-family: 'Montserrat', sans-serif; font-weight: 800; text-transform: uppercase; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.5); box-shadow: 0 2px 5px rgba(0,0,0,0.3); letter-spacing: 0.5px; border: 1px solid rgba(255,255,255,0.3); }
     
-    .extra-info-container { width: 100%; display: flex; flex-direction: column; gap: 15px; margin-top: 20px; z-index: 10; }
-    .extra-section { background: var(--glass-panel); border: 1px solid var(--glass-border); border-radius: 20px; padding: 15px; display: flex; flex-direction: column; align-items: center; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
-    .extra-title { font-size: 11px; color: var(--type-color); text-transform: uppercase; font-family: 'Montserrat', sans-serif; font-weight: 900; margin-bottom: 10px; letter-spacing: 1px; text-shadow: 0 1px 2px rgba(0,0,0,0.2); text-align: center; transition: color 0.6s ease; }
+    .extra-info-container { display: grid; grid-template-columns: 1fr; gap: 10px; width: 100%; margin-top: 10px; z-index: 10; }
+    .extra-section { background: var(--glass-panel); border: 1px solid var(--glass-border); border-radius: 16px; padding: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+    .extra-title { font-size: 11px; color: var(--type-color); text-transform: uppercase; font-family: 'Montserrat', sans-serif; font-weight: 900; margin-bottom: 15px; letter-spacing: 1px; text-shadow: 0 1px 2px rgba(0,0,0,0.2); text-align: center; transition: color 0.6s ease; }
 
-    #poke-shiny { width: 100px; height: 100px; object-fit: contain; filter: drop-shadow(0 5px 10px rgba(0,0,0,0.3)); transition: transform 0.3s ease; }
-    #poke-shiny:hover { transform: scale(1.1); }
+    #poke-shiny-card { position: relative; border-radius: 20px; padding: 15px 10px; text-align: center; cursor: pointer; transition: transform 0.2s ease, box-shadow 0.2s; display: flex; flex-direction: column; align-items: center; width: clamp(100px, 28vw, 130px); }
+    #poke-shiny-card::after { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; border-radius: inherit; background: var(--card-bg, transparent); filter: blur(20px); opacity: 0.2; z-index: -1; transition: opacity 0.4s ease, filter 0.4s ease, transform 0.4s ease; pointer-events: none; }
+    #poke-shiny-card:hover::after { opacity: 0.6; filter: blur(25px); transform: scale(1.05); }
+    #poke-shiny-card:active { transform: scale(0.94); }
+    #poke-shiny-card > *:not(.glass-bg) { position: relative; z-index: 1; }
+
+    #poke-shiny { width: clamp(65px, 18vw, 85px); height: clamp(65px, 18vw, 85px); object-fit: contain; filter: drop-shadow(0 8px 12px rgba(0,0,0,0.3)); margin-bottom: 10px; transition: transform 0.3s ease; color: transparent; text-indent: -9999px; }
+    #poke-shiny-card:hover #poke-shiny { transform: scale(1.1) translateY(-3px); }
+    .shiny-name { font-size: 12px; text-transform: capitalize; font-weight: 900; word-wrap: break-word; line-height: 1.2; text-shadow: 0 2px 4px rgba(0,0,0,0.2); margin-bottom: 5px; color: var(--text-main); }
 
     .capture-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; }
     .cap-box { display: flex; flex-direction: column; align-items: center; background: transparent; padding: 8px; border-radius: 12px; }
@@ -203,7 +210,7 @@
       #main-card { display: grid; grid-template-columns: 45% 1fr; grid-template-rows: auto auto; column-gap: 40px; row-gap: 30px; padding: 50px 40px; max-width: 1000px; margin-top: 20px; }
       .img-container { width: 100%; grid-column: 1; grid-row: 1; position: relative; top: auto; }
       .extra-info-container { width: 100%; grid-column: 1; grid-row: 2; margin-top: 0; align-self: start; position: sticky; top: 120px; }
-      #poke-image { margin-top: -40px; width: 100%; max-width: 380px; height: auto; }
+      #poke-image { margin-top: -40px; width: 100%; max-width: none; height: auto; }
       .card-content { width: 100%; grid-column: 2; grid-row: 1 / span 2; align-items: flex-start; text-align: left; }
       #poke-types, .moves-container { justify-content: flex-start; }
       .section-title { text-align: left; }
@@ -282,7 +289,11 @@
         <div id="extra-info" class="extra-info-container">
           <div class="extra-section">
             <span class="extra-title">Versão Brilhante</span>
-            <img id="poke-shiny" src="" alt="Shiny">
+            <div id="poke-shiny-card" onclick="toggleShiny()">
+               <div class="glass-bg liquid-glass"></div>
+               <img id="poke-shiny" src="" alt="Shiny">
+               <div class="shiny-name">Shiny</div>
+            </div>
           </div>
           <div class="extra-section">
             <span class="extra-title">Dados de Captura</span>
@@ -338,6 +349,8 @@
 
     let allPokemonList = [];
     let currentMode = 'detail';
+    let isShinyView = false;
+    let currentPokemonData = null;
 
     async function loadAllPokemon() {
       try {
@@ -572,8 +585,9 @@
         const res = await fetch('https://pokeapi.co/api/v2/pokemon/' + cleanQuery);
         if (!res.ok) throw new Error('Status ' + res.status); 
         const data = await res.json();
+        currentPokemonData = data;
+        isShinyView = false;
         
-
         const primaryType = data.types[0].type.name;
         const baseColor = typeColors[primaryType] || '#777';
         const typeDark = shadeColor(baseColor, -40);
@@ -596,6 +610,7 @@
         
         document.getElementById('poke-image').src = data.sprites.other['official-artwork'].front_default || data.sprites.front_default;
         document.getElementById('poke-shiny').src = data.sprites.other['official-artwork'].front_shiny || data.sprites.front_shiny || 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs='; // Imagem vazia como fallback
+        document.querySelector('.shiny-name').innerText = "Shiny";
         let formattedName = data.name.replace(/-/g, ' ');
         document.getElementById('poke-name').innerText = formattedName;
         document.getElementById('poke-id').innerText = '#' + data.id.toString().padStart(3, '0');
@@ -887,6 +902,26 @@
     }
     document.getElementById('search-input').addEventListener('keypress', (e) => { if (e.key === 'Enter') searchPokemon(); });
     
+    function toggleShiny() {
+        if (!currentPokemonData) return;
+        isShinyView = !isShinyView;
+
+        const mainImg = document.getElementById('poke-image');
+        const shinyImg = document.getElementById('poke-shiny');
+        const shinyName = document.querySelector('.shiny-name');
+        const data = currentPokemonData;
+
+        if (isShinyView) {
+            mainImg.src = data.sprites.other['official-artwork'].front_shiny || data.sprites.front_shiny || 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
+            shinyImg.src = data.sprites.other['official-artwork'].front_default || data.sprites.front_default;
+            shinyName.innerText = "Normal";
+        } else {
+            mainImg.src = data.sprites.other['official-artwork'].front_default || data.sprites.front_default;
+            shinyImg.src = data.sprites.other['official-artwork'].front_shiny || data.sprites.front_shiny || 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
+            shinyName.innerText = "Shiny";
+        }
+    }
+
     function getPokemonFromUrl() {
       const params = new URLSearchParams(window.location.search);
       let id = params.get('id') || params.get('pokemonId');
