@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>POKÉDEX ULTRA V7</title>
+  <title>POKÉDEX ULTRA V8</title>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@800;900&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     :root {
@@ -159,6 +159,22 @@
     .card-types { display: flex; gap: 4px; justify-content: center; flex-wrap: wrap; width: 100%; min-height: 18px; }
     .mini-type { padding: 3px 8px; border-radius: 10px; font-size: 9px; font-family: 'Montserrat', sans-serif; font-weight: 800; text-transform: uppercase; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.5); box-shadow: 0 2px 5px rgba(0,0,0,0.3); letter-spacing: 0.5px; border: 1px solid rgba(255,255,255,0.3); }
     
+    .extra-info-container { width: 100%; display: flex; flex-direction: column; gap: 15px; margin-top: 20px; z-index: 10; }
+    .extra-section { background: rgba(0,0,0,0.15); border: 1px solid rgba(255,255,255,0.15); border-radius: 20px; padding: 15px; display: flex; flex-direction: column; align-items: center; box-shadow: inset 0 2px 10px rgba(0,0,0,0.05); }
+    @media (prefers-color-scheme: dark) { .extra-section { background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.08); } }
+    .extra-title { font-size: 11px; color: var(--type-color); text-transform: uppercase; font-family: 'Montserrat', sans-serif; font-weight: 900; margin-bottom: 10px; letter-spacing: 1px; text-shadow: 0 1px 2px rgba(0,0,0,0.2); text-align: center; }
+    
+    #poke-shiny { width: 100px; height: 100px; object-fit: contain; filter: drop-shadow(0 5px 10px rgba(0,0,0,0.3)); transition: transform 0.3s ease; }
+    #poke-shiny:hover { transform: scale(1.1); }
+    
+    .capture-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; }
+    .cap-box { display: flex; flex-direction: column; align-items: center; background: rgba(255,255,255,0.1); padding: 8px; border-radius: 12px; }
+    @media (prefers-color-scheme: dark) { .cap-box { background: rgba(255,255,255,0.05); } }
+    .cap-label { font-size: 9px; text-transform: uppercase; font-weight: 800; opacity: 0.8; margin-bottom: 3px; }
+    .cap-value { font-size: 14px; font-weight: 900; }
+    
+    .dmg-types { display: flex; gap: 6px; justify-content: center; flex-wrap: wrap; width: 100%; }
+    
     footer {
       width: 100%;
       text-align: center;
@@ -189,6 +205,7 @@
       #main-card { flex-direction: row; align-items: flex-start; gap: 40px; padding: 50px 40px; max-width: 1000px; margin-top: 20px; }
       .img-container { width: 45%; flex-shrink: 0; position: sticky; top: 120px; }
       #poke-image { margin-top: -40px; width: 100%; max-width: 380px; height: auto; }
+      .extra-info-container { margin-top: 30px; }
       .card-content { flex: 1; align-items: flex-start; text-align: left; }
       #poke-types, .moves-container { justify-content: flex-start; }
       .section-title { text-align: left; }
@@ -240,6 +257,31 @@
         <div class="glass-bg liquid-glass"></div>
         <div class="img-container">
            <img id="poke-image" src="" alt="" onclick="randomPokemon()">
+           
+           <div id="extra-info" class="extra-info-container">
+             <div class="extra-section">
+               <span class="extra-title">Versão Brilhante</span>
+               <img id="poke-shiny" src="" alt="Shiny">
+             </div>
+             
+             <div class="extra-section">
+               <span class="extra-title">Dados de Captura</span>
+               <div class="capture-grid">
+                 <div class="cap-box"><span class="cap-label">Taxa Base</span><span class="cap-value" id="poke-capture">-</span></div>
+                 <div class="cap-box"><span class="cap-label">Felicidade</span><span class="cap-value" id="poke-happiness">-</span></div>
+               </div>
+             </div>
+             
+             <div class="extra-section">
+               <span class="extra-title">Fraquezas (x2 ou x4)</span>
+               <div id="poke-weaknesses" class="dmg-types"></div>
+             </div>
+             
+             <div class="extra-section">
+               <span class="extra-title">Resistências (x0.5, x0.25 ou Imune)</span>
+               <div id="poke-resistances" class="dmg-types"></div>
+             </div>
+           </div>
         </div>
         <div class="card-content">
           <div id="poke-name">Carregando...</div>
@@ -559,6 +601,7 @@
 
         
         document.getElementById('poke-image').src = data.sprites.other['official-artwork'].front_default || data.sprites.front_default;
+        document.getElementById('poke-shiny').src = data.sprites.other['official-artwork'].front_shiny || data.sprites.front_shiny || 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs='; // Imagem vazia como fallback
         let formattedName = data.name.replace(/-/g, ' ');
         document.getElementById('poke-name').innerText = formattedName;
         document.getElementById('poke-id').innerText = '#' + data.id.toString().padStart(3, '0');
@@ -642,6 +685,9 @@
            rarityEl.innerText = rarity; 
            rarityEl.style.color = rColor || 'inherit';
            
+           document.getElementById('poke-capture').innerText = speciesData.capture_rate || 'N/A';
+           document.getElementById('poke-happiness').innerText = speciesData.base_happiness !== null ? speciesData.base_happiness : 'N/A';
+           
            document.getElementById('poke-gen').innerText = genMap[speciesData.generation.name] || 'Desc.';
            fetchEvolutions(speciesData.evolution_chain.url);
            
@@ -719,11 +765,69 @@
           statsList.appendChild(row); setTimeout(() => { barFill.style.width = pct + '%'; }, 50);
         });
         
+        // Calculando Fraquezas e Resistências
+        await calculateTypeMatchups(data.types.map(t => t.type.name));
+        
         setTimeout(() => { document.body.classList.remove('loading'); window.scrollTo({ top: 0, behavior: 'smooth' }); adjustSpacer(); }, 100);
       } catch (e) { 
         alert('Erro 404: Não encontramos o Pokémon/ID -> "' + cleanQuery + '". Verifique o link!'); 
         document.body.classList.remove('loading'); 
       }
+    }
+    
+    async function calculateTypeMatchups(pokemonTypes) {
+        let typeDamage = {};
+        
+        try {
+            for (let typeName of pokemonTypes) {
+                const res = await fetch(`https://pokeapi.co/api/v2/type/${typeName}`);
+                const typeData = await res.json();
+                const relations = typeData.damage_relations;
+                
+                relations.double_damage_from.forEach(t => { typeDamage[t.name] = (typeDamage[t.name] || 1) * 2; });
+                relations.half_damage_from.forEach(t => { typeDamage[t.name] = (typeDamage[t.name] || 1) * 0.5; });
+                relations.no_damage_from.forEach(t => { typeDamage[t.name] = 0; });
+            }
+            
+            const weaknesses = [];
+            const resistances = [];
+            
+            for (const [t, multiplier] of Object.entries(typeDamage)) {
+                if (multiplier > 1) weaknesses.push({ type: t, mult: multiplier });
+                if (multiplier < 1) resistances.push({ type: t, mult: multiplier });
+            }
+            
+            // Ordenar para mostrar maiores fraquezas/resistencias primeiro
+            weaknesses.sort((a,b) => b.mult - a.mult);
+            resistances.sort((a,b) => a.mult - b.mult);
+            
+            const weakContainer = document.getElementById('poke-weaknesses');
+            const resContainer = document.getElementById('poke-resistances');
+            weakContainer.innerHTML = ''; resContainer.innerHTML = '';
+            
+            const createTypeBadge = (item, container) => {
+                let ptType = typeMap[item.type] || item.type;
+                let span = document.createElement('span');
+                span.className = 'mini-type';
+                span.style.background = typeColors[item.type] || '#777';
+                span.style.display = 'flex';
+                span.style.alignItems = 'center';
+                span.style.gap = '3px';
+                
+                let multText = item.mult === 0.5 ? '½' : item.mult === 0.25 ? '¼' : item.mult;
+                span.innerHTML = `${ptType} <b style="background:rgba(0,0,0,0.3); padding:1px 4px; border-radius:6px; font-size:8px;">x${multText}</b>`;
+                container.appendChild(span);
+            };
+            
+            if(weaknesses.length === 0) weakContainer.innerHTML = '<span style="font-size:10px; opacity:0.6;">Nenhuma</span>';
+            else weaknesses.forEach(w => createTypeBadge(w, weakContainer));
+            
+            if(resistances.length === 0) resContainer.innerHTML = '<span style="font-size:10px; opacity:0.6;">Nenhuma</span>';
+            else resistances.forEach(r => createTypeBadge(r, resContainer));
+            
+        } catch(e) {
+            console.error("Erro ao calcular vantagens:", e);
+        }
     }
     
     async function fetchEvolutions(url) {
