@@ -3,7 +3,9 @@
 == PROJECTS ==
 
 * POKÉDEX ULTRA V5
-https://kaduvercosa.github.io/KADU-S-REPOSITORY/Pokedex/
+
+## Live Demo
+Check out the live Pokédex here: [https://kaduvercosa.github.io/KADU-S-REPOSITORY/Pokedex/](https://kaduvercosa.github.io/KADU-S-REPOSITORY/Pokedex/)
 
 ## Features
 * **Detailed View:** View individual Pokémon with attributes, stats, moves, abilities, items, and evolutions.
@@ -22,8 +24,14 @@ https://kaduvercosa.github.io/KADU-S-REPOSITORY/Pokedex/
 * [PokeAPI](https://pokeapi.co/)
 
 ## How to run locally
-1. Clone the repository.
-2. Navigate to the repository root directory.
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/kaduvercosa/KADU-S-REPOSITORY.git
+   ```
+2. Navigate to the repository root directory:
+   ```bash
+   cd KADU-S-REPOSITORY
+   ```
 3. Start a local server. For example, using Python 3:
    ```bash
    python3 -m http.server --directory Pokedex/
