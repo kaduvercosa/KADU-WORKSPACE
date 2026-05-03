@@ -1,0 +1,21 @@
+{
+  "name": "app",
+  "version": "1.0.0",
+  "description": "== PROJECTS ==",
+  "main": "index.js",
+  "scripts": {
+    "test": "node --test Pokedex/js/utils.test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kaduvercosa/KADU-S-REPOSITORY.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/kaduvercosa/KADU-S-REPOSITORY/issues"
+  },
+  "homepage": "https://github.com/kaduvercosa/KADU-S-REPOSITORY#readme"
+}
