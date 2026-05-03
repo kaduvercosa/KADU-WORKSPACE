@@ -11,6 +11,8 @@
       --bg-gradient: linear-gradient(135deg, var(--type-color) 0%, var(--type-dark) 100%);
       --nav-bg: var(--type-color);
       /* TEMA CLARO */
+      --ac-bg: #ffffff;
+      --ac-text: #1a1a2e;
       --bg-overlay: rgba(255, 255, 255, 0.45);
       --glass-bg: rgba(255, 255, 255, 0.15);
       --glass-panel: rgba(255, 255, 255, 0.75);
@@ -22,6 +24,8 @@
     /* TEMA ESCURO */
     @media (prefers-color-scheme: dark) {
       :root {
+        --ac-bg: #1a1a2e;
+        --ac-text: f0f0f0;
         --bg-overlay: rgba(10, 10, 15, 0.55);
         --glass-bg: rgba(255, 255, 255, 0.10);
         --glass-panel: rgba(255, 255, 255, 0.05);
@@ -86,9 +90,9 @@
     #input-wrapper { flex: 1 1 100%; min-width: 100%; order: 1; position: relative; }
     #search-input { width: 100%; padding: 12px 15px; font-size: 14px; }
     
-    #autocomplete-list { position: absolute; top: 100%; left: 0; right: 0; margin-top: 8px; max-height: 220px; overflow-y: auto; border-radius: 18px; z-index: 200; display: none; flex-direction: column; background: var(--glass-panel); backdrop-filter: blur(20px); border: 1px solid var(--glass-border); box-shadow: 0 10px 30px rgba(0,0,0,0.2); padding: 5px; }
+    #autocomplete-list { position: absolute; top: 100%; left: 0; right: 0; margin-top: 8px; max-height: 220px; overflow-y: auto; border-radius: 18px; z-index: 200; display: none; flex-direction: column; background: var(--ac-bg); color: var(--ac-text); backdrop-filter: blur(25px); border: 1px solid var(--glass-border); box-shadow: 0 15px 40px rgba(0,0,0,0.4); padding: 5px; }
     .autocomplete-item { padding: 8px 12px; cursor: pointer; border-radius: 12px; font-size: 13px; font-weight: 700; text-transform: capitalize; display: flex; align-items: center; gap: 12px; transition: background 0.2s ease; }
-    .autocomplete-item:hover, .autocomplete-item:active { background: var(--nav-bg); color: #fff; }
+    .autocomplete-item:hover, .autocomplete-item:active { background: var(--nav-bg); color: var(--ac-text); }
     .ac-img { width: 40px; height: 40px; object-fit: contain; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2)); }
     
     select { flex: 1 1 calc(33.33% - 4px); min-width: calc(33.33% - 4px); order: 2; padding: 10px 4px; font-size: 11px; text-align: center; }
