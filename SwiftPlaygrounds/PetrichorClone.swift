@@ -36,36 +36,65 @@ class AudioPlayerManager: NSObject, ObservableObject, AVAudioPlayerDelegate {
     private var timer: Timer?
 
     func addTracks(urls: [URL]) {
-        for url in urls {
-            guard url.startAccessingSecurityScopedResource() else { continue }
+        Task { @MainActor in
+            for url in urls {
+                guard url.startAccessingSecurityScopedResource() else { continue }
 
-            let asset = AVAsset(url: url)
-            var title = url.deletingPathExtension().lastPathComponent
-            var artist = "Unknown Artist"
-            var album = "Unknown Album"
-            var artworkData: Data? = nil
+                let tempDir = FileManager.default.temporaryDirectory
+                let destURL = tempDir.appendingPathComponent(url.lastPathComponent)
 
-            let metadata = asset.metadata
-            for item in metadata {
-                if let commonKey = item.commonKey {
-                    switch commonKey {
-                    case .commonKeyTitle:
-                        title = item.stringValue ?? title
-                    case .commonKeyArtist:
-                        artist = item.stringValue ?? artist
-                    case .commonKeyAlbumName:
-                        album = item.stringValue ?? album
-                    case .commonKeyArtwork:
-                        artworkData = item.dataValue
-                    default:
-                        break
+                do {
+                    if FileManager.default.fileExists(atPath: destURL.path) {
+                        try FileManager.default.removeItem(at: destURL)
                     }
-                }
-            }
+                    try FileManager.default.copyItem(at: url, to: destURL)
 
-            let track = Track(url: url, title: title, artist: artist, album: album, artworkData: artworkData)
-            if !tracks.contains(where: { $0.url == track.url }) {
-                tracks.append(track)
+                    url.stopAccessingSecurityScopedResource()
+
+                    let asset = AVURLAsset(url: destURL)
+                    var title = destURL.deletingPathExtension().lastPathComponent
+                    var artist = "Unknown Artist"
+                    var album = "Unknown Album"
+                    var artworkData: Data? = nil
+
+                    do {
+                        let metadata = try await asset.load(.commonMetadata)
+                        for item in metadata {
+                            if let commonKey = item.commonKey {
+                                switch commonKey {
+                                case .commonKeyTitle:
+                                    if let value = try? await item.load(.stringValue) {
+                                        title = value
+                                    }
+                                case .commonKeyArtist:
+                                    if let value = try? await item.load(.stringValue) {
+                                        artist = value
+                                    }
+                                case .commonKeyAlbumName:
+                                    if let value = try? await item.load(.stringValue) {
+                                        album = value
+                                    }
+                                case .commonKeyArtwork:
+                                    if let value = try? await item.load(.dataValue) {
+                                        artworkData = value
+                                    }
+                                default:
+                                    break
+                                }
+                            }
+                        }
+                    } catch {
+                        print("Failed to load metadata: \(error.localizedDescription)")
+                    }
+
+                    let track = Track(url: destURL, title: title, artist: artist, album: album, artworkData: artworkData)
+                    if !self.tracks.contains(where: { $0.url == track.url }) {
+                        self.tracks.append(track)
+                    }
+                } catch {
+                    print("Failed to copy or read file: \(error.localizedDescription)")
+                    url.stopAccessingSecurityScopedResource()
+                }
             }
         }
     }
@@ -145,6 +174,17 @@ class AudioPlayerManager: NSObject, ObservableObject, AVAudioPlayerDelegate {
     func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
         if flag {
             skipForward()
+        }
+    }
+}
+
+// MARK: - App Entry Point
+
+@main
+struct PetrichorCloneApp: App {
+    var body: some Scene {
+        WindowGroup {
+            ContentView()
         }
     }
 }
