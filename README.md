@@ -1,15 +1,9 @@
 # KADU-WORKSPACE
 
-### PROJECTS
-
-* POKÉDEX ULTRA V5
-
-## Live Demo
+## Live Pokédex
 Check out the live Pokédex here: 
 
 [https://kaduvercosa.github.io/KADU-WORKSPACE/Pokedex/](https://kaduvercosa.github.io/KADU-WORKSPACE/Pokedex/)
-
-[https://kaduvercosa.github.io/KADU-WORKSPACE/feat-pokedex-dual-type-gradients-glow-11633516229114617311](https://kaduvercosa.github.io/KADU-WORKSPACE/feat-pokedex-dual-type-gradients-glow-11633516229114617311)
 
 ## Features
 * **Detailed View:** View individual Pokémon with attributes, stats, moves, abilities, items, and evolutions.
@@ -30,11 +24,11 @@ Check out the live Pokédex here:
 ## How to run locally
 1. Clone the repository:
    ```bash
-   git clone https://github.com/kaduvercosa/KADU-S-REPOSITORY.git
+   git clone https://github.com/kaduvercosa/KADU-WORKSPACE.git
    ```
 2. Navigate to the repository root directory:
    ```bash
-   cd KADU-S-REPOSITORY
+   cd KADU-WORKSPACE
    ```
 3. Start a local server. For example, using Python 3:
    ```bash
