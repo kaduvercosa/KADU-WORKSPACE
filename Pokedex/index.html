@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>POKEDEX ULTRA - *Kaduzin*</title>
+  <title>POKÉDEX ULTRA</title>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@800;900&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     :root {
@@ -88,14 +88,23 @@
     
     .info-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; width: 100%; margin-bottom: 25px; }
     .info-box { background: var(--glass-panel); border: 1px solid var(--glass-border); padding: 12px 15px; border-radius: 16px; display: flex; flex-direction: column; justify-content: center; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
-    .info-label { font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: 900; margin-bottom: 2px; letter-spacing: 1px; }
+    
+    /* MODIFICADO: Rótulos agora acompanham a cor do Pokémon */
+    .info-label { font-size: 10px; color: var(--type-color); text-transform: uppercase; font-weight: 900; margin-bottom: 2px; letter-spacing: 1px; }
+    
     .info-value { font-size: 14px; font-weight: 800; text-transform: capitalize; line-height: 1.3; }
     .full-width { grid-column: 1 / -1; }
     
     .stats-container, .moves-wrapper { width: 100%; background: var(--glass-panel); padding: 20px; border-radius: 20px; border: 1px solid var(--glass-border); margin-bottom: 20px; }
-    .section-title { margin: 0 0 15px 0; font-size: 14px; text-align: center; text-transform: uppercase; font-family: 'Montserrat', sans-serif; font-weight: 900; letter-spacing: 1.5px; opacity: 0.9; }
+    
+    /* MODIFICADO: Títulos de seções agora acompanham a cor do Pokémon */
+    .section-title { margin: 0 0 15px 0; font-size: 14px; text-align: center; text-transform: uppercase; font-family: 'Montserrat', sans-serif; font-weight: 900; letter-spacing: 1.5px; opacity: 0.9; color: var(--type-color); }
+    
     .stat-row { display: flex; align-items: center; margin-bottom: 10px; }
-    .stat-name { width: 70px; font-weight: 900; text-transform: uppercase; font-size: 10px; letter-spacing: 1px; color: var(--text-muted); }
+    
+    /* MODIFICADO: Nomes dos status acompanham a cor do Pokémon */
+    .stat-name { width: 70px; font-weight: 900; text-transform: uppercase; font-size: 10px; letter-spacing: 1px; color: var(--type-color); }
+    
     .stat-bar-bg { flex: 1; background: var(--stat-bg); height: 10px; border-radius: 5px; margin: 0 10px; overflow: hidden; box-shadow: inset 0 2px 5px rgba(0,0,0,0.2); }
     .stat-bar-fill { height: 100%; border-radius: 5px; width: 0; transition: width 1s cubic-bezier(0.2, 0.8, 0.2, 1), background 0.6s ease; background: var(--type-color); box-shadow: 0 0 10px rgba(255,255,255,0.2); }
     .stat-value { width: 30px; text-align: right; font-weight: 900; font-size: 13px; }
@@ -435,15 +444,12 @@
         document.getElementById('poke-weight').innerText = (data.weight / 10).toFixed(1) + ' kg';
         document.getElementById('poke-exp').innerText = data.base_experience ? data.base_experience : 'N/A';
 
-        // ========================================================
-        // TRADUÇÃO EM LOTE: ITENS, HABILIDADES E MOVIMENTOS
-        // ========================================================
         let itemsArr = data.held_items.length > 0 ? data.held_items.map(i => i.item.name.replace(/-/g, ' ')) : [];
         let abilitiesArr = data.abilities.map(a => a.ability.name.replace(/-/g, ' '));
         let movesArr = data.moves.slice(0, 40).map(m => m.move.name.replace(/-/g, ' '));
         
         let toTranslate = [...itemsArr, ...abilitiesArr, ...movesArr];
-        let translatedArr = toTranslate; // Se a tradução falhar, usa o inglês original
+        let translatedArr = toTranslate; 
         
         if (toTranslate.length > 0) {
           try {
@@ -455,14 +461,12 @@
             transData[0].forEach(part => { translatedStr += part[0]; });
             let tempArr = translatedStr.split('\n').map(s => s.trim());
             
-            // Só substitui se o Google não tiver comido nenhuma linha durante a tradução
             if(tempArr.length === toTranslate.length) {
                 translatedArr = tempArr;
             }
           } catch(e) { console.log("Tradução automática falhou, usando inglês."); }
         }
         
-        // Distribui as palavras traduzidas de volta para as listas
         let itemsTrans = translatedArr.slice(0, itemsArr.length);
         let abilitiesTrans = translatedArr.slice(itemsArr.length, itemsArr.length + abilitiesArr.length);
         let movesTrans = translatedArr.slice(itemsArr.length + abilitiesArr.length);
@@ -476,7 +480,6 @@
         movesTrans.forEach(m => {
            let span = document.createElement('span'); span.className = 'move-badge'; span.innerText = m; movesDiv.appendChild(span);
         });
-        // ========================================================
         
         let speciesUrl = data.species.url; let speciesData = null;
         try { const specRes = await fetch(speciesUrl); speciesData = await specRes.json(); } catch(e){}
@@ -497,9 +500,16 @@
            }
            document.getElementById('poke-desc').innerText = '\"' + synopsis + '\"';
            
+           // MODIFICADO: Cores de Raridade Escurecidas
            let rarity = 'Comum'; let rColor = '';
-           if (speciesData.is_mythical) { rarity = 'Mítico'; rColor = '#FFE082'; } else if (speciesData.is_legendary) { rarity = 'Lendário'; rColor = '#FFF59D'; } else if (speciesData.is_baby) { rarity = 'Bebê'; rColor = '#B3E5FC'; }
-           let rarityEl = document.getElementById('poke-rarity'); rarityEl.innerText = rarity; rarityEl.style.color = rColor || 'inherit';
+           if (speciesData.is_mythical) { rarity = 'Mítico'; rColor = '#D97706'; } 
+           else if (speciesData.is_legendary) { rarity = 'Lendário'; rColor = '#D97706'; } 
+           else if (speciesData.is_baby) { rarity = 'Bebê'; rColor = '#0284C7'; }
+           
+           let rarityEl = document.getElementById('poke-rarity'); 
+           rarityEl.innerText = rarity; 
+           rarityEl.style.color = rColor || 'inherit';
+           
            document.getElementById('poke-gen').innerText = genMap[speciesData.generation.name] || 'Desc.';
            fetchEvolutions(speciesData.evolution_chain.url);
            
