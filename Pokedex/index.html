@@ -115,7 +115,7 @@
 
     .glass-bg { position: absolute; top: 0; bottom: 0; left: 0; right: 0; border-radius: inherit; z-index: 0; pointer-events: none; }
     
-    #search-container { position: fixed; top: clamp(10px, 2vw, 15px); left: 50%; transform: translateX(-50%); width: 96%; max-width: 1000px; z-index: 100; padding: clamp(10px, 3vw, 15px); border-radius: clamp(20px, 4vw, 25px); display: flex; flex-wrap: wrap; gap: 6px; transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s ease; border-right: 1px solid rgba(255,255,255,0.05); border-bottom: 1px solid rgba(255,255,255,0.05); }
+    #search-container { position: fixed; top: clamp(10px, 2vw, 15px); left: 50%; transform: translateX(-50%); width: 96%; max-width: 1000px; z-index: 100; padding: clamp(10px, 3vw, 15px); border-radius: clamp(20px, 4vw, 25px); display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s ease; border-right: 1px solid rgba(255,255,255,0.05); border-bottom: 1px solid rgba(255,255,255,0.05); }
     #search-container > *:not(.glass-bg) { position: relative; z-index: 1; }
     
     /* FIX: Ensure autocomplete wrapper stays above sibling filters */
@@ -162,15 +162,22 @@
     .ac-img { width: 40px; height: 40px; object-fit: contain; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2)); }
     
     select { flex: 1 1 calc(33.33% - 4px); min-width: calc(33.33% - 4px); order: 2; padding: 10px 4px; font-size: 11px; text-align: center; }
-    .btn-action { flex: 1 1 calc(50% - 4px); order: 3; padding: 12px 10px; font-size: 11px; }
-    .btn-nav { flex: 1 1 calc(50% - 4px); order: 4; padding: 12px 10px; font-size: 11px; }
+    .btn-action { flex: 1 1 calc(33.33% - 4px); order: 3; padding: 12px 10px; font-size: 11px; }
+    .btn-nav { flex: 1 1 100%; order: 4; padding: 12px 10px; font-size: 11px; }
     
     @media (min-width: 768px) {
       #search-container { flex-wrap: nowrap; gap: 10px; }
-      #input-wrapper { flex: 2 1 200px; min-width: 200px; order: 1; }
-      select { flex: 1 1 100px; min-width: 100px; order: 2; padding: 14px 8px; font-size: 13px; }
-      .btn-action { flex: 1 1 100px; order: 3; padding: 14px; font-size: 13px; }
-      .btn-nav { flex: 1 1 120px; order: 4; padding: 14px; font-size: 13px; }
+      #input-wrapper { flex: 2 1 150px; min-width: 150px; order: 1; }
+      select { flex: 1 1 80px; min-width: 80px; order: 2; padding: 14px 6px; font-size: 12px; }
+      .btn-action { flex: 1 1 80px; min-width: 80px; order: 3; padding: 14px 8px; font-size: 11px; }
+      .btn-nav { flex: 1 1 100px; min-width: 100px; order: 4; padding: 14px 10px; font-size: 11px; }
+    }
+
+    @media (min-width: 1024px) {
+      #input-wrapper { flex: 2 1 200px; min-width: 200px; }
+      select { flex: 1 1 100px; min-width: 100px; font-size: 13px; }
+      .btn-action { flex: 1 1 100px; min-width: 100px; font-size: 13px; }
+      .btn-nav { flex: 1 1 120px; min-width: 120px; font-size: 13px; }
     }
     
     #content-wrapper { display: flex; flex-direction: column; align-items: center; width: 100%; transition: opacity 0.3s ease; }
@@ -441,7 +448,6 @@
               <input type="text" id="compare-input" placeholder="Buscar 2º Pokémon..." style="width:100%; padding: 14px 20px; font-size:16px; pointer-events:auto;" autocomplete="off">
               <div id="compare-autocomplete" style="position:absolute; top:100%; left:0; right:0; margin-top:5px; max-height:240px; overflow-y:auto; background:var(--glass-panel); backdrop-filter:blur(20px); border:1px solid var(--glass-border); border-radius:16px; display:none; flex-direction:column; z-index:10007; padding:8px; box-shadow:0 15px 35px rgba(0,0,0,0.4);"></div>
           </div>
-          <button onclick="searchCompare()" class="btn-action" style="padding: 14px 25px; font-size:14px; pointer-events:auto;">Buscar</button>
       </div>
 
       <div id="compare-results" style="display:none; flex-direction:column; gap:15px;">
@@ -1514,7 +1520,11 @@
         document.getElementById('compare-loading').style.display = 'block';
 
         try {
-            const res = await fetch(`https://pokeapi.co/api/v2/pokemon/${query}`);
+            // Find Pokemon by exact ID or search string
+            const match = allPokemonList.find(p => p.name.replace(/-/g, '') === query || p.id === query || p.name === query);
+            const searchVal = match ? match.name : query;
+
+            const res = await fetch(`https://pokeapi.co/api/v2/pokemon/${searchVal}`);
             if (!res.ok) throw new Error('Not found');
             const data2 = await res.json();
             const data1 = currentPokemonData;
@@ -1591,7 +1601,7 @@
         }
     }
 
-    document.getElementById('compare-input').addEventListener('keypress', (e) => { if (e.key === 'Enter') searchCompare(); });
+    // Removed enter event listener to trigger search on enter since we want it on select only
 
     async function fetchAbilityInfo(rawName, ptName) {
         document.getElementById('im-title').innerText = ptName + " (Habilidade)";
