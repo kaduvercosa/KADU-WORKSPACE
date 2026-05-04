@@ -66,6 +66,52 @@
     body.hide-moves .moves-wrapper { display: none !important; }
     body.hide-extra #extra-info { display: none !important; }
     body.hide-evo #evolutions, body.hide-evo #varieties { display: none !important; }
+
+    /* FONT SIZES */
+    body.font-small { font-size: 12px; }
+    body.font-small #poke-name { font-size: clamp(24px, 6vw, 36px); }
+    body.font-small .info-value { font-size: 12px; }
+
+    body.font-large { font-size: 16px; }
+    body.font-large #poke-name { font-size: clamp(32px, 8vw, 48px); }
+    body.font-large .info-value { font-size: 16px; }
+
+    /* MONOCHROME MODE */
+    body.monochrome {
+      --type-color: #888888 !important;
+      --type-dark: #333333 !important;
+      --nav-bg: #444444 !important;
+      --bg-gradient: linear-gradient(135deg, #dddddd 0%, #aaaaaa 100%) !important;
+    }
+    @media (prefers-color-scheme: dark) {
+      body.monochrome:not([data-theme="light"]), :root[data-theme="dark"] body.monochrome {
+        --bg-gradient: linear-gradient(135deg, #333333 0%, #111111 100%) !important;
+        --nav-bg: #222222 !important;
+      }
+    }
+    body.monochrome .type-badge, body.monochrome .mini-type, body.monochrome .stat-bar-fill { background: #888 !important; filter: grayscale(100%); }
+    body.monochrome #main-card, body.monochrome #search-container, body.monochrome .colored-card { --card-bg: transparent !important; }
+
+    /* DETAILS MODAL CSS */
+    #details-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 10000; display: none; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s ease; }
+    #details-modal.show-modal { display: flex; opacity: 1; }
+    .details-content { width: 95%; max-width: 600px; max-height: 90vh; }
+    .dm-section { margin-bottom: 25px; background: rgba(0,0,0,0.03); padding: 15px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.05); }
+    @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .dm-section { background: rgba(255,255,255,0.02); } }
+    :root[data-theme="dark"] .dm-section { background: rgba(255,255,255,0.02); }
+    .dm-subtitle { margin: 0 0 15px 0; font-size: 13px; color: var(--type-color); text-transform: uppercase; letter-spacing: 1px; font-weight: 900; }
+
+    .dm-gallery { display: grid; grid-template-columns: repeat(auto-fit, minmax(80px, 1fr)); gap: 10px; justify-items: center; }
+    .dm-sprite-box { display: flex; flex-direction: column; align-items: center; padding: 5px; background: var(--glass-panel); border-radius: 12px; border: 1px solid var(--glass-border); width: 100%; }
+    .dm-sprite-img { width: 70px; height: 70px; object-fit: contain; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2)); }
+    .dm-sprite-label { font-size: 9px; font-weight: 800; text-transform: uppercase; margin-top: 5px; text-align: center; color: var(--text-muted); }
+
+    .dm-encounters { font-size: 12px; line-height: 1.5; max-height: 120px; overflow-y: auto; padding-right: 5px; }
+    .dm-enc-item { background: var(--glass-panel); padding: 6px 10px; border-radius: 8px; margin-bottom: 5px; display: inline-block; margin-right: 5px; font-weight: 600; border: 1px solid var(--glass-border); }
+
+    /* Make image clickable */
+    #poke-image { cursor: pointer; }
+
     .glass-bg { position: absolute; top: 0; bottom: 0; left: 0; right: 0; border-radius: inherit; z-index: 0; pointer-events: none; }
     
     #search-container { position: fixed; top: clamp(10px, 2vw, 15px); left: 50%; transform: translateX(-50%); width: 96%; max-width: 1000px; z-index: 100; padding: clamp(10px, 3vw, 15px); border-radius: clamp(20px, 4vw, 25px); display: flex; flex-wrap: wrap; gap: 6px; transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s ease; border-right: 1px solid rgba(255,255,255,0.05); border-bottom: 1px solid rgba(255,255,255,0.05); }
@@ -312,7 +358,7 @@
       <div id="main-card">
         <div class="glass-bg liquid-glass"></div>
         <div class="img-container">
-           <img id="poke-image" src="" alt="" onclick="randomPokemon()">
+           <img id="poke-image" src="" alt="" onclick="openDetailsModal()" title="Clique para ver mais detalhes!">
         </div>
         <div class="card-content">
           <div id="poke-name">Carregando...</div>
@@ -374,6 +420,48 @@
     </div>
   </div>
 
+  <!-- DETAILS MODAL -->
+  <div id="details-modal">
+    <div class="modal-overlay" onclick="closeDetailsModal()"></div>
+    <div class="modal-content details-content">
+      <div class="modal-header">
+        <h3 class="modal-title" id="dm-title">Detalhes do Pokémon</h3>
+        <button class="close-btn" onclick="closeDetailsModal()">×</button>
+      </div>
+
+      <div class="dm-section">
+        <h4 class="dm-subtitle">Galeria de Sprites</h4>
+        <div class="dm-gallery" id="dm-gallery">
+           <!-- Sprites will be injected here -->
+        </div>
+      </div>
+
+      <div class="dm-section">
+        <h4 class="dm-subtitle">Reprodução (Breeding)</h4>
+        <div class="info-grid">
+          <div class="info-box"><span class="info-label">Gênero</span><span class="info-value" id="dm-gender">-</span></div>
+          <div class="info-box"><span class="info-label">Ciclos (Passos)</span><span class="info-value" id="dm-cycles">-</span></div>
+          <div class="info-box full-width"><span class="info-label">Grupos de Ovos</span><span class="info-value" id="dm-egggroups">-</span></div>
+        </div>
+      </div>
+
+      <div class="dm-section">
+        <h4 class="dm-subtitle">Treinamento</h4>
+        <div class="info-grid">
+          <div class="info-box"><span class="info-label">Exp Base</span><span class="info-value" id="dm-baseexp">-</span></div>
+          <div class="info-box"><span class="info-label">Amizade Base</span><span class="info-value" id="dm-basehappiness">-</span></div>
+          <div class="info-box"><span class="info-label">Taxa de Captura</span><span class="info-value" id="dm-capturerate">-</span></div>
+          <div class="info-box full-width"><span class="info-label">Pontos de Esforço (EV Yield)</span><span class="info-value" id="dm-evs">-</span></div>
+        </div>
+      </div>
+
+      <div class="dm-section">
+        <h4 class="dm-subtitle">Localizações de Encontro</h4>
+        <div class="dm-encounters" id="dm-encounters">Carregando...</div>
+      </div>
+    </div>
+  </div>
+
   <!-- SETTINGS MODAL -->
   <div id="settings-modal">
     <div class="modal-overlay" onclick="closeSettings()"></div>
@@ -394,6 +482,18 @@
           </select>
         </div>
         <div class="setting-item">
+          <span class="setting-label">Modo Monocromático</span>
+          <label class="switch"><input type="checkbox" id="setting-monochrome" onchange="saveSettings()"><span class="slider"></span></label>
+        </div>
+        <div class="setting-item">
+          <span class="setting-label">Tamanho da Fonte</span>
+          <select id="setting-fontsize" class="modal-select" onchange="saveSettings()">
+            <option value="small">Pequena</option>
+            <option value="normal" selected>Normal</option>
+            <option value="large">Grande</option>
+          </select>
+        </div>
+        <div class="setting-item">
           <span class="setting-label">Efeito de Vidro (Blur)</span>
           <label class="switch"><input type="checkbox" id="setting-glass" onchange="saveSettings()" checked><span class="slider"></span></label>
         </div>
@@ -404,6 +504,24 @@
         <div class="setting-item">
           <span class="setting-label">Animação de Flutuação</span>
           <label class="switch"><input type="checkbox" id="setting-anim" onchange="saveSettings()" checked><span class="slider"></span></label>
+        </div>
+      </div>
+
+      <div class="setting-group">
+        <h4>Dados e Sistema</h4>
+        <div class="setting-item">
+          <span class="setting-label">Sistema de Medidas</span>
+          <select id="setting-units" class="modal-select" onchange="saveSettings()">
+            <option value="metric" selected>Métrico (m/kg)</option>
+            <option value="imperial">Imperial (ft/lbs)</option>
+          </select>
+        </div>
+        <div class="setting-item">
+          <span class="setting-label">Tela Inicial</span>
+          <select id="setting-startup" class="modal-select" onchange="saveSettings()">
+            <option value="random" selected>Aleatório</option>
+            <option value="grid">Grade Completa</option>
+          </select>
         </div>
       </div>
 
@@ -427,6 +545,7 @@
         </div>
       </div>
     </div>
+  </div>
   </div>
 
   <!-- MODIFICADO: Links Adicionados ao Rodapé -->
@@ -725,8 +844,7 @@
           span.style.backgroundColor = typeColors[t.type.name] || '#777'; typesDiv.appendChild(span);
         });
         
-        document.getElementById('poke-height').innerText = (data.height / 10).toFixed(1) + ' m';
-        document.getElementById('poke-weight').innerText = (data.weight / 10).toFixed(1) + ' kg';
+        updatePokemonUI(data);
         document.getElementById('poke-exp').innerText = data.base_experience ? data.base_experience : 'N/A';
 
         let itemsArr = data.held_items.length > 0 ? data.held_items.map(i => i.item.name.replace(/-/g, ' ')) : [];
@@ -767,9 +885,11 @@
         });
         
         let speciesUrl = data.species.url; let speciesData = null;
+        currentSpeciesData = null;
         try { const specRes = await fetch(speciesUrl); speciesData = await specRes.json(); } catch(e){ console.error("Error fetching species data:", e); }
         
         if (speciesData) {
+           currentSpeciesData = speciesData;
            let flavorEntry = speciesData.flavor_text_entries.find(f => f.language.name === 'pt-BR' || f.language.name === 'pt');
            let needsTranslation = false;
            if (!flavorEntry) { flavorEntry = speciesData.flavor_text_entries.find(f => f.language.name === 'en'); needsTranslation = true; }
@@ -939,11 +1059,31 @@
         }
     }
     
-    async function fetchEvolutions(url) {
+        async function fetchEvolutions(url) {
       try {
         const evoRes = await fetch(url); const evoData = await evoRes.json(); let evolutions = [];
-        function extractEvo(node) { let id = node.species.url.split('/')[6]; evolutions.push({ name: node.species.name, id: id }); node.evolves_to.forEach(evo => extractEvo(evo)); }
-        extractEvo(evoData.chain); const evoDiv = document.getElementById('evolutions'); const evoList = document.getElementById('evo-list'); evoList.innerHTML = '';
+
+        function extractEvo(node) {
+            let id = node.species.url.split('/')[6];
+
+            // Extract details safely
+            let detailsObj = node.evolution_details && node.evolution_details.length > 0 ? node.evolution_details[0] : null;
+            let conditionText = '';
+
+            if (detailsObj) {
+                if (detailsObj.min_level) conditionText = `Lvl ${detailsObj.min_level}`;
+                else if (detailsObj.item) conditionText = detailsObj.item.name.replace(/-/g, ' ');
+                else if (detailsObj.trigger.name === 'trade') conditionText = 'Troca';
+                else if (detailsObj.min_happiness) conditionText = 'Amizade';
+                else conditionText = '?';
+            }
+
+            evolutions.push({ name: node.species.name, id: id, condition: conditionText });
+            node.evolves_to.forEach(evo => extractEvo(evo));
+        }
+
+        extractEvo(evoData.chain);
+        const evoDiv = document.getElementById('evolutions'); const evoList = document.getElementById('evo-list'); evoList.innerHTML = '';
         if (evolutions.length > 1) {
           evoDiv.style.display = 'block'; evolutions.forEach(evo => {
             
@@ -953,7 +1093,6 @@
             card.appendChild(glassBg);
             
             card.onclick = () => { document.getElementById('search-input').value = ''; fetchPokemon(evo.id); };
-
 
             const idDiv = document.createElement('div');
             idDiv.className = 'evo-id';
@@ -969,6 +1108,20 @@
             card.appendChild(idDiv);
             card.appendChild(img);
             card.appendChild(nameDiv);
+
+            if (evo.condition) {
+                const condDiv = document.createElement('div');
+                condDiv.style.fontSize = '9px';
+                condDiv.style.fontWeight = '800';
+                condDiv.style.background = 'rgba(0,0,0,0.3)';
+                condDiv.style.color = '#fff';
+                condDiv.style.padding = '2px 6px';
+                condDiv.style.borderRadius = '8px';
+                condDiv.style.marginTop = '4px';
+                condDiv.style.textTransform = 'capitalize';
+                condDiv.textContent = evo.condition;
+                card.appendChild(condDiv);
+            }
 
             evoList.appendChild(card);
             
@@ -1030,19 +1183,120 @@
     }
 
     const urlId = getPokemonFromUrl();
+
+    // Initialize settings FIRST so startup pref is known
+    applySettings();
+
     if (urlId && urlId.trim() !== "" && urlId !== "null") {
       fetchPokemon(urlId);
     } else {
-      fetchPokemon(Math.floor(Math.random() * 1025) + 1);
+      const saved = localStorage.getItem('pokedex-settings');
+      let startup = 'random';
+      if (saved) { try { startup = JSON.parse(saved).startup; } catch(e){} }
+
+      if (startup === 'grid') {
+          toggleView();
+          document.getElementById('gen-filter').value = '1';
+          loadPokedex('1', 'gen');
+      } else {
+          fetchPokemon(Math.floor(Math.random() * 1025) + 1);
+      }
     }
 
     // SETTINGS LOGIC
     function openSettings() { document.getElementById('settings-modal').classList.add('show-modal'); }
     function closeSettings() { document.getElementById('settings-modal').classList.remove('show-modal'); }
 
+
+    let currentSpeciesData = null; // Store species data for details modal
+    let isImperial = false; // Store unit preference
+
+    function openDetailsModal() {
+        if (!currentPokemonData || !currentSpeciesData) return;
+
+        document.getElementById('dm-title').innerText = currentPokemonData.name.replace(/-/g, ' ') + ' - Detalhes';
+
+        // 1. Sprites Gallery
+        const gallery = document.getElementById('dm-gallery');
+        gallery.innerHTML = '';
+        const sprites = currentPokemonData.sprites;
+        const addSprite = (url, label) => {
+            if(!url) return;
+            const box = document.createElement('div'); box.className = 'dm-sprite-box';
+            const img = document.createElement('img'); img.className = 'dm-sprite-img'; img.src = url;
+            const span = document.createElement('span'); span.className = 'dm-sprite-label'; span.innerText = label;
+            box.appendChild(img); box.appendChild(span); gallery.appendChild(box);
+        };
+
+        addSprite(sprites.front_default, 'Frente (Padrão)');
+        addSprite(sprites.back_default, 'Costas (Padrão)');
+        addSprite(sprites.front_shiny, 'Frente (Shiny)');
+        addSprite(sprites.back_shiny, 'Costas (Shiny)');
+        addSprite(sprites.other?.showdown?.front_default, 'Animado');
+        addSprite(sprites.other?.home?.front_default, 'Home 3D');
+
+        if (gallery.innerHTML === '') gallery.innerHTML = '<span style="font-size:12px; opacity:0.6;">Nenhum sprite adicional encontrado.</span>';
+
+        // 2. Breeding
+        const genderRate = currentSpeciesData.gender_rate;
+        let genderText = 'Desconhecido';
+        if (genderRate === -1) genderText = 'Sem Gênero';
+        else if (genderRate >= 0) {
+            const femalePct = (genderRate / 8) * 100;
+            const malePct = 100 - femalePct;
+            genderText = `♂ ${malePct}% | ♀ ${femalePct}%`;
+        }
+        document.getElementById('dm-gender').innerText = genderText;
+
+        const hatchCounter = currentSpeciesData.hatch_counter;
+        document.getElementById('dm-cycles').innerText = hatchCounter ? `${hatchCounter} ciclos (~${hatchCounter * 257} passos)` : 'N/A';
+
+        const eggGroups = currentSpeciesData.egg_groups;
+        document.getElementById('dm-egggroups').innerText = eggGroups && eggGroups.length > 0 ? eggGroups.map(e => e.name.replace(/-/g, ' ')).join(', ') : 'Desconhecido';
+
+        // 3. Training
+        document.getElementById('dm-baseexp').innerText = currentPokemonData.base_experience || 'N/A';
+        document.getElementById('dm-basehappiness').innerText = currentSpeciesData.base_happiness || 'N/A';
+        document.getElementById('dm-capturerate').innerText = currentSpeciesData.capture_rate || 'N/A';
+
+        const evs = currentPokemonData.stats.filter(s => s.effort > 0);
+        document.getElementById('dm-evs').innerText = evs.length > 0 ? evs.map(e => `${e.effort} ${statMap[e.stat.name] || e.stat.name}`).join(', ') : 'Nenhum';
+
+        // 4. Encounters
+        const encContainer = document.getElementById('dm-encounters');
+        encContainer.innerHTML = 'Carregando...';
+        fetch(currentPokemonData.location_area_encounters)
+            .then(r => r.json())
+            .then(data => {
+                if (data.length === 0) {
+                    encContainer.innerHTML = '<span style="opacity:0.6;">Não encontrado na natureza (Apenas evolução/evento).</span>';
+                } else {
+                    encContainer.innerHTML = '';
+                    // Translate area names roughly (replace dashes)
+                    const areas = data.slice(0, 15).map(enc => {
+                        let name = enc.location_area.name.replace(/-/g, ' ');
+                        return `<span class="dm-enc-item">${name}</span>`;
+                    });
+                    encContainer.innerHTML = areas.join('');
+                    if (data.length > 15) encContainer.innerHTML += `<span class="dm-enc-item">...e mais ${data.length - 15} locais</span>`;
+                }
+            }).catch(e => {
+                encContainer.innerHTML = '<span style="opacity:0.6; color:red;">Erro ao carregar locais.</span>';
+            });
+
+        document.getElementById('details-modal').classList.add('show-modal');
+    }
+
+    function closeDetailsModal() { document.getElementById('details-modal').classList.remove('show-modal'); }
+
+    // Settings adjustments
     function saveSettings() {
       const settings = {
         theme: document.getElementById('setting-theme').value,
+        monochrome: document.getElementById('setting-monochrome').checked,
+        fontsize: document.getElementById('setting-fontsize').value,
+        units: document.getElementById('setting-units').value,
+        startup: document.getElementById('setting-startup').value,
         glass: document.getElementById('setting-glass').checked,
         glow: document.getElementById('setting-glow').checked,
         anim: document.getElementById('setting-anim').checked,
@@ -1053,43 +1307,81 @@
       };
       localStorage.setItem('pokedex-settings', JSON.stringify(settings));
       applySettings();
+      // Re-render current pokemon to apply unit changes
+      if(currentPokemonData) updatePokemonUI(currentPokemonData);
     }
+
+
 
     function applySettings() {
       const saved = localStorage.getItem('pokedex-settings');
-      if (!saved) return; // uses HTML default state
+      if (!saved) return;
 
       try {
         const s = JSON.parse(saved);
 
-        // Update DOM inputs
-        document.getElementById('setting-theme').value = s.theme;
-        document.getElementById('setting-glass').checked = s.glass;
-        document.getElementById('setting-glow').checked = s.glow;
-        document.getElementById('setting-anim').checked = s.anim;
-        document.getElementById('setting-stats').checked = s.stats;
-        document.getElementById('setting-moves').checked = s.moves;
-        document.getElementById('setting-extra').checked = s.extra;
-        document.getElementById('setting-evo').checked = s.evo;
+        if (document.getElementById('setting-theme')) {
+            document.getElementById('setting-theme').value = s.theme || 'auto';
+            document.getElementById('setting-monochrome').checked = s.monochrome || false;
+            document.getElementById('setting-fontsize').value = s.fontsize || 'normal';
+            document.getElementById('setting-units').value = s.units || 'metric';
+            document.getElementById('setting-startup').value = s.startup || 'random';
+            document.getElementById('setting-glass').checked = s.glass !== undefined ? s.glass : true;
+            document.getElementById('setting-glow').checked = s.glow !== undefined ? s.glow : true;
+            document.getElementById('setting-anim').checked = s.anim !== undefined ? s.anim : true;
+            document.getElementById('setting-stats').checked = s.stats !== undefined ? s.stats : true;
+            document.getElementById('setting-moves').checked = s.moves !== undefined ? s.moves : true;
+            document.getElementById('setting-extra').checked = s.extra !== undefined ? s.extra : true;
+            document.getElementById('setting-evo').checked = s.evo !== undefined ? s.evo : true;
+        }
 
-        // Apply classes
-        if (s.theme === 'auto') { document.documentElement.removeAttribute('data-theme'); }
+        isImperial = s.units === 'imperial';
+
+        if (s.theme === 'auto' || !s.theme) { document.documentElement.removeAttribute('data-theme'); }
         else { document.documentElement.setAttribute('data-theme', s.theme); }
 
-        document.body.classList.toggle('no-glass', !s.glass);
-        document.body.classList.toggle('no-glow', !s.glow);
-        document.body.classList.toggle('no-anim', !s.anim);
+        document.body.classList.toggle('monochrome', s.monochrome === true);
+        document.body.classList.remove('font-small', 'font-large');
+        if (s.fontsize === 'small') document.body.classList.add('font-small');
+        if (s.fontsize === 'large') document.body.classList.add('font-large');
 
-        document.body.classList.toggle('hide-stats', !s.stats);
-        document.body.classList.toggle('hide-moves', !s.moves);
-        document.body.classList.toggle('hide-extra', !s.extra);
-        document.body.classList.toggle('hide-evo', !s.evo);
+        document.body.classList.toggle('no-glass', s.glass === false);
+        document.body.classList.toggle('no-glow', s.glow === false);
+        document.body.classList.toggle('no-anim', s.anim === false);
+
+        document.body.classList.toggle('hide-stats', s.stats === false);
+        document.body.classList.toggle('hide-moves', s.moves === false);
+        document.body.classList.toggle('hide-extra', s.extra === false);
+        document.body.classList.toggle('hide-evo', s.evo === false);
 
       } catch (e) { console.error("Error applying settings", e); }
     }
 
+    function updatePokemonUI(data) {
+        if (!data) return;
+
+        let heightM = data.height / 10;
+        let weightKg = data.weight / 10;
+
+        if (isImperial) {
+            // Convert to ft/in and lbs
+            let totalInches = heightM * 39.3701;
+            let ft = Math.floor(totalInches / 12);
+            let inc = Math.round(totalInches % 12);
+            document.getElementById('poke-height').innerText = `${ft}'${inc}"`;
+
+            let lbs = (weightKg * 2.20462).toFixed(1);
+            document.getElementById('poke-weight').innerText = `${lbs} lbs`;
+        } else {
+            document.getElementById('poke-height').innerText = heightM.toFixed(1) + ' m';
+            document.getElementById('poke-weight').innerText = weightKg.toFixed(1) + ' kg';
+        }
+    }
+
+
+
+
     // Init settings on load
-    applySettings();
     adjustSpacer();
   </script>
 </body>
