@@ -181,9 +181,9 @@
     #main-card { position: relative; border-radius: clamp(30px, 5vw, 45px); padding: clamp(25px, 6vw, 40px) clamp(15px, 4vw, 40px); width: 94%; max-width: 850px; display: flex; flex-direction: column; align-items: center; gap: 15px; }
     #main-card > *:not(.glass-bg) { position: relative; z-index: 1; }
     .img-container { position: relative; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-    .img-container::after { content: ''; position: absolute; width: clamp(140px, 40vw, 220px); height: clamp(140px, 40vw, 220px); background: var(--type-color, var(--card-bg)); filter: blur(35px); opacity: 0; border-radius: 50%; z-index: 1; transition: opacity 0.4s ease, transform 0.4s cubic-bezier(0.16, 1, 0.3, 1); pointer-events: none; }
+    .img-container::after { content: ''; position: absolute; width: clamp(180px, 50vw, 280px); height: clamp(180px, 50vw, 280px); background: var(--type-color, var(--card-bg)); filter: blur(35px); opacity: 0; border-radius: 50%; z-index: 1; transition: opacity 0.4s ease, transform 0.4s cubic-bezier(0.16, 1, 0.3, 1); pointer-events: none; }
     .img-container:hover::after { opacity: 0.7; transform: scale(1.2); }
-    #poke-image { width: clamp(160px, 45vw, 260px); height: clamp(160px, 45vw, 260px); object-fit: contain; margin-top: -60px; z-index: 10; animation: float 6s ease-in-out infinite; filter: drop-shadow(0 15px 25px rgba(0,0,0,0.3)); }
+    #poke-image { width: clamp(220px, 60vw, 360px); height: clamp(220px, 60vw, 360px); object-fit: contain; margin-top: -80px; z-index: 10; animation: float 6s ease-in-out infinite; filter: drop-shadow(0 15px 25px rgba(0,0,0,0.3)); }
     .card-content { width: 100%; display: flex; flex-direction: column; align-items: center; text-align: center; }
     #poke-name { font-family: 'Montserrat', sans-serif; font-size: clamp(28px, 7vw, 42px); font-weight: 900; text-transform: capitalize; margin: 0; letter-spacing: -1px; line-height: 1.1; }
     .header-badges { display: flex; gap: 10px; justify-content: center; align-items: center; margin: 12px 0 18px 0; }
@@ -309,7 +309,7 @@
       #main-card { display: grid; grid-template-columns: 45% 1fr; grid-template-rows: 1fr auto; column-gap: 40px; row-gap: 30px; padding: 50px 40px; max-width: 1000px; margin-top: 20px; }
       .img-container { width: 100%; grid-column: 1; grid-row: 1; position: relative; top: auto; display: flex; align-items: center; justify-content: center; min-height: 0; }
       .extra-info-container { width: 100%; grid-column: 1; grid-row: 2; margin-top: 0; align-self: end; }
-      #poke-image { margin-top: -40px; width: 100%; max-height: 100%; max-width: 100%; object-fit: contain; }
+      #poke-image { margin-top: -60px; width: 100%; max-height: 100%; max-width: 100%; object-fit: contain; }
       .card-content { width: 100%; grid-column: 2; grid-row: 1 / span 2; align-items: flex-start; text-align: left; }
       #poke-types, .moves-container { justify-content: flex-start; }
       .section-title { text-align: left; }
@@ -366,11 +366,11 @@
         </div>
         <div class="card-content">
           <div id="poke-name">Carregando...</div>
-          <div class="header-badges">
+          <div class="header-badges" style="flex-wrap: wrap;">
             <div id="poke-id"></div>
             <button id="poke-shiny-btn" onclick="toggleShiny()">✨ SHINY</button>
-            <button id="poke-fav-btn" onclick="toggleFavorite()">❤️</button>
-            <button id="poke-compare-btn" onclick="openCompareModal()">⚖️</button>
+            <button id="poke-fav-btn" onclick="toggleFavorite()">🤍 FAVORITAR</button>
+            <button id="poke-compare-btn" onclick="openCompareModal()">⚖️ COMPARAR</button>
           </div>
           <div id="poke-types"></div>
           <div id="poke-desc"></div>
@@ -435,9 +435,12 @@
         <button class="close-btn" onclick="closeCompareModal()">×</button>
       </div>
 
-      <div style="display:flex; gap:10px; margin-bottom: 20px;">
-          <input type="text" id="compare-input" placeholder="Buscar 2º Pokémon..." style="flex:1; padding: 10px 15px; font-size:14px;">
-          <button onclick="searchCompare()" class="btn-action" style="padding: 10px 20px; font-size:12px;">Buscar</button>
+      <div style="display:flex; gap:10px; margin-bottom: 20px; position:relative; z-index:10006;">
+          <div style="flex:1; position:relative;">
+              <input type="text" id="compare-input" placeholder="Buscar 2º Pokémon..." style="width:100%; padding: 10px 15px; font-size:14px; pointer-events:auto;" autocomplete="off">
+              <div id="compare-autocomplete" style="position:absolute; top:100%; left:0; right:0; margin-top:5px; max-height:200px; overflow-y:auto; background:var(--glass-panel); backdrop-filter:blur(20px); border:1px solid var(--glass-border); border-radius:12px; display:none; flex-direction:column; z-index:10007; padding:5px; box-shadow:0 10px 30px rgba(0,0,0,0.3);"></div>
+          </div>
+          <button onclick="searchCompare()" class="btn-action" style="padding: 10px 20px; font-size:12px; pointer-events:auto;">Buscar</button>
       </div>
 
       <div id="compare-results" style="display:none; flex-direction:column; gap:15px;">
@@ -690,9 +693,41 @@
       } else { autocompleteList.style.display = 'none'; }
     });
 
+    const compareInput = document.getElementById('compare-input');
+    const compareAutocompleteList = document.getElementById('compare-autocomplete');
+
+    compareInput.addEventListener('input', function() {
+      const val = this.value.toLowerCase().trim().replace(/[^a-z0-9-]/g, '');
+      compareAutocompleteList.innerHTML = '';
+      if (!val) { compareAutocompleteList.style.display = 'none'; return; }
+      const matches = allPokemonList.filter(p => p.name.includes(val) || p.id === val).slice(0, 5);
+      if (matches.length > 0) {
+        compareAutocompleteList.style.display = 'flex';
+        matches.forEach(match => {
+          const div = document.createElement('div');
+          div.className = 'autocomplete-item';
+          const formatName = match.name.replace(/-/g, ' ');
+          const img = document.createElement('img'); img.className = 'ac-img';
+          img.src = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${match.id}.png`;
+          const span = document.createElement('span'); span.textContent = `#${match.id.padStart(3,'0')} - ${formatName}`;
+          div.appendChild(img); div.appendChild(span);
+          div.onclick = () => {
+            compareInput.value = formatName;
+            compareAutocompleteList.style.display = 'none';
+            searchCompare();
+          };
+          compareAutocompleteList.appendChild(div);
+        });
+      } else { compareAutocompleteList.style.display = 'none'; }
+    });
+
     document.addEventListener('click', function(e) {
       if (!document.getElementById('input-wrapper').contains(e.target)) {
         autocompleteList.style.display = 'none';
+      }
+      const compWrap = document.getElementById('compare-input');
+      if (compWrap && !compWrap.parentElement.contains(e.target)) {
+        document.getElementById('compare-autocomplete').style.display = 'none';
       }
     });
 
@@ -717,7 +752,7 @@
       
       if (currentScroll > 50) {
         header.classList.add('hide-nav');
-        if(document.activeElement.tagName === 'INPUT') document.activeElement.blur();
+        if(document.activeElement.id === 'search-input') document.activeElement.blur();
       } 
       else if (currentScroll <= 10) {
         header.classList.remove('hide-nav');
@@ -731,9 +766,18 @@
       document.getElementById('detail-view').classList.toggle('active-view', currentMode === 'detail');
       document.getElementById('list-view').classList.toggle('active-view', currentMode === 'list');
       const btn = document.getElementById('nav-btn');
+
       if(currentMode === 'list') {
          btn.innerText = 'VOLTAR AO POKÉMON';
-         if(!document.getElementById('pokedex-grid').innerHTML) {
+         // Check if we are currently looking at favorites or nothing
+         const isFavActive = document.getElementById('fav-filter-btn').classList.contains('active-fav');
+         const hasNoGrid = !document.getElementById('pokedex-grid').innerHTML;
+
+         // If we click "VER POKEDEX" and were trapped in favorites, reset to Gen 1 so user isn't stuck.
+         if(hasNoGrid || isFavActive) {
+             document.getElementById('fav-filter-btn').classList.remove('active-fav');
+             document.getElementById('fav-filter-btn').style.background = '';
+             document.getElementById('fav-filter-btn').style.color = '';
              document.getElementById('gen-filter').value = '1';
              loadPokedex('1', 'gen');
          }
@@ -924,8 +968,10 @@
         const favBtn = document.getElementById('poke-fav-btn');
         if (favorites.includes(data.id.toString())) {
             favBtn.classList.add('is-fav');
+            favBtn.innerHTML = '❤️ FAVORITO';
         } else {
             favBtn.classList.remove('is-fav');
+            favBtn.innerHTML = '🤍 FAVORITAR';
         }
 
         const novaUrl = window.location.pathname + '?id=' + data.name;
@@ -1275,9 +1321,11 @@
         if (index > -1) {
             favorites.splice(index, 1);
             btn.classList.remove('is-fav');
+            btn.innerHTML = '🤍 FAVORITAR';
         } else {
             favorites.push(id);
             btn.classList.add('is-fav');
+            btn.innerHTML = '❤️ FAVORITO';
         }
         localStorage.setItem('pokedex-favorites', JSON.stringify(favorites));
 
@@ -1441,6 +1489,7 @@
     function openCompareModal() {
         if (!currentPokemonData) return;
         document.getElementById('compare-input').value = '';
+        document.getElementById('compare-autocomplete').style.display = 'none';
         document.getElementById('compare-results').style.display = 'none';
         document.getElementById('compare-loading').style.display = 'none';
         document.getElementById('compare-modal').style.display = 'flex';
@@ -1456,6 +1505,7 @@
         const query = document.getElementById('compare-input').value.toLowerCase().trim().replace(/[^a-z0-9-]/g, '');
         if (!query) return;
 
+        document.getElementById('compare-autocomplete').style.display = 'none';
         document.getElementById('compare-results').style.display = 'none';
         document.getElementById('compare-loading').style.display = 'block';
 
