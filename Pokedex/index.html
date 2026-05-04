@@ -96,7 +96,7 @@
     
     select { flex: 1 1 calc(33.33% - 4px); min-width: calc(33.33% - 4px); order: 2; padding: 10px 4px; font-size: 11px; text-align: center; }
     .btn-action { flex: 1 1 calc(50% - 4px); order: 3; padding: 12px 10px; font-size: 11px; }
-    .btn-nav { flex: 1 1 100%; order: 4; padding: 12px; font-size: 12px; }
+    .btn-nav { flex: 1 1 calc(50% - 4px); order: 4; padding: 12px 10px; font-size: 11px; }
     
     @media (min-width: 768px) {
       #search-container { flex-wrap: nowrap; gap: 10px; }
@@ -117,7 +117,11 @@
     #poke-image { width: clamp(160px, 45vw, 260px); height: clamp(160px, 45vw, 260px); object-fit: contain; margin-top: -60px; z-index: 10; animation: float 6s ease-in-out infinite; filter: drop-shadow(0 15px 25px rgba(0,0,0,0.3)); }
     .card-content { width: 100%; display: flex; flex-direction: column; align-items: center; text-align: center; }
     #poke-name { font-family: 'Montserrat', sans-serif; font-size: clamp(28px, 7vw, 42px); font-weight: 900; text-transform: capitalize; margin: 0; letter-spacing: -1px; line-height: 1.1; }
-    #poke-id { font-family: 'Montserrat', sans-serif; background: var(--type-dark); padding: 6px 18px; border-radius: 15px; color: #fff; font-weight: 900; font-size: 14px; letter-spacing: 2px; margin: 12px 0 18px 0; display: inline-block; box-shadow: 0 4px 10px rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.2); transition: background 0.6s ease; }
+    .header-badges { display: flex; gap: 10px; justify-content: center; align-items: center; margin: 12px 0 18px 0; }
+    #poke-id { font-family: 'Montserrat', sans-serif; background: var(--type-dark); padding: 6px 18px; border-radius: 15px; color: #fff; font-weight: 900; font-size: 14px; letter-spacing: 2px; display: inline-block; box-shadow: 0 4px 10px rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.2); transition: background 0.6s ease; }
+    #poke-shiny-btn { background: var(--glass-panel); font-family: 'Montserrat', sans-serif; font-weight: 900; padding: 6px 14px; border-radius: 15px; font-size: 12px; color: var(--text-main); border: 1px solid var(--glass-border); box-shadow: 0 4px 10px rgba(0,0,0,0.1); cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.2s ease; text-transform: uppercase; letter-spacing: 1px; }
+    #poke-shiny-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(0,0,0,0.15); }
+    #poke-shiny-btn:active { transform: scale(0.95); }
     #poke-types { margin-bottom: 20px; display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
     .type-badge { padding: 6px 18px; border-radius: 20px; font-family: 'Montserrat', sans-serif; font-weight: 900; font-size: 11px; text-transform: uppercase; border: 1px solid rgba(255,255,255,0.5); box-shadow: 0 4px 12px rgba(0,0,0,0.2); letter-spacing: 1px; color: #fff; text-shadow: 0 1px 3px rgba(0,0,0,0.4); }
     #poke-desc { font-style: italic; font-weight: 500; font-size: 14px; line-height: 1.5; background: var(--glass-panel); padding: 18px; border-radius: 18px; border-left: 4px solid var(--type-color); margin-bottom: 25px; width: 100%; text-align: left; box-shadow: inset 0 2px 10px rgba(0,0,0,0.05); transition: border-color 0.6s ease; }
@@ -166,15 +170,6 @@
     .extra-section { background: var(--glass-panel); border: 1px solid var(--glass-border); border-radius: 16px; padding: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
     .extra-title { font-size: 11px; color: var(--type-color); text-transform: uppercase; font-family: 'Montserrat', sans-serif; font-weight: 900; margin-bottom: 15px; letter-spacing: 1px; text-shadow: 0 1px 2px rgba(0,0,0,0.2); text-align: center; transition: color 0.6s ease; }
     
-    #poke-shiny-card { position: relative; border-radius: 20px; padding: 15px 10px; text-align: center; cursor: pointer; transition: transform 0.2s ease, box-shadow 0.2s; display: flex; flex-direction: column; align-items: center; width: clamp(100px, 28vw, 130px); }
-    #poke-shiny-card::after { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; border-radius: inherit; background: var(--card-bg, transparent); filter: blur(20px); opacity: 0.2; z-index: -1; transition: opacity 0.4s ease, filter 0.4s ease, transform 0.4s ease; pointer-events: none; }
-    #poke-shiny-card:hover::after { opacity: 0.6; filter: blur(25px); transform: scale(1.05); }
-    #poke-shiny-card:active { transform: scale(0.94); }
-    #poke-shiny-card > *:not(.glass-bg) { position: relative; z-index: 1; }
-    
-    #poke-shiny { width: clamp(65px, 18vw, 85px); height: clamp(65px, 18vw, 85px); object-fit: contain; filter: drop-shadow(0 8px 12px rgba(0,0,0,0.3)); margin-bottom: 10px; transition: transform 0.3s ease; color: transparent; text-indent: -9999px; }
-    #poke-shiny-card:hover #poke-shiny { transform: scale(1.1) translateY(-3px); }
-    .shiny-name { font-size: 12px; text-transform: capitalize; font-weight: 900; word-wrap: break-word; line-height: 1.2; text-shadow: 0 2px 4px rgba(0,0,0,0.2); margin-bottom: 5px; color: var(--text-main); }
     
     .capture-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; }
     .cap-box { display: flex; flex-direction: column; align-items: center; background: transparent; padding: 8px; border-radius: 12px; }
@@ -210,10 +205,10 @@
     }
     
     @media (min-width: 768px) {
-      #main-card { display: grid; grid-template-columns: 45% 1fr; grid-template-rows: auto auto; column-gap: 40px; row-gap: 30px; padding: 50px 40px; max-width: 1000px; margin-top: 20px; }
-      .img-container { width: 100%; grid-column: 1; grid-row: 1; position: relative; top: auto; }
-      .extra-info-container { width: 100%; grid-column: 1; grid-row: 2; margin-top: 0; align-self: start; position: sticky; top: 120px; }
-      #poke-image { margin-top: -40px; width: 100%; max-width: none; height: auto; }
+      #main-card { display: grid; grid-template-columns: 45% 1fr; grid-template-rows: auto 1fr; column-gap: 40px; row-gap: 30px; padding: 50px 40px; max-width: 1000px; margin-top: 20px; }
+      .img-container { width: 100%; grid-column: 1; grid-row: 1; position: relative; top: auto; display: flex; align-items: center; justify-content: center; }
+      .extra-info-container { width: 100%; grid-column: 1; grid-row: 2; margin-top: 0; align-self: start; }
+      #poke-image { margin-top: -40px; width: 100%; max-height: 40vh; max-width: 100%; object-fit: contain; }
       .card-content { width: 100%; grid-column: 2; grid-row: 1 / span 2; align-items: flex-start; text-align: left; }
       #poke-types, .moves-container { justify-content: flex-start; }
       .section-title { text-align: left; }
@@ -254,7 +249,6 @@
       <option value="baby">Bebê</option>
     </select>
 
-    <button onclick="searchPokemon()" class="btn-action">🔍 Buscar</button>
     <button onclick="randomPokemon()" class="btn-action">🎲 Sortear</button>
     <button onclick="toggleView()" id="nav-btn" class="btn-nav">VER POKÉDEX</button>
   </div>
@@ -268,7 +262,10 @@
         </div>
         <div class="card-content">
           <div id="poke-name">Carregando...</div>
-          <div id="poke-id"></div>
+          <div class="header-badges">
+            <div id="poke-id"></div>
+            <button id="poke-shiny-btn" onclick="toggleShiny()">✨ SHINY</button>
+          </div>
           <div id="poke-types"></div>
           <div id="poke-desc"></div>
           <div class="info-grid">
@@ -290,14 +287,6 @@
           </div>
         </div>
         <div id="extra-info" class="extra-info-container">
-          <div class="extra-section">
-            <span class="extra-title">Versão Brilhante</span>
-            <div id="poke-shiny-card" onclick="toggleShiny()">
-               <div class="glass-bg liquid-glass"></div>
-               <img id="poke-shiny" src="" alt="Shiny">
-               <div class="shiny-name">Shiny</div>
-            </div>
-          </div>
           <div class="extra-section">
             <span class="extra-title">Dados de Captura</span>
             <div class="capture-grid">
@@ -612,8 +601,7 @@
 
         
         document.getElementById('poke-image').src = data.sprites.other['official-artwork'].front_default || data.sprites.front_default;
-        document.getElementById('poke-shiny').src = data.sprites.other['official-artwork'].front_shiny || data.sprites.front_shiny || 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs='; // Imagem vazia como fallback
-        document.querySelector('.shiny-name').innerText = "Shiny";
+        document.getElementById('poke-shiny-btn').innerHTML = "✨ SHINY";
         let formattedName = data.name.replace(/-/g, ' ');
         document.getElementById('poke-name').innerText = formattedName;
         document.getElementById('poke-id').innerText = '#' + data.id.toString().padStart(3, '0');
@@ -910,18 +898,15 @@
         isShinyView = !isShinyView;
         
         const mainImg = document.getElementById('poke-image');
-        const shinyImg = document.getElementById('poke-shiny');
-        const shinyName = document.querySelector('.shiny-name');
+        const shinyBtn = document.getElementById('poke-shiny-btn');
         const data = currentPokemonData;
 
         if (isShinyView) {
             mainImg.src = data.sprites.other['official-artwork'].front_shiny || data.sprites.front_shiny || 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
-            shinyImg.src = data.sprites.other['official-artwork'].front_default || data.sprites.front_default;
-            shinyName.innerText = "Normal";
+            shinyBtn.innerHTML = "✨ NORMAL";
         } else {
             mainImg.src = data.sprites.other['official-artwork'].front_default || data.sprites.front_default;
-            shinyImg.src = data.sprites.other['official-artwork'].front_shiny || data.sprites.front_shiny || 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
-            shinyName.innerText = "Shiny";
+            shinyBtn.innerHTML = "✨ SHINY";
         }
     }
 
