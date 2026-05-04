@@ -19,9 +19,9 @@
       --text-main: #1a1a2e; --text-muted: #4a4a5a;
       --btn-bg: #ffffff; --stat-bg: rgba(0, 0, 0, 0.1);
     }
-    /* TEMA ESCURO */
+    /* TEMA ESCURO (Automático e Forçado) */
     @media (prefers-color-scheme: dark) {
-      :root {
+      :root:not([data-theme="light"]) {
         --bg-overlay: rgba(10, 10, 15, 0.55);
         --glass-bg: rgba(255, 255, 255, 0.10);
         --glass-panel: rgba(255, 255, 255, 0.05);
@@ -30,6 +30,15 @@
         --text-main: #f0f0f0; --text-muted: rgba(255, 255, 255, 0.6);
         --btn-bg: rgba(255, 255, 255, 0.1); --stat-bg: rgba(0, 0, 0, 0.4);
       }
+    }
+    :root[data-theme="dark"] {
+      --bg-overlay: rgba(10, 10, 15, 0.55) !important;
+      --glass-bg: rgba(255, 255, 255, 0.10) !important;
+      --glass-panel: rgba(255, 255, 255, 0.05) !important;
+      --glass-border: rgba(255, 255, 255, 0.12) !important;
+      --glass-shadow: 0 10px 35px 0 rgba(0, 0, 0, 0.5) !important;
+      --text-main: #f0f0f0 !important; --text-muted: rgba(255, 255, 255, 0.6) !important;
+      --btn-bg: rgba(255, 255, 255, 0.1) !important; --stat-bg: rgba(0, 0, 0, 0.4) !important;
     }
     @keyframes float { 0% { transform: translateY(0px); filter: drop-shadow(0 15px 25px rgba(0,0,0,0.4)); } 50% { transform: translateY(-12px); filter: drop-shadow(0 25px 35px rgba(0,0,0,0.25)); } 100% { transform: translateY(0px); filter: drop-shadow(0 15px 25px rgba(0,0,0,0.4)); } }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
@@ -47,6 +56,16 @@
       border: 1px solid rgba(255, 255, 255, 0.3); 
       box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.4) inset, 0 0 0 1px rgba(255, 255, 255, 0.4), 0 8px 32px rgba(0, 0, 0, 0.25); 
     }
+    
+    /* SETTINGS OVERRIDES */
+    body.no-glass .liquid-glass, body.no-glass .modal-content, body.no-glass #autocomplete-list { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; background: var(--glass-panel) !important; }
+    body.no-glow #search-container::after, body.no-glow #main-card::after, body.no-glow .pokedex-card::after, body.no-glow .evo-card::after, body.no-glow .img-container::after { display: none !important; }
+    body.no-anim * { animation: none !important; transition: none !important; }
+    
+    body.hide-stats .stats-container { display: none !important; }
+    body.hide-moves .moves-wrapper { display: none !important; }
+    body.hide-extra #extra-info { display: none !important; }
+    body.hide-evo #evolutions, body.hide-evo #varieties { display: none !important; }
     .glass-bg { position: absolute; top: 0; bottom: 0; left: 0; right: 0; border-radius: inherit; z-index: 0; pointer-events: none; }
     
     #search-container { position: fixed; top: clamp(10px, 2vw, 15px); left: 50%; transform: translateX(-50%); width: 96%; max-width: 1000px; z-index: 100; padding: clamp(10px, 3vw, 15px); border-radius: clamp(20px, 4vw, 25px); display: flex; flex-wrap: wrap; gap: 6px; transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s ease; border-right: 1px solid rgba(255,255,255,0.05); border-bottom: 1px solid rgba(255,255,255,0.05); }
@@ -80,6 +99,7 @@
     input, select { border-radius: 16px; border: 1px solid var(--glass-border); background: var(--glass-panel); color: var(--text-main); font-family: 'Poppins', sans-serif; font-weight: 600; outline: none; transition: all 0.3s ease; }
     input::placeholder { color: var(--text-muted); font-weight: 400; }
     @media (prefers-color-scheme: dark) { select option { background: #222; color: #fff; } }
+    :root[data-theme="dark"] select option { background: #222; color: #fff; }
     input:focus, select:focus { border-color: var(--type-color); box-shadow: 0 0 15px var(--type-color); }
     
     button { border-radius: 16px; border: 1px solid var(--glass-border); background: var(--btn-bg); color: var(--text-main); font-family: 'Montserrat', sans-serif; font-weight: 900; cursor: pointer; transition: all 0.2s ease; box-shadow: 0 4px 15px rgba(0,0,0,0.1); display: flex; align-items: center; justify-content: center; letter-spacing: 0.5px; text-transform: uppercase; }
@@ -206,6 +226,37 @@
       text-decoration: underline;
     }
     
+    /* MODAL SETTINGS */
+    #settings-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 10000; display: none; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s ease; }
+    #settings-modal.show-modal { display: flex; opacity: 1; }
+    .modal-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(5px); cursor: pointer; }
+    .modal-content { position: relative; width: 90%; max-width: 500px; background: var(--glass-panel); backdrop-filter: blur(20px) saturate(120%); border: 1px solid var(--glass-border); border-radius: 25px; padding: 25px; box-shadow: 0 15px 40px rgba(0,0,0,0.4); z-index: 10001; max-height: 85vh; overflow-y: auto; }
+    .modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px; margin-bottom: 20px; }
+    .modal-title { font-family: 'Montserrat', sans-serif; font-weight: 900; font-size: 18px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-main); margin: 0; }
+    .close-btn { background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; font-weight: 900; color: var(--text-main); cursor: pointer; transition: all 0.2s; }
+    .close-btn:hover { background: rgba(255, 0, 0, 0.5); color: #fff; }
+    
+    .setting-group { margin-bottom: 25px; }
+    .setting-group h4 { margin: 0 0 15px 0; font-size: 12px; color: var(--type-color); text-transform: uppercase; letter-spacing: 1.5px; opacity: 0.9; }
+    
+    .setting-item { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; background: rgba(0,0,0,0.05); padding: 10px 15px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); }
+    @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .setting-item { background: rgba(255,255,255,0.03); } }
+    :root[data-theme="dark"] .setting-item { background: rgba(255,255,255,0.03); }
+    .setting-label { font-size: 13px; font-weight: 600; color: var(--text-main); }
+    
+    /* Toggle Switch */
+    .switch { position: relative; display: inline-block; width: 44px; height: 24px; }
+    .switch input { opacity: 0; width: 0; height: 0; }
+    .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0,0,0,0.2); transition: .4s; border-radius: 24px; border: 1px solid rgba(255,255,255,0.1); }
+    @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .slider { background-color: rgba(255,255,255,0.1); } }
+    :root[data-theme="dark"] .slider { background-color: rgba(255,255,255,0.1); }
+    .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 2px; background-color: white; transition: .4s; border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+    input:checked + .slider { background-color: var(--type-color); }
+    input:checked + .slider:before { transform: translateX(20px); }
+    
+    /* Select styling inside modal */
+    .modal-select { padding: 6px 12px; font-size: 12px; }
+
     @media (min-width: 768px) {
       #main-card { display: grid; grid-template-columns: 45% 1fr; grid-template-rows: 1fr auto; column-gap: 40px; row-gap: 30px; padding: 50px 40px; max-width: 1000px; margin-top: 20px; }
       .img-container { width: 100%; grid-column: 1; grid-row: 1; position: relative; top: auto; display: flex; align-items: center; justify-content: center; min-height: 0; }
@@ -252,6 +303,7 @@
     </select>
 
     <button onclick="randomPokemon()" class="btn-action">🎲 Sortear</button>
+    <button onclick="openSettings()" class="btn-action">⚙️ Config.</button>
     <button onclick="toggleView()" id="nav-btn" class="btn-nav">VER POKÉDEX</button>
   </div>
   <div id="top-spacer"></div>
@@ -318,6 +370,61 @@
     <div id="list-view" class="view-section">
       <div id="full-pokedex">
         <div id="pokedex-grid" class="grid-container"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SETTINGS MODAL -->
+  <div id="settings-modal">
+    <div class="modal-overlay" onclick="closeSettings()"></div>
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title">Configurações</h3>
+        <button class="close-btn" onclick="closeSettings()">×</button>
+      </div>
+      
+      <div class="setting-group">
+        <h4>Visual e Efeitos</h4>
+        <div class="setting-item">
+          <span class="setting-label">Tema Visual</span>
+          <select id="setting-theme" class="modal-select" onchange="saveSettings()">
+            <option value="auto">Automático</option>
+            <option value="light">Forçar Claro</option>
+            <option value="dark">Forçar Escuro</option>
+          </select>
+        </div>
+        <div class="setting-item">
+          <span class="setting-label">Efeito de Vidro (Blur)</span>
+          <label class="switch"><input type="checkbox" id="setting-glass" onchange="saveSettings()" checked><span class="slider"></span></label>
+        </div>
+        <div class="setting-item">
+          <span class="setting-label">Efeitos de Brilho (Glow)</span>
+          <label class="switch"><input type="checkbox" id="setting-glow" onchange="saveSettings()" checked><span class="slider"></span></label>
+        </div>
+        <div class="setting-item">
+          <span class="setting-label">Animação de Flutuação</span>
+          <label class="switch"><input type="checkbox" id="setting-anim" onchange="saveSettings()" checked><span class="slider"></span></label>
+        </div>
+      </div>
+
+      <div class="setting-group">
+        <h4>Ocultar/Mostrar Seções</h4>
+        <div class="setting-item">
+          <span class="setting-label">Atributos Base</span>
+          <label class="switch"><input type="checkbox" id="setting-stats" onchange="saveSettings()" checked><span class="slider"></span></label>
+        </div>
+        <div class="setting-item">
+          <span class="setting-label">Movimentos (Moves)</span>
+          <label class="switch"><input type="checkbox" id="setting-moves" onchange="saveSettings()" checked><span class="slider"></span></label>
+        </div>
+        <div class="setting-item">
+          <span class="setting-label">Dados Extra (Captura, Fraquezas)</span>
+          <label class="switch"><input type="checkbox" id="setting-extra" onchange="saveSettings()" checked><span class="slider"></span></label>
+        </div>
+        <div class="setting-item">
+          <span class="setting-label">Evoluções e Formas Alt.</span>
+          <label class="switch"><input type="checkbox" id="setting-evo" onchange="saveSettings()" checked><span class="slider"></span></label>
+        </div>
       </div>
     </div>
   </div>
@@ -928,6 +1035,61 @@
     } else {
       fetchPokemon(Math.floor(Math.random() * 1025) + 1);
     }
+    
+    // SETTINGS LOGIC
+    function openSettings() { document.getElementById('settings-modal').classList.add('show-modal'); }
+    function closeSettings() { document.getElementById('settings-modal').classList.remove('show-modal'); }
+    
+    function saveSettings() {
+      const settings = {
+        theme: document.getElementById('setting-theme').value,
+        glass: document.getElementById('setting-glass').checked,
+        glow: document.getElementById('setting-glow').checked,
+        anim: document.getElementById('setting-anim').checked,
+        stats: document.getElementById('setting-stats').checked,
+        moves: document.getElementById('setting-moves').checked,
+        extra: document.getElementById('setting-extra').checked,
+        evo: document.getElementById('setting-evo').checked
+      };
+      localStorage.setItem('pokedex-settings', JSON.stringify(settings));
+      applySettings();
+    }
+    
+    function applySettings() {
+      const saved = localStorage.getItem('pokedex-settings');
+      if (!saved) return; // uses HTML default state
+      
+      try {
+        const s = JSON.parse(saved);
+        
+        // Update DOM inputs
+        document.getElementById('setting-theme').value = s.theme;
+        document.getElementById('setting-glass').checked = s.glass;
+        document.getElementById('setting-glow').checked = s.glow;
+        document.getElementById('setting-anim').checked = s.anim;
+        document.getElementById('setting-stats').checked = s.stats;
+        document.getElementById('setting-moves').checked = s.moves;
+        document.getElementById('setting-extra').checked = s.extra;
+        document.getElementById('setting-evo').checked = s.evo;
+        
+        // Apply classes
+        if (s.theme === 'auto') { document.documentElement.removeAttribute('data-theme'); }
+        else { document.documentElement.setAttribute('data-theme', s.theme); }
+        
+        document.body.classList.toggle('no-glass', !s.glass);
+        document.body.classList.toggle('no-glow', !s.glow);
+        document.body.classList.toggle('no-anim', !s.anim);
+        
+        document.body.classList.toggle('hide-stats', !s.stats);
+        document.body.classList.toggle('hide-moves', !s.moves);
+        document.body.classList.toggle('hide-extra', !s.extra);
+        document.body.classList.toggle('hide-evo', !s.evo);
+        
+      } catch (e) { console.error("Error applying settings", e); }
+    }
+    
+    // Init settings on load
+    applySettings();
     adjustSpacer();
   </script>
 </body>
