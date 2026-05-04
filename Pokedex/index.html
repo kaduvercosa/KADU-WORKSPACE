@@ -437,10 +437,10 @@
 
       <div style="display:flex; gap:10px; margin-bottom: 20px; position:relative; z-index:10006;">
           <div style="flex:1; position:relative;">
-              <input type="text" id="compare-input" placeholder="Buscar 2º Pokémon..." style="width:100%; padding: 10px 15px; font-size:14px; pointer-events:auto;" autocomplete="off">
-              <div id="compare-autocomplete" style="position:absolute; top:100%; left:0; right:0; margin-top:5px; max-height:200px; overflow-y:auto; background:var(--glass-panel); backdrop-filter:blur(20px); border:1px solid var(--glass-border); border-radius:12px; display:none; flex-direction:column; z-index:10007; padding:5px; box-shadow:0 10px 30px rgba(0,0,0,0.3);"></div>
+              <input type="text" id="compare-input" placeholder="Buscar 2º Pokémon..." style="width:100%; padding: 14px 20px; font-size:16px; pointer-events:auto;" autocomplete="off">
+              <div id="compare-autocomplete" style="position:absolute; top:100%; left:0; right:0; margin-top:5px; max-height:240px; overflow-y:auto; background:var(--glass-panel); backdrop-filter:blur(20px); border:1px solid var(--glass-border); border-radius:16px; display:none; flex-direction:column; z-index:10007; padding:8px; box-shadow:0 15px 35px rgba(0,0,0,0.4);"></div>
           </div>
-          <button onclick="searchCompare()" class="btn-action" style="padding: 10px 20px; font-size:12px; pointer-events:auto;">Buscar</button>
+          <button onclick="searchCompare()" class="btn-action" style="padding: 14px 25px; font-size:14px; pointer-events:auto;">Buscar</button>
       </div>
 
       <div id="compare-results" style="display:none; flex-direction:column; gap:15px;">
@@ -706,8 +706,11 @@
         matches.forEach(match => {
           const div = document.createElement('div');
           div.className = 'autocomplete-item';
+          div.style.padding = '10px 15px'; // Maior área de toque
+          div.style.fontSize = '14px';     // Fonte maior
           const formatName = match.name.replace(/-/g, ' ');
           const img = document.createElement('img'); img.className = 'ac-img';
+          img.style.width = '45px'; img.style.height = '45px';
           img.src = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${match.id}.png`;
           const span = document.createElement('span'); span.textContent = `#${match.id.padStart(3,'0')} - ${formatName}`;
           div.appendChild(img); div.appendChild(span);
