@@ -205,10 +205,10 @@
     }
     
     @media (min-width: 768px) {
-      #main-card { display: grid; grid-template-columns: 45% 1fr; grid-template-rows: auto 1fr; column-gap: 40px; row-gap: 30px; padding: 50px 40px; max-width: 1000px; margin-top: 20px; }
-      .img-container { width: 100%; grid-column: 1; grid-row: 1; position: relative; top: auto; display: flex; align-items: center; justify-content: center; }
-      .extra-info-container { width: 100%; grid-column: 1; grid-row: 2; margin-top: 0; align-self: start; }
-      #poke-image { margin-top: -40px; width: 100%; max-height: 40vh; max-width: 100%; object-fit: contain; }
+      #main-card { display: grid; grid-template-columns: 45% 1fr; grid-template-rows: 1fr auto; column-gap: 40px; row-gap: 30px; padding: 50px 40px; max-width: 1000px; margin-top: 20px; }
+      .img-container { width: 100%; grid-column: 1; grid-row: 1; position: relative; top: auto; display: flex; align-items: center; justify-content: center; min-height: 0; }
+      .extra-info-container { width: 100%; grid-column: 1; grid-row: 2; margin-top: 0; align-self: end; }
+      #poke-image { margin-top: -40px; width: 100%; max-height: 100%; max-width: 100%; object-fit: contain; }
       .card-content { width: 100%; grid-column: 2; grid-row: 1 / span 2; align-items: flex-start; text-align: left; }
       #poke-types, .moves-container { justify-content: flex-start; }
       .section-title { text-align: left; }
