@@ -3,7 +3,7 @@
 ## Live Pokédex
 Check out the live Pokédex here: 
 
-[https://kaduvercosa.github.io/KADU-WORKSPACE/Pokedex/](https://kaduvercosa.github.io/KADU-WORKSPACE/Pokedex/)
+[https://kaduvercosa.github.io/pokedexdokadu/Pokedex/](https://kaduvercosa.github.io/pokedexdokadu/Pokedex/)
 
 ## Features
 * **Detailed View:** View individual Pokémon with attributes, stats, moves, abilities, items, and evolutions.
@@ -24,11 +24,11 @@ Check out the live Pokédex here:
 ## How to run locally
 1. Clone the repository:
    ```bash
-   git clone https://github.com/kaduvercosa/KADU-WORKSPACE.git
+   git clone https://github.com/kaduvercosa/pokedexdokadu.git
    ```
 2. Navigate to the repository root directory:
    ```bash
-   cd KADU-WORKSPACE
+   cd pokedexdokadu
    ```
 3. Start a local server. For example, using Python 3:
    ```bash
