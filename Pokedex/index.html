@@ -365,7 +365,7 @@
       <div id="main-card">
         <div class="glass-bg liquid-glass"></div>
         <div class="img-container">
-           <img id="poke-image" src="" alt="" onclick="openDetailsModal()" title="Clique para ver mais detalhes!">
+           <img id="poke-image" src="" alt="" onclick="openDetailsModal()" title="Clique para ver mais detalhes!" onerror="if(spriteStyle==='animated'){ this.onerror=null; this.src=getFallbackSpriteUrl(currentPokemonData, isShinyView); }">
         </div>
         <div class="card-content">
           <div id="poke-name">Carregando...</div>
@@ -1228,10 +1228,29 @@
     function getMainSpriteUrl(data, isShiny) {
         if (!data) return '';
         const sprites = data.sprites;
-        if (spriteStyle === 'animated' && sprites.other && sprites.other.showdown) {
-            const animUrl = isShiny ? sprites.other.showdown.front_shiny : sprites.other.showdown.front_default;
-            if (animUrl) return animUrl;
+
+        if (spriteStyle === 'animated') {
+            // Project Pokémon high-res 3D animated sprites
+            let cleanName = data.name.replace(/-/g, '').toLowerCase(); // Basic normalization for PP
+            if (cleanName === 'nidoranf') cleanName = 'nidoran_f';
+            if (cleanName === 'nidoranm') cleanName = 'nidoran_m';
+            if (cleanName === 'mr mime') cleanName = 'mr._mime';
+            if (cleanName === 'mime jr') cleanName = 'mime_jr.';
+            if (cleanName === 'farfetchd') cleanName = 'farfetchd'; // Keep without apostrophe
+
+            const baseUrl = isShiny ? 'https://projectpokemon.org/images/shiny-sprite/' : 'https://projectpokemon.org/images/normal-sprite/';
+            return `${baseUrl}${cleanName}.gif`;
         }
+
+        if (sprites.other && sprites.other['official-artwork']) {
+            return isShiny ? sprites.other['official-artwork'].front_shiny : sprites.other['official-artwork'].front_default;
+        }
+        return isShiny ? sprites.front_shiny : sprites.front_default;
+    }
+
+    function getFallbackSpriteUrl(data, isShiny) {
+        if (!data) return '';
+        const sprites = data.sprites;
         if (sprites.other && sprites.other['official-artwork']) {
             return isShiny ? sprites.other['official-artwork'].front_shiny : sprites.other['official-artwork'].front_default;
         }
