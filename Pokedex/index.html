@@ -92,8 +92,12 @@
     body.monochrome .type-badge, body.monochrome .mini-type, body.monochrome .stat-bar-fill { background: #888 !important; filter: grayscale(100%); }
     body.monochrome #main-card, body.monochrome #search-container, body.monochrome .colored-card { --card-bg: transparent !important; }
 
-    /* PIXEL ART MODE */
-    body.pixel-art #poke-image { image-rendering: pixelated; transform: scale(1.1); }
+    /* ANIMATED SPRITE MODE */
+    body.pixel-art #poke-image {
+        image-rendering: auto; /* Suavização natural */
+        transform: scale(1); /* Evitar esticamento artificial */
+        filter: drop-shadow(0 15px 25px rgba(0,0,0,0.2)); /* Sombra um pouco mais suave */
+    }
 
     /* DETAILS MODAL CSS */
     #details-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 10000; display: none; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s ease; }
@@ -555,7 +559,6 @@
         </div>
       </div>
     </div>
-  </div>
   </div>
 
   <!-- MODIFICADO: Links Adicionados ao Rodapé -->
