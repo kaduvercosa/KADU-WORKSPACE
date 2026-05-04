@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>POKÉDEX ULTRA DO KADUZIN</title>
+  <title>POKÉDEX ULTRA DO KADU</title>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@800;900&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     :root {
@@ -56,12 +56,12 @@
       border: 1px solid rgba(255, 255, 255, 0.3); 
       box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.4) inset, 0 0 0 1px rgba(255, 255, 255, 0.4), 0 8px 32px rgba(0, 0, 0, 0.25); 
     }
-
+    
     /* SETTINGS OVERRIDES */
     body.no-glass .liquid-glass, body.no-glass .modal-content, body.no-glass #autocomplete-list { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; background: var(--glass-panel) !important; }
     body.no-glow #search-container::after, body.no-glow #main-card::after, body.no-glow .pokedex-card::after, body.no-glow .evo-card::after, body.no-glow .img-container::after { display: none !important; }
     body.no-anim * { animation: none !important; transition: none !important; }
-
+    
     body.hide-stats .stats-container { display: none !important; }
     body.hide-moves .moves-wrapper { display: none !important; }
     body.hide-extra #extra-info { display: none !important; }
@@ -71,11 +71,11 @@
     body.font-small { font-size: 12px; }
     body.font-small #poke-name { font-size: clamp(24px, 6vw, 36px); }
     body.font-small .info-value { font-size: 12px; }
-
+    
     body.font-large { font-size: 16px; }
     body.font-large #poke-name { font-size: clamp(32px, 8vw, 48px); }
     body.font-large .info-value { font-size: 16px; }
-
+    
     /* MONOCHROME MODE */
     body.monochrome {
       --type-color: #888888 !important;
@@ -91,9 +91,9 @@
     }
     body.monochrome .type-badge, body.monochrome .mini-type, body.monochrome .stat-bar-fill { background: #888 !important; filter: grayscale(100%); }
     body.monochrome #main-card, body.monochrome #search-container, body.monochrome .colored-card { --card-bg: transparent !important; }
-
+    
     /* ANIMATED SPRITE MODE */
-    body.pixel-art #poke-image {
+    body.pixel-art #poke-image { 
         image-rendering: auto; /* Suavização natural */
         transform: scale(1); /* Evitar esticamento artificial */
         filter: drop-shadow(0 15px 25px rgba(0,0,0,0.2)); /* Sombra um pouco mais suave */
@@ -107,15 +107,15 @@
     @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .dm-section { background: rgba(255,255,255,0.02); } }
     :root[data-theme="dark"] .dm-section { background: rgba(255,255,255,0.02); }
     .dm-subtitle { margin: 0 0 15px 0; font-size: 13px; color: var(--type-color); text-transform: uppercase; letter-spacing: 1px; font-weight: 900; }
-
+    
     .dm-gallery { display: grid; grid-template-columns: repeat(auto-fit, minmax(80px, 1fr)); gap: 10px; justify-items: center; }
     .dm-sprite-box { display: flex; flex-direction: column; align-items: center; padding: 5px; background: var(--glass-panel); border-radius: 12px; border: 1px solid var(--glass-border); width: 100%; }
     .dm-sprite-img { width: 70px; height: 70px; object-fit: contain; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2)); }
     .dm-sprite-label { font-size: 9px; font-weight: 800; text-transform: uppercase; margin-top: 5px; text-align: center; color: var(--text-muted); }
-
+    
     .dm-encounters { font-size: 12px; line-height: 1.5; max-height: 120px; overflow-y: auto; padding-right: 5px; }
     .dm-enc-item { background: var(--glass-panel); padding: 6px 10px; border-radius: 8px; margin-bottom: 5px; display: inline-block; margin-right: 5px; font-weight: 600; border: 1px solid var(--glass-border); }
-
+    
     /* Make image clickable */
     #poke-image { cursor: pointer; }
 
@@ -288,15 +288,15 @@
     .modal-title { font-family: 'Montserrat', sans-serif; font-weight: 900; font-size: 18px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-main); margin: 0; }
     .close-btn { background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; font-weight: 900; color: var(--text-main); cursor: pointer; transition: all 0.2s; }
     .close-btn:hover { background: rgba(255, 0, 0, 0.5); color: #fff; }
-
+    
     .setting-group { margin-bottom: 25px; }
     .setting-group h4 { margin: 0 0 15px 0; font-size: 12px; color: var(--type-color); text-transform: uppercase; letter-spacing: 1.5px; opacity: 0.9; }
-
+    
     .setting-item { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; background: rgba(0,0,0,0.05); padding: 10px 15px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); }
     @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .setting-item { background: rgba(255,255,255,0.03); } }
     :root[data-theme="dark"] .setting-item { background: rgba(255,255,255,0.03); }
     .setting-label { font-size: 13px; font-weight: 600; color: var(--text-main); }
-
+    
     /* Toggle Switch */
     .switch { position: relative; display: inline-block; width: 44px; height: 24px; }
     .switch input { opacity: 0; width: 0; height: 0; }
@@ -306,7 +306,7 @@
     .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 2px; background-color: white; transition: .4s; border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
     input:checked + .slider { background-color: var(--type-color); }
     input:checked + .slider:before { transform: translateX(20px); }
-
+    
     /* Select styling inside modal */
     .modal-select { padding: 6px 12px; font-size: 12px; }
 
@@ -365,7 +365,7 @@
       <div id="main-card">
         <div class="glass-bg liquid-glass"></div>
         <div class="img-container">
-           <img id="poke-image" src="" alt="" onclick="openDetailsModal()" title="Clique para ver mais detalhes!">
+           <img id="poke-image" src="" alt="" onclick="openDetailsModal()" title="Clique para ver mais detalhes!" onerror="if(spriteStyle==='animated'){ this.onerror=null; this.src=getFallbackSpriteUrl(currentPokemonData, isShinyView); }">
         </div>
         <div class="card-content">
           <div id="poke-name">Carregando...</div>
@@ -435,7 +435,7 @@
         <h3 class="modal-title" id="dm-title">Detalhes do Pokémon</h3>
         <button class="close-btn" onclick="closeDetailsModal()">×</button>
       </div>
-
+      
       <div class="dm-section">
         <h4 class="dm-subtitle">Galeria de Sprites</h4>
         <div class="dm-gallery" id="dm-gallery">
@@ -477,7 +477,7 @@
         <h3 class="modal-title">Configurações</h3>
         <button class="close-btn" onclick="closeSettings()">×</button>
       </div>
-
+      
       <div class="setting-group">
         <h4>Visual e Efeitos</h4>
         <div class="setting-item">
@@ -1075,14 +1075,14 @@
         async function fetchEvolutions(url) {
       try {
         const evoRes = await fetch(url); const evoData = await evoRes.json(); let evolutions = [];
-
-        function extractEvo(node) {
-            let id = node.species.url.split('/')[6];
-
+        
+        function extractEvo(node) { 
+            let id = node.species.url.split('/')[6]; 
+            
             // Extract details safely
             let detailsObj = node.evolution_details && node.evolution_details.length > 0 ? node.evolution_details[0] : null;
             let conditionText = '';
-
+            
             if (detailsObj) {
                 if (detailsObj.min_level) conditionText = `Lvl ${detailsObj.min_level}`;
                 else if (detailsObj.item) conditionText = detailsObj.item.name.replace(/-/g, ' ');
@@ -1091,11 +1091,11 @@
                 else conditionText = '?';
             }
 
-            evolutions.push({ name: node.species.name, id: id, condition: conditionText });
-            node.evolves_to.forEach(evo => extractEvo(evo));
+            evolutions.push({ name: node.species.name, id: id, condition: conditionText }); 
+            node.evolves_to.forEach(evo => extractEvo(evo)); 
         }
-
-        extractEvo(evoData.chain);
+        
+        extractEvo(evoData.chain); 
         const evoDiv = document.getElementById('evolutions'); const evoList = document.getElementById('evo-list'); evoList.innerHTML = '';
         if (evolutions.length > 1) {
           evoDiv.style.display = 'block'; evolutions.forEach(evo => {
@@ -1117,7 +1117,7 @@
             const nameDiv = document.createElement('div');
             nameDiv.className = 'evo-name';
             nameDiv.textContent = evo.name.replace(/-/g, ' ');
-
+            
             card.appendChild(idDiv);
             card.appendChild(img);
             card.appendChild(nameDiv);
@@ -1196,17 +1196,17 @@
     }
 
     const urlId = getPokemonFromUrl();
-
+    
     // Initialize settings FIRST so startup pref is known
     applySettings();
-
+    
     if (urlId && urlId.trim() !== "" && urlId !== "null") {
       fetchPokemon(urlId);
     } else {
       const saved = localStorage.getItem('pokedex-settings');
       let startup = 'random';
       if (saved) { try { startup = JSON.parse(saved).startup; } catch(e){} }
-
+      
       if (startup === 'grid') {
           toggleView();
           document.getElementById('gen-filter').value = '1';
@@ -1215,12 +1215,12 @@
           fetchPokemon(Math.floor(Math.random() * 1025) + 1);
       }
     }
-
+    
     // SETTINGS LOGIC
     function openSettings() { document.getElementById('settings-modal').classList.add('show-modal'); }
     function closeSettings() { document.getElementById('settings-modal').classList.remove('show-modal'); }
-
-
+    
+    
     let currentSpeciesData = null;
     let isImperial = false;
     let spriteStyle = 'official';
@@ -1228,10 +1228,29 @@
     function getMainSpriteUrl(data, isShiny) {
         if (!data) return '';
         const sprites = data.sprites;
-        if (spriteStyle === 'animated' && sprites.other && sprites.other.showdown) {
-            const animUrl = isShiny ? sprites.other.showdown.front_shiny : sprites.other.showdown.front_default;
-            if (animUrl) return animUrl;
+        
+        if (spriteStyle === 'animated') {
+            // Project Pokémon high-res 3D animated sprites
+            let cleanName = data.name.replace(/-/g, '').toLowerCase(); // Basic normalization for PP
+            if (cleanName === 'nidoranf') cleanName = 'nidoran_f';
+            if (cleanName === 'nidoranm') cleanName = 'nidoran_m';
+            if (cleanName === 'mr mime') cleanName = 'mr._mime';
+            if (cleanName === 'mime jr') cleanName = 'mime_jr.';
+            if (cleanName === 'farfetchd') cleanName = 'farfetchd'; // Keep without apostrophe
+            
+            const baseUrl = isShiny ? 'https://projectpokemon.org/images/shiny-sprite/' : 'https://projectpokemon.org/images/normal-sprite/';
+            return `${baseUrl}${cleanName}.gif`;
         }
+        
+        if (sprites.other && sprites.other['official-artwork']) {
+            return isShiny ? sprites.other['official-artwork'].front_shiny : sprites.other['official-artwork'].front_default;
+        }
+        return isShiny ? sprites.front_shiny : sprites.front_default;
+    }
+    
+    function getFallbackSpriteUrl(data, isShiny) {
+        if (!data) return '';
+        const sprites = data.sprites;
         if (sprites.other && sprites.other['official-artwork']) {
             return isShiny ? sprites.other['official-artwork'].front_shiny : sprites.other['official-artwork'].front_default;
         }
@@ -1240,9 +1259,9 @@
 
     function openDetailsModal() {
         if (!currentPokemonData || !currentSpeciesData) return;
-
+        
         document.getElementById('dm-title').innerText = currentPokemonData.name.replace(/-/g, ' ') + ' - Detalhes';
-
+        
         // 1. Sprites Gallery
         const gallery = document.getElementById('dm-gallery');
         gallery.innerHTML = '';
@@ -1254,14 +1273,14 @@
             const span = document.createElement('span'); span.className = 'dm-sprite-label'; span.innerText = label;
             box.appendChild(img); box.appendChild(span); gallery.appendChild(box);
         };
-
+        
         addSprite(sprites.front_default, 'Frente (Padrão)');
         addSprite(sprites.back_default, 'Costas (Padrão)');
         addSprite(sprites.front_shiny, 'Frente (Shiny)');
         addSprite(sprites.back_shiny, 'Costas (Shiny)');
         addSprite(sprites.other?.showdown?.front_default, 'Animado');
         addSprite(sprites.other?.home?.front_default, 'Home 3D');
-
+        
         if (gallery.innerHTML === '') gallery.innerHTML = '<span style="font-size:12px; opacity:0.6;">Nenhum sprite adicional encontrado.</span>';
 
         // 2. Breeding
@@ -1274,10 +1293,10 @@
             genderText = `♂ ${malePct}% | ♀ ${femalePct}%`;
         }
         document.getElementById('dm-gender').innerText = genderText;
-
+        
         const hatchCounter = currentSpeciesData.hatch_counter;
         document.getElementById('dm-cycles').innerText = hatchCounter ? `${hatchCounter} ciclos (~${hatchCounter * 257} passos)` : 'N/A';
-
+        
         const eggGroups = currentSpeciesData.egg_groups;
         document.getElementById('dm-egggroups').innerText = eggGroups && eggGroups.length > 0 ? eggGroups.map(e => e.name.replace(/-/g, ' ')).join(', ') : 'Desconhecido';
 
@@ -1285,7 +1304,7 @@
         document.getElementById('dm-baseexp').innerText = currentPokemonData.base_experience || 'N/A';
         document.getElementById('dm-basehappiness').innerText = currentSpeciesData.base_happiness || 'N/A';
         document.getElementById('dm-capturerate').innerText = currentSpeciesData.capture_rate || 'N/A';
-
+        
         const evs = currentPokemonData.stats.filter(s => s.effort > 0);
         document.getElementById('dm-evs').innerText = evs.length > 0 ? evs.map(e => `${e.effort} ${statMap[e.stat.name] || e.stat.name}`).join(', ') : 'Nenhum';
 
@@ -1341,16 +1360,16 @@
           document.getElementById('poke-image').src = getMainSpriteUrl(currentPokemonData, isShinyView);
       }
     }
-
-
-
+    
+    
+    
     function applySettings() {
       const saved = localStorage.getItem('pokedex-settings');
-      if (!saved) return;
-
+      if (!saved) return; 
+      
       try {
         const s = JSON.parse(saved);
-
+        
         if (document.getElementById('setting-theme')) {
             document.getElementById('setting-spritestyle').value = s.spritestyle || 'official';
             document.getElementById('setting-theme').value = s.theme || 'auto';
@@ -1366,13 +1385,13 @@
             document.getElementById('setting-extra').checked = s.extra !== undefined ? s.extra : true;
             document.getElementById('setting-evo').checked = s.evo !== undefined ? s.evo : true;
         }
-
+        
         isImperial = s.units === 'imperial';
         spriteStyle = s.spritestyle || 'official';
 
         if (s.theme === 'auto' || !s.theme) { document.documentElement.removeAttribute('data-theme'); }
         else { document.documentElement.setAttribute('data-theme', s.theme); }
-
+        
         document.body.classList.toggle('monochrome', s.monochrome === true);
         document.body.classList.remove('font-small', 'font-large');
         if (s.fontsize === 'small') document.body.classList.add('font-small');
@@ -1381,29 +1400,29 @@
         document.body.classList.toggle('no-glass', s.glass === false);
         document.body.classList.toggle('no-glow', s.glow === false);
         document.body.classList.toggle('no-anim', s.anim === false);
-
+        
         document.body.classList.toggle('hide-stats', s.stats === false);
         document.body.classList.toggle('hide-moves', s.moves === false);
         document.body.classList.toggle('hide-extra', s.extra === false);
         document.body.classList.toggle('hide-evo', s.evo === false);
         document.body.classList.toggle('pixel-art', spriteStyle === 'animated');
-
+        
       } catch (e) { console.error("Error applying settings", e); }
     }
 
     function updatePokemonUI(data) {
         if (!data) return;
-
+        
         let heightM = data.height / 10;
         let weightKg = data.weight / 10;
-
+        
         if (isImperial) {
             // Convert to ft/in and lbs
             let totalInches = heightM * 39.3701;
             let ft = Math.floor(totalInches / 12);
             let inc = Math.round(totalInches % 12);
             document.getElementById('poke-height').innerText = `${ft}'${inc}"`;
-
+            
             let lbs = (weightKg * 2.20462).toFixed(1);
             document.getElementById('poke-weight').innerText = `${lbs} lbs`;
         } else {
@@ -1412,9 +1431,9 @@
         }
     }
 
-
-
-
+    
+    
+        
     // Init settings on load
     adjustSpacer();
   </script>
