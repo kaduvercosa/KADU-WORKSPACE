@@ -88,30 +88,34 @@ O arquivo `Pokedex/index.html` é um aplicativo de arquivo único que contém to
 * [PokeAPI](https://pokeapi.co/)
 
 ## Como executar localmente
+
 1. Clone o repositório:
 
-``bash
+```bash
 
 git clone https://github.com/kaduvercosa/KADU-WORKSPACE.git
 
 ```
+
 2. Navegue até o diretório raiz do repositório:
 
-``bash
+```bash
 
 cd KADU-WORKSPACE
 
 ```
+
 3. Inicie um servidor local. Por exemplo, usando Python 3:
 
-``bash
+```bash
 
 python3 -m http.server --directory Pokedex/
 
 ```
+
 4. Abra seu navegador e acesse:
 
-``bash
+```bash
 
 http://localhost:8000
 ```
