@@ -280,7 +280,6 @@
       line-height: 1.6;
     }
     
-    /* MODIFICADO: Estilo dos links do rodapé */
     footer a { 
       font-weight: 900; 
       color: var(--type-color); 
@@ -332,7 +331,6 @@
     input:checked + .slider { background-color: var(--type-color); }
     input:checked + .slider:before { transform: translateX(20px); }
     
-    /* Select styling inside modal */
     .modal-select { padding: 6px 12px; font-size: 12px; }
 
     @media (min-width: 768px) {
@@ -342,18 +340,37 @@
       .extra-info-container { width: 100%; grid-column: 1; grid-row: 2; margin-top: 0; align-self: start; position: sticky; top: 120px; }
       #poke-image { margin-top: -40px; width: 100%; max-width: none; height: auto; object-fit: contain; }
       .card-content { width: 100%; grid-column: 2; grid-row: 1 / span 2; align-items: flex-start; text-align: left; }
+      
+      /* ALINHAMENTO CENTRALIZADO DOS TIPOS NO PC AJUSTADO AQUI */
       .moves-container { justify-content: flex-start; }
       #poke-types { justify-content: center; width: 100%; }
+      
       .section-title { text-align: left; }
       .info-grid { grid-template-columns: repeat(3, 1fr); }
       .full-width { grid-column: span 3; }
       .grid-container { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 15px; }
     }
-    
-    /* REGRA PARA O MODAL LADO A LADO - NOVA TENTATIVA */
+
+    /* ====== AJUSTES CELULAR E PC PARA O MODAL (REPRODUÇÃO E TREINAMENTO) ====== */
     .dm-split-row { 
       display: flex; 
       flex-direction: column; 
+    }
+
+    /* Reprodução: um abaixo do outro no mobile */
+    .repro-grid {
+      display: flex !important;
+      flex-direction: column;
+    }
+
+    /* Treinamento: um do lado do outro (grade 2x2) no mobile */
+    .train-grid {
+      display: grid !important;
+      grid-template-columns: 1fr 1fr !important;
+      gap: 10px;
+    }
+    .train-grid .train-full {
+      grid-column: span 1 !important; 
     }
 
     @media (min-width: 768px) {
@@ -361,11 +378,25 @@
         display: grid !important;
         grid-template-columns: 1fr 1fr;
         gap: 20px;
-        margin-bottom: 25px;
+        margin-bottom: 25px; 
       }
       .dm-split-row .dm-section {
         margin-bottom: 0 !important;
-        height: 100%;
+        height: 100%; 
+      }
+
+      /* PC: Reprodução volta a ter 2 colunas, com Grupos de Ovos linha inteira */
+      .repro-grid {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important;
+      }
+      .repro-grid .repro-full {
+        grid-column: 1 / -1 !important;
+      }
+      
+      /* PC: Treinamento estica a Taxa e EV Yield para manter a mesma altura */
+      .train-grid .train-full {
+        grid-column: 1 / -1 !important;
       }
     }
   </style>
@@ -557,26 +588,30 @@
         </div>
       </div>
 
+      <!-- INÍCIO DA DIV SPLIT ROW -->
       <div class="dm-split-row">
+        
         <div class="dm-section">
           <h4 class="dm-subtitle">Reprodução (Breeding)</h4>
-          <div class="info-grid">
-            <div class="info-box full-width"><span class="info-label">Gênero</span><span class="info-value" id="dm-gender">-</span></div>
-            <div class="info-box full-width"><span class="info-label">Ciclos (Passos)</span><span class="info-value" id="dm-cycles">-</span></div>
-            <div class="info-box full-width"><span class="info-label">Grupos de Ovos</span><span class="info-value" id="dm-egggroups">-</span></div>
+          <div class="info-grid repro-grid">
+            <div class="info-box"><span class="info-label">Gênero</span><span class="info-value" id="dm-gender">-</span></div>
+            <div class="info-box"><span class="info-label">Ciclos (Passos)</span><span class="info-value" id="dm-cycles">-</span></div>
+            <div class="info-box repro-full"><span class="info-label">Grupos de Ovos</span><span class="info-value" id="dm-egggroups">-</span></div>
           </div>
         </div>
 
         <div class="dm-section">
           <h4 class="dm-subtitle">Treinamento</h4>
-          <div class="info-grid">
+          <div class="info-grid train-grid">
             <div class="info-box"><span class="info-label">Exp Base</span><span class="info-value" id="dm-baseexp">-</span></div>
             <div class="info-box"><span class="info-label">Amizade Base</span><span class="info-value" id="dm-basehappiness">-</span></div>
-            <div class="info-box"><span class="info-label">Taxa de Captura</span><span class="info-value" id="dm-capturerate">-</span></div>
-            <div class="info-box full-width"><span class="info-label">Pontos de Esforço (EV Yield)</span><span class="info-value" id="dm-evs">-</span></div>
+            <div class="info-box train-full"><span class="info-label">Taxa de Captura</span><span class="info-value" id="dm-capturerate">-</span></div>
+            <div class="info-box train-full"><span class="info-label">Pontos de Esforço (EV Yield)</span><span class="info-value" id="dm-evs">-</span></div>
           </div>
         </div>
+
       </div>
+      <!-- FIM DA DIV SPLIT ROW -->
 
       <div class="dm-section">
         <h4 class="dm-subtitle">Localizações de Encontro</h4>
@@ -677,7 +712,6 @@
     </div>
   </div>
 
-  <!-- MODIFICADO: Links Adicionados ao Rodapé -->
   <footer>
     POKÉDEX ULTRA © 2026<br>
     DESENVOLVIDO POR <a href="https://github.com/kaduvercosa" target="_blank">EDUARDO</a> | POWERED BY <a href="https://pokeapi.co/" target="_blank">POKEAPI</a>
@@ -1851,9 +1885,6 @@
         }
     }
 
-    
-    
-        
     // Init settings on load
     adjustSpacer();
   </script>
