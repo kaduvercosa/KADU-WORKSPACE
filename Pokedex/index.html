@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>POKÉDEX ULTRA V5</title>
+  <title>POKÉDEX ULTRA X</title>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@800;900&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     :root {
@@ -341,7 +341,6 @@
       #poke-image { margin-top: -40px; width: 100%; max-width: none; height: auto; object-fit: contain; }
       .card-content { width: 100%; grid-column: 2; grid-row: 1 / span 2; align-items: flex-start; text-align: left; }
       
-      /* ALINHAMENTO CENTRALIZADO DOS TIPOS NO PC AJUSTADO AQUI */
       .moves-container { justify-content: flex-start; }
       #poke-types { justify-content: center; width: 100%; }
       
@@ -394,9 +393,9 @@
         grid-column: 1 / -1 !important;
       }
       
-      /* PC: Treinamento estica a Taxa e EV Yield para manter a mesma altura */
+      /* PC: Treinamento - mantendo 2x2 lado a lado igual celular */
       .train-grid .train-full {
-        grid-column: 1 / -1 !important;
+        grid-column: span 1 !important;
       }
     }
   </style>
