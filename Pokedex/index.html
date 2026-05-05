@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>POKÉDEX ULTRA V10</title>
+  <title>POKÉDEX ULTRA V5</title>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@800;900&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     :root {
@@ -56,12 +56,12 @@
       border: 1px solid rgba(255, 255, 255, 0.3); 
       box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.4) inset, 0 0 0 1px rgba(255, 255, 255, 0.4), 0 8px 32px rgba(0, 0, 0, 0.25); 
     }
-
+    
     /* SETTINGS OVERRIDES */
     body.no-glass .liquid-glass, body.no-glass .modal-content, body.no-glass #autocomplete-list { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; background: var(--glass-panel) !important; }
     body.no-glow #search-container::after, body.no-glow #main-card::after, body.no-glow .pokedex-card::after, body.no-glow .evo-card::after, body.no-glow .img-container::after { display: none !important; }
     body.no-anim * { animation: none !important; transition: none !important; }
-
+    
     body.hide-stats .stats-container { display: none !important; }
     body.hide-moves .moves-wrapper { display: none !important; }
     body.hide-extra #extra-info { display: none !important; }
@@ -71,11 +71,11 @@
     body.font-small { font-size: 12px; }
     body.font-small #poke-name { font-size: clamp(24px, 6vw, 36px); }
     body.font-small .info-value { font-size: 12px; }
-
+    
     body.font-large { font-size: 16px; }
     body.font-large #poke-name { font-size: clamp(32px, 8vw, 48px); }
     body.font-large .info-value { font-size: 16px; }
-
+    
     /* MONOCHROME MODE */
     body.monochrome {
       --type-color: #888888 !important;
@@ -91,7 +91,7 @@
     }
     body.monochrome .type-badge, body.monochrome .mini-type, body.monochrome .stat-bar-fill { background: #888 !important; filter: grayscale(100%); }
     body.monochrome #main-card, body.monochrome #search-container, body.monochrome .colored-card { --card-bg: transparent !important; }
-
+    
 
     /* DETAILS MODAL CSS */
     #details-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 10000; display: none; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s ease; }
@@ -101,12 +101,12 @@
     @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .dm-section { background: rgba(255,255,255,0.02); } }
     :root[data-theme="dark"] .dm-section { background: rgba(255,255,255,0.02); }
     .dm-subtitle { margin: 0 0 15px 0; font-size: 13px; color: var(--type-color); text-transform: uppercase; letter-spacing: 1px; font-weight: 900; }
-
+    
     .dm-gallery { display: grid; grid-template-columns: repeat(auto-fit, minmax(80px, 1fr)); gap: 10px; justify-items: center; }
     .dm-sprite-box { display: flex; flex-direction: column; align-items: center; padding: 5px; background: var(--glass-panel); border-radius: 12px; border: 1px solid var(--glass-border); width: 100%; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; }
     .dm-sprite-box:hover { transform: translateY(-3px); box-shadow: 0 8px 15px rgba(0,0,0,0.1); }
     .dm-sprite-img { width: 70px; height: 70px; object-fit: contain; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2)); }
-
+    
     /* Fullscreen Image Viewer Modal */
     #image-viewer-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 20000; display: none; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s ease; }
     #image-viewer-modal.show-modal { display: flex; opacity: 1; }
@@ -117,11 +117,10 @@
     .viewer-close { position: absolute; top: -50px; right: 0; background: var(--glass-panel); backdrop-filter: blur(10px) saturate(100%); -webkit-backdrop-filter: blur(10px) saturate(100%); border: 1px solid rgba(255,255,255,0.4); border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-weight: 900; color: #fff; cursor: pointer; font-size: 20px; transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); box-shadow: 0 4px 15px rgba(0,0,0,0.1), inset 0 0 0 1px rgba(255,255,255,0.2); }
     .viewer-close:hover { background: rgba(255, 71, 87, 0.8); transform: scale(1.1) rotate(90deg); border-color: rgba(255,255,255,0.6); box-shadow: 0 4px 20px rgba(255, 71, 87, 0.4); }
     .dm-sprite-label { font-size: 9px; font-weight: 800; text-transform: uppercase; margin-top: 5px; text-align: center; color: var(--text-muted); }
-
+    
     .dm-encounters { font-size: 12px; line-height: 1.5; max-height: 120px; overflow-y: auto; padding-right: 5px; }
-    .dm-split-row { display: flex; flex-direction:column; }
     .dm-enc-item { background: var(--glass-panel); padding: 6px 10px; border-radius: 8px; margin-bottom: 5px; display: inline-block; margin-right: 5px; font-weight: 600; border: 1px solid var(--glass-border); }
-
+    
     /* Make image clickable */
     #poke-image { cursor: pointer; }
 
@@ -185,7 +184,7 @@
       .btn-nav { flex: 1 1 100px; min-width: 100px; order: 4; padding: 14px 10px; font-size: 11px; }
       #compare-modal-content, .details-content { max-width: 1200px !important; padding: 50px 40px !important; }
     }
-
+    
     @media (min-width: 1024px) {
       #input-wrapper { flex: 2 1 200px; min-width: 200px; }
       select { flex: 1 1 100px; min-width: 100px; font-size: 13px; }
@@ -301,28 +300,28 @@
     .modal-content { position: relative; width: 90%; max-width: 500px; background: var(--glass-panel); backdrop-filter: blur(20px) saturate(120%); border: 1px solid var(--glass-border); border-radius: 25px; padding: 25px; box-shadow: 0 15px 40px rgba(0,0,0,0.4); z-index: 10001; max-height: 85vh; overflow-y: auto; }
     .modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px; margin-bottom: 20px; }
     .modal-title { font-family: 'Montserrat', sans-serif; font-weight: 900; font-size: 18px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-main); margin: 0; }
-    .close-btn {
-      background: var(--glass-panel);
-      backdrop-filter: blur(10px) saturate(100%);
-      -webkit-backdrop-filter: blur(10px) saturate(100%);
-      border: 1px solid rgba(255, 255, 255, 0.4);
+    .close-btn { 
+      background: var(--glass-panel); 
+      backdrop-filter: blur(10px) saturate(100%); 
+      -webkit-backdrop-filter: blur(10px) saturate(100%); 
+      border: 1px solid rgba(255, 255, 255, 0.4); 
       box-shadow: 0 4px 15px rgba(0,0,0,0.1), inset 0 0 0 1px rgba(255,255,255,0.2);
-      border-radius: 50%;
-      width: 36px; height: 36px;
-      display: flex; align-items: center; justify-content: center;
-      font-weight: 900; color: var(--text-main); cursor: pointer; transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      border-radius: 50%; 
+      width: 36px; height: 36px; 
+      display: flex; align-items: center; justify-content: center; 
+      font-weight: 900; color: var(--text-main); cursor: pointer; transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); 
     }
     .close-btn:hover { background: rgba(255, 71, 87, 0.8); color: #fff; transform: scale(1.1) rotate(90deg); border-color: rgba(255,255,255,0.6); box-shadow: 0 4px 20px rgba(255, 71, 87, 0.4); }
     .close-btn:active { transform: scale(0.9) rotate(90deg); }
-
+    
     .setting-group { margin-bottom: 25px; }
     .setting-group h4 { margin: 0 0 15px 0; font-size: 12px; color: var(--type-color); text-transform: uppercase; letter-spacing: 1.5px; opacity: 0.9; }
-
+    
     .setting-item { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; background: rgba(0,0,0,0.05); padding: 10px 15px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); }
     @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .setting-item { background: rgba(255,255,255,0.03); } }
     :root[data-theme="dark"] .setting-item { background: rgba(255,255,255,0.03); }
     .setting-label { font-size: 13px; font-weight: 600; color: var(--text-main); }
-
+    
     /* Toggle Switch */
     .switch { position: relative; display: inline-block; width: 44px; height: 24px; }
     .switch input { opacity: 0; width: 0; height: 0; }
@@ -332,7 +331,7 @@
     .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 2px; background-color: white; transition: .4s; border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
     input:checked + .slider { background-color: var(--type-color); }
     input:checked + .slider:before { transform: translateX(20px); }
-
+    
     /* Select styling inside modal */
     .modal-select { padding: 6px 12px; font-size: 12px; }
 
@@ -344,26 +343,29 @@
       #poke-image { margin-top: -40px; width: 100%; max-width: none; height: auto; object-fit: contain; }
       .card-content { width: 100%; grid-column: 2; grid-row: 1 / span 2; align-items: flex-start; text-align: left; }
       .moves-container { justify-content: flex-start; }
-      #poke-types, { justify-content: center; width:100%; }
+      #poke-types { justify-content: center; width: 100%; }
       .section-title { text-align: left; }
       .info-grid { grid-template-columns: repeat(3, 1fr); }
       .full-width { grid-column: span 3; }
       .grid-container { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 15px; }
+    }
+    
+    /* REGRA PARA O MODAL LADO A LADO - NOVA TENTATIVA */
+    .dm-split-row { 
+      display: flex; 
+      flex-direction: column; 
+    }
+
+    @media (min-width: 768px) {
       .dm-split-row {
-        display: flex;
-        flex-direction: column;
+        display: grid !important;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+        margin-bottom: 25px;
       }
-      @media (min-width: 768px) {
-        .dm-split-row {
-          display: grid !important;
-          grid-template-columns: 1fr 1fr;
-          gap: 20px;
-          margin-bottom: 25px;
-        }
-        .dm-split-row .dm-section {
-          margin-bottom: 0 !important;
-          height: 100%;
-        }
+      .dm-split-row .dm-section {
+        margin-bottom: 0 !important;
+        height: 100%;
       }
     }
   </style>
@@ -372,7 +374,7 @@
   <div id="search-container">
     <div class="glass-bg liquid-glass"></div>
     <div id="input-wrapper">
-      <input type="text" id="search-input" placeholder="Digite Nome ou ID..." autocomplete="off">
+      <input type="text" id="search-input" placeholder="Nome, ID..." autocomplete="off">
       <div id="autocomplete-list"></div>
     </div>
     
@@ -398,7 +400,7 @@
       <option value="mythical">Mítico</option>
       <option value="baby">Bebê</option>
     </select>
-
+    
     <button onclick="handleFilter('fav', 'favorites')" class="btn-action" id="fav-filter-btn">❤️ Favoritos</button>
 
     <button onclick="randomPokemon()" class="btn-action">🎲 Sortear</button>
@@ -483,14 +485,14 @@
         <h3 class="modal-title">Comparador</h3>
         <button class="close-btn" onclick="closeCompareModal()">×</button>
       </div>
-
+      
       <div style="display:flex; gap:10px; margin-bottom: 20px; position:relative; z-index:10006;">
           <div style="flex:1; position:relative;">
               <input type="text" id="compare-input" placeholder="Buscar 2º Pokémon..." style="width:100%; padding: 14px 20px; font-size:16px; pointer-events:auto;" autocomplete="off">
               <div id="compare-autocomplete" style="position:absolute; top:100%; left:0; right:0; margin-top:5px; max-height:240px; overflow-y:auto; background:var(--glass-panel); backdrop-filter:blur(20px); border:1px solid var(--glass-border); border-radius:16px; display:none; flex-direction:column; z-index:10007; padding:8px; box-shadow:0 15px 35px rgba(0,0,0,0.4);"></div>
           </div>
       </div>
-
+      
       <div id="compare-results" style="display:none; flex-direction:column; gap:15px;">
           <div style="display:flex; justify-content:space-between; align-items:flex-end;">
               <div id="comp-poke1" style="text-align:center; flex:1;">
@@ -503,12 +505,12 @@
                   <div id="comp-name2" style="font-weight:900; text-transform:capitalize; font-size:14px; margin-top:5px;">P2</div>
               </div>
           </div>
-
+          
           <div id="comp-stats-list" style="background:var(--glass-panel); padding:15px; border-radius:16px; border:1px solid var(--glass-border);">
               <!-- Stats rows injected here -->
           </div>
       </div>
-
+      
       <div id="compare-loading" style="display:none; text-align:center; padding:20px; font-weight:800; color:var(--text-muted);">
           Carregando...
       </div>
@@ -547,7 +549,7 @@
         <h3 class="modal-title" id="dm-title">Detalhes do Pokémon</h3>
         <button class="close-btn" onclick="closeDetailsModal()">×</button>
       </div>
-
+      
       <div class="dm-section">
         <h4 class="dm-subtitle">Galeria de Sprites</h4>
         <div class="dm-gallery" id="dm-gallery">
@@ -555,27 +557,27 @@
         </div>
       </div>
 
-		<div class="dm-split-row">
-      <div class="dm-section">
-        <h4 class="dm-subtitle">Reprodução (Breeding)</h4>
-        <div class="info-grid">
-          <div class="info-box full-width"><span class="info-label">Gênero</span><span class="info-value" id="dm-gender">-</span></div>
-          <div class="info-box full-width"><span class="info-label">Ciclos (Passos)</span><span class="info-value" id="dm-cycles">-</span></div>
-          <div class="info-box full-width"><span class="info-label">Grupos de Ovos</span><span class="info-value" id="dm-egggroups">-</span></div>
+      <div class="dm-split-row">
+        <div class="dm-section">
+          <h4 class="dm-subtitle">Reprodução (Breeding)</h4>
+          <div class="info-grid">
+            <div class="info-box"><span class="info-label">Gênero</span><span class="info-value" id="dm-gender">-</span></div>
+            <div class="info-box"><span class="info-label">Ciclos (Passos)</span><span class="info-value" id="dm-cycles">-</span></div>
+            <div class="info-box full-width"><span class="info-label">Grupos de Ovos</span><span class="info-value" id="dm-egggroups">-</span></div>
+          </div>
+        </div>
+
+        <div class="dm-section">
+          <h4 class="dm-subtitle">Treinamento</h4>
+          <div class="info-grid">
+            <div class="info-box"><span class="info-label">Exp Base</span><span class="info-value" id="dm-baseexp">-</span></div>
+            <div class="info-box"><span class="info-label">Amizade Base</span><span class="info-value" id="dm-basehappiness">-</span></div>
+            <div class="info-box"><span class="info-label">Taxa de Captura</span><span class="info-value" id="dm-capturerate">-</span></div>
+            <div class="info-box full-width"><span class="info-label">Pontos de Esforço (EV Yield)</span><span class="info-value" id="dm-evs">-</span></div>
+          </div>
         </div>
       </div>
 
-      <div class="dm-section">
-        <h4 class="dm-subtitle">Treinamento</h4>
-        <div class="info-grid" style="display-flex; flex-direction: column; gap: 10px;">
-        <div style="display: flex; gap: 10px; width: 100%;"> 
-          <div class="info-box" style="flex: 1;"><span class="info-label">Exp Base</span><span class="info-value" id="dm-baseexp">-</span></div>
-          <div class="info-box" style="flex: 1;"><span class="info-label">Amizade Base</span><span class="info-value" id="dm-basehappiness">-</span></div>
-          <div class="info-box" style="width: 100%;"><span class="info-label">Taxa de Captura</span><span class="info-value" id="dm-capturerate">-</span></div>
-          <div class="info-box" style="width: 100%;"><span class="info-label">Pontos de Esforço (EV Yield)</span><span class="info-value" id="dm-evs">-</span></div>
-        </div>
-      </div>
-		</div>
       <div class="dm-section">
         <h4 class="dm-subtitle">Localizações de Encontro</h4>
         <div class="dm-encounters" id="dm-encounters">Carregando...</div>
@@ -591,7 +593,7 @@
         <h3 class="modal-title">Configurações</h3>
         <button class="close-btn" onclick="closeSettings()">×</button>
       </div>
-
+      
       <div class="setting-group">
         <h4>Visual e Efeitos</h4>
         <div class="setting-item">
@@ -755,7 +757,7 @@
 
     const compareInput = document.getElementById('compare-input');
     const compareAutocompleteList = document.getElementById('compare-autocomplete');
-
+    
     compareInput.addEventListener('input', function() {
       const val = this.value.toLowerCase().trim().replace(/[^a-z0-9-]/g, '');
       compareAutocompleteList.innerHTML = '';
@@ -829,13 +831,13 @@
       document.getElementById('detail-view').classList.toggle('active-view', currentMode === 'detail');
       document.getElementById('list-view').classList.toggle('active-view', currentMode === 'list');
       const btn = document.getElementById('nav-btn');
-
+      
       if(currentMode === 'list') {
          btn.innerText = 'VOLTAR AO POKÉMON';
          // Check if we are currently looking at favorites or nothing
          const isFavActive = document.getElementById('fav-filter-btn').classList.contains('active-fav');
          const hasNoGrid = !document.getElementById('pokedex-grid').innerHTML;
-
+         
          // If we click "VER POKEDEX" and were trapped in favorites, reset to Gen 1 so user isn't stuck.
          if(hasNoGrid || isFavActive) {
              document.getElementById('fav-filter-btn').classList.remove('active-fav');
@@ -877,7 +879,7 @@
           favFilterBtn.style.background = '';
           favFilterBtn.style.color = '';
       }
-
+      
       if(filterType === 'gen') { document.getElementById('type-filter').value = ''; document.getElementById('rarity-filter').value = ''; }
       if(filterType === 'type') { document.getElementById('gen-filter').value = ''; document.getElementById('rarity-filter').value = ''; }
       if(filterType === 'rarity') { document.getElementById('type-filter').value = ''; document.getElementById('gen-filter').value = ''; }
@@ -1027,7 +1029,7 @@
         let formattedName = data.name.replace(/-/g, ' ');
         document.getElementById('poke-name').innerText = formattedName;
         document.getElementById('poke-id').innerText = '#' + data.id.toString().padStart(3, '0');
-
+        
         const favBtn = document.getElementById('poke-fav-btn');
         if (favorites.includes(data.id.toString())) {
             favBtn.classList.add('is-fav');
@@ -1096,10 +1098,10 @@
         const movesDiv = document.getElementById('poke-moves'); movesDiv.innerHTML = '';
         movesTrans.forEach((m, index) => {
            const rawName = data.moves[index].move.name;
-           let span = document.createElement('span');
-           span.className = 'move-badge';
+           let span = document.createElement('span'); 
+           span.className = 'move-badge'; 
            span.style.cursor = 'pointer';
-           span.innerText = m;
+           span.innerText = m; 
            span.onclick = () => fetchMoveInfo(rawName, m);
            movesDiv.appendChild(span);
         });
@@ -1282,14 +1284,14 @@
         async function fetchEvolutions(url) {
       try {
         const evoRes = await fetch(url); const evoData = await evoRes.json(); let evolutions = [];
-
-        function extractEvo(node) {
-            let id = node.species.url.split('/')[6];
-
+        
+        function extractEvo(node) { 
+            let id = node.species.url.split('/')[6]; 
+            
             // Extract details safely
             let detailsObj = node.evolution_details && node.evolution_details.length > 0 ? node.evolution_details[0] : null;
             let conditionText = '';
-
+            
             if (detailsObj) {
                 if (detailsObj.min_level) conditionText = `Lvl ${detailsObj.min_level}`;
                 else if (detailsObj.item) conditionText = detailsObj.item.name.replace(/-/g, ' ');
@@ -1298,11 +1300,11 @@
                 else conditionText = '?';
             }
 
-            evolutions.push({ name: node.species.name, id: id, condition: conditionText });
-            node.evolves_to.forEach(evo => extractEvo(evo));
+            evolutions.push({ name: node.species.name, id: id, condition: conditionText }); 
+            node.evolves_to.forEach(evo => extractEvo(evo)); 
         }
-
-        extractEvo(evoData.chain);
+        
+        extractEvo(evoData.chain); 
         const evoDiv = document.getElementById('evolutions'); const evoList = document.getElementById('evo-list'); evoList.innerHTML = '';
         if (evolutions.length > 1) {
           evoDiv.style.display = 'block'; evolutions.forEach(evo => {
@@ -1324,7 +1326,7 @@
             const nameDiv = document.createElement('div');
             nameDiv.className = 'evo-name';
             nameDiv.textContent = evo.name.replace(/-/g, ' ');
-
+            
             card.appendChild(idDiv);
             card.appendChild(img);
             card.appendChild(nameDiv);
@@ -1380,7 +1382,7 @@
         const id = currentPokemonData.id.toString();
         const index = favorites.indexOf(id);
         const btn = document.getElementById('poke-fav-btn');
-
+        
         if (index > -1) {
             favorites.splice(index, 1);
             btn.classList.remove('is-fav');
@@ -1391,7 +1393,7 @@
             btn.innerHTML = '❤️ FAVORITO';
         }
         localStorage.setItem('pokedex-favorites', JSON.stringify(favorites));
-
+        
         // If we are currently in favorites view, refresh it
         if (currentMode === 'list' && document.getElementById('fav-filter-btn').classList.contains('active-fav')) {
             loadPokedex('fav', 'favorites');
@@ -1426,17 +1428,17 @@
     }
 
     const urlId = getPokemonFromUrl();
-
+    
     // Initialize settings FIRST so startup pref is known
     applySettings();
-
+    
     if (urlId && urlId.trim() !== "" && urlId !== "null") {
       fetchPokemon(urlId);
     } else {
       const saved = localStorage.getItem('pokedex-settings');
       let startup = 'random';
       if (saved) { try { startup = JSON.parse(saved).startup; } catch(e){} }
-
+      
       if (startup === 'grid') {
           toggleView();
           document.getElementById('gen-filter').value = '1';
@@ -1445,11 +1447,11 @@
           fetchPokemon(Math.floor(Math.random() * 1025) + 1);
       }
     }
-
+    
     // SETTINGS LOGIC
     function openSettings() { document.getElementById('settings-modal').classList.add('show-modal'); }
     function closeSettings() { document.getElementById('settings-modal').classList.remove('show-modal'); }
-
+    
     // IMAGE VIEWER LOGIC
     function openImageViewer(url, label) {
         if (!url) return;
@@ -1457,11 +1459,11 @@
         document.getElementById('viewer-label').innerText = label;
         document.getElementById('image-viewer-modal').classList.add('show-modal');
     }
-    function closeImageViewer() {
+    function closeImageViewer() { 
         document.getElementById('image-viewer-modal').classList.remove('show-modal');
         setTimeout(() => { document.getElementById('viewer-img').src = ''; }, 300);
     }
-
+    
     // KEYBOARD NAVIGATION
     document.addEventListener('keydown', function(event) {
         if (event.key === 'Escape') {
@@ -1479,8 +1481,8 @@
             }
         }
     });
-
-
+    
+    
     let currentSpeciesData = null;
     let favorites = JSON.parse(localStorage.getItem('pokedex-favorites') || '[]');
     var isImperial = false;
@@ -1501,9 +1503,9 @@
 
     function openDetailsModal() {
         if (!currentPokemonData || !currentSpeciesData) return;
-
+        
         document.getElementById('dm-title').innerText = currentPokemonData.name.replace(/-/g, ' ') + ' - Detalhes';
-
+        
         // 1. Sprites Gallery
         const gallery = document.getElementById('dm-gallery');
         gallery.innerHTML = '';
@@ -1516,14 +1518,14 @@
             box.onclick = () => { openImageViewer(url, label); };
             box.appendChild(img); box.appendChild(span); gallery.appendChild(box);
         };
-
+        
         addSprite(sprites.front_default, 'Frente (Padrão)');
         addSprite(sprites.back_default, 'Costas (Padrão)');
         addSprite(sprites.front_shiny, 'Frente (Shiny)');
         addSprite(sprites.back_shiny, 'Costas (Shiny)');
         addSprite(sprites.other?.showdown?.front_default, 'Animado');
         addSprite(sprites.other?.home?.front_default, 'Home 3D');
-
+        
         if (gallery.innerHTML === '') gallery.innerHTML = '<span style="font-size:12px; opacity:0.6;">Nenhum sprite adicional encontrado.</span>';
 
         // 2. Breeding
@@ -1536,10 +1538,10 @@
             genderText = `♂ ${malePct}% | ♀ ${femalePct}%`;
         }
         document.getElementById('dm-gender').innerText = genderText;
-
+        
         const hatchCounter = currentSpeciesData.hatch_counter;
         document.getElementById('dm-cycles').innerText = hatchCounter ? `${hatchCounter} ciclos (~${hatchCounter * 257} passos)` : 'N/A';
-
+        
         const eggGroups = currentSpeciesData.egg_groups;
         document.getElementById('dm-egggroups').innerText = eggGroups && eggGroups.length > 0 ? eggGroups.map(e => e.name.replace(/-/g, ' ')).join(', ') : 'Desconhecido';
 
@@ -1547,7 +1549,7 @@
         document.getElementById('dm-baseexp').innerText = currentPokemonData.base_experience || 'N/A';
         document.getElementById('dm-basehappiness').innerText = currentSpeciesData.base_happiness || 'N/A';
         document.getElementById('dm-capturerate').innerText = currentSpeciesData.capture_rate || 'N/A';
-
+        
         const evs = currentPokemonData.stats.filter(s => s.effort > 0);
         document.getElementById('dm-evs').innerText = evs.length > 0 ? evs.map(e => `${e.effort} ${statMap[e.stat.name] || e.stat.name}`).join(', ') : 'Nenhum';
 
@@ -1577,7 +1579,7 @@
     }
 
     function closeDetailsModal() { document.getElementById('details-modal').classList.remove('show-modal'); }
-
+    
     function closeInfoModal() { document.getElementById('info-modal').style.display = 'none'; setTimeout(() => document.getElementById('info-modal').style.opacity = '0', 10); }
 
     function openCompareModal() {
@@ -1589,57 +1591,57 @@
         document.getElementById('compare-modal').style.display = 'flex';
         setTimeout(() => document.getElementById('compare-modal').style.opacity = '1', 10);
     }
-
+    
     function closeCompareModal() {
         document.getElementById('compare-modal').style.display = 'none';
         setTimeout(() => document.getElementById('compare-modal').style.opacity = '0', 10);
     }
-
+    
     async function searchCompare() {
         const query = document.getElementById('compare-input').value.toLowerCase().trim().replace(/[^a-z0-9-]/g, '');
         if (!query) return;
-
+        
         document.getElementById('compare-autocomplete').style.display = 'none';
         document.getElementById('compare-results').style.display = 'none';
         document.getElementById('compare-loading').style.display = 'block';
-
+        
         try {
             // Find Pokemon by exact ID or search string
             const match = allPokemonList.find(p => p.name.replace(/-/g, '') === query || p.id === query || p.name === query);
             const searchVal = match ? match.name : query;
-
+            
             const res = await fetch(`https://pokeapi.co/api/v2/pokemon/${searchVal}`);
             if (!res.ok) throw new Error('Not found');
             const data2 = await res.json();
             const data1 = currentPokemonData;
-
+            
             // Setup Headers
             document.getElementById('comp-img1').src = data1.sprites.other['official-artwork'].front_default || data1.sprites.front_default;
             document.getElementById('comp-name1').innerText = data1.name.replace(/-/g, ' ');
-
+            
             document.getElementById('comp-img2').src = data2.sprites.other['official-artwork'].front_default || data2.sprites.front_default;
             document.getElementById('comp-name2').innerText = data2.name.replace(/-/g, ' ');
-
+            
             // Setup Stats Compare
             const statsList = document.getElementById('comp-stats-list');
             statsList.innerHTML = '';
-
+            
             const maxStatVal = 200; // Max visual range
-
+            
             for (let i = 0; i < data1.stats.length; i++) {
                 const s1 = data1.stats[i].base_stat;
                 const s2 = data2.stats[i].base_stat;
                 const statName = statMap[data1.stats[i].stat.name] || data1.stats[i].stat.name;
-
+                
                 const p1Color = s1 > s2 ? '#53BA4E' : (s1 < s2 ? '#ff4757' : '#9FA19F');
                 const p2Color = s2 > s1 ? '#53BA4E' : (s2 < s1 ? '#ff4757' : '#9FA19F');
-
+                
                 const p1Width = Math.min((s1 / maxStatVal) * 100, 100);
                 const p2Width = Math.min((s2 / maxStatVal) * 100, 100);
-
+                
                 const row = document.createElement('div');
                 row.style.marginBottom = '12px';
-
+                
                 row.innerHTML = `
                     <div style="text-align:center; font-size:10px; font-weight:900; text-transform:uppercase; letter-spacing:1px; margin-bottom:4px; color:var(--text-main);">${statName}</div>
                     <div style="display:flex; align-items:center; gap:8px;">
@@ -1659,7 +1661,7 @@
                 `;
                 statsList.appendChild(row);
             }
-
+            
             // Total Stats
             const t1 = data1.stats.reduce((acc, curr) => acc + curr.base_stat, 0);
             const t2 = data2.stats.reduce((acc, curr) => acc + curr.base_stat, 0);
@@ -1676,15 +1678,15 @@
                 <span style="color:${t2 > t1 ? '#53BA4E' : (t2 < t1 ? '#ff4757' : 'inherit')}">TOTAL: ${t2}</span>
             `;
             statsList.appendChild(totalRow);
-
+            
             document.getElementById('compare-loading').style.display = 'none';
             document.getElementById('compare-results').style.display = 'flex';
-
+            
         } catch(e) {
             document.getElementById('compare-loading').innerText = 'Pokémon não encontrado!';
         }
     }
-
+    
     // Removed enter event listener to trigger search on enter since we want it on select only
 
     async function fetchAbilityInfo(rawName, ptName) {
@@ -1693,13 +1695,13 @@
         content.innerHTML = 'Carregando...';
         document.getElementById('info-modal').style.display = 'flex';
         setTimeout(() => document.getElementById('info-modal').style.opacity = '1', 10);
-
+        
         try {
             const res = await fetch(`https://pokeapi.co/api/v2/ability/${rawName}`);
             const data = await res.json();
             let entry = data.flavor_text_entries.find(e => e.language.name === 'en');
             let desc = entry ? entry.flavor_text.replace(/[\f\n\r]/g, ' ') : 'Sem descrição.';
-
+            
             // Try translate
             try {
                const transUrl = 'https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=pt&dt=t&q=' + encodeURIComponent(desc);
@@ -1707,7 +1709,7 @@
                let translated = ''; transData[0].forEach(part => { translated += part[0]; });
                desc = translated;
             } catch(e) {}
-
+            
             content.innerHTML = `<strong>Descrição:</strong><br>${desc}`;
         } catch(e) {
             content.innerHTML = 'Erro ao carregar dados.';
@@ -1720,14 +1722,14 @@
         content.innerHTML = 'Carregando...';
         document.getElementById('info-modal').style.display = 'flex';
         setTimeout(() => document.getElementById('info-modal').style.opacity = '1', 10);
-
+        
         try {
             const res = await fetch(`https://pokeapi.co/api/v2/move/${rawName}`);
             const data = await res.json();
-
+            
             let entry = data.flavor_text_entries.find(e => e.language.name === 'en');
             let desc = entry ? entry.flavor_text.replace(/[\f\n\r]/g, ' ') : 'Sem descrição.';
-
+            
             // Try translate
             try {
                const transUrl = 'https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=pt&dt=t&q=' + encodeURIComponent(desc);
@@ -1735,10 +1737,10 @@
                let translated = ''; transData[0].forEach(part => { translated += part[0]; });
                desc = translated;
             } catch(e) {}
-
+            
             const typePt = typeMap[data.type.name] || data.type.name;
             const tColor = typeColors[data.type.name] || '#777';
-
+            
             content.innerHTML = `
                 <div style="display:flex; gap:10px; margin-bottom:15px; flex-wrap:wrap;">
                     <span style="background:${tColor}; color:white; padding:4px 10px; border-radius:12px; font-size:11px; font-weight:800; text-transform:uppercase;">${typePt}</span>
@@ -1778,16 +1780,16 @@
           document.getElementById('poke-image').src = getMainSpriteUrl(currentPokemonData, isShinyView);
       }
     }
-
-
-
+    
+    
+    
     function applySettings() {
       const saved = localStorage.getItem('pokedex-settings');
-      if (!saved) return;
-
+      if (!saved) return; 
+      
       try {
         const s = JSON.parse(saved);
-
+        
         if (document.getElementById('setting-theme')) {
             document.getElementById('setting-spritestyle').value = s.spritestyle || 'official';
             document.getElementById('setting-theme').value = s.theme || 'auto';
@@ -1803,13 +1805,13 @@
             document.getElementById('setting-extra').checked = s.extra !== undefined ? s.extra : true;
             document.getElementById('setting-evo').checked = s.evo !== undefined ? s.evo : true;
         }
-
+        
         isImperial = s.units === 'imperial';
         spriteStyle = s.spritestyle || 'official';
 
         if (s.theme === 'auto' || !s.theme) { document.documentElement.removeAttribute('data-theme'); }
         else { document.documentElement.setAttribute('data-theme', s.theme); }
-
+        
         document.body.classList.toggle('monochrome', s.monochrome === true);
         document.body.classList.remove('font-small', 'font-large');
         if (s.fontsize === 'small') document.body.classList.add('font-small');
@@ -1818,29 +1820,29 @@
         document.body.classList.toggle('no-glass', s.glass === false);
         document.body.classList.toggle('no-glow', s.glow === false);
         document.body.classList.toggle('no-anim', s.anim === false);
-
+        
         document.body.classList.toggle('hide-stats', s.stats === false);
         document.body.classList.toggle('hide-moves', s.moves === false);
         document.body.classList.toggle('hide-extra', s.extra === false);
         document.body.classList.toggle('hide-evo', s.evo === false);
-
-
+        
+        
       } catch (e) { console.error("Error applying settings", e); }
     }
 
     function updatePokemonUI(data) {
         if (!data) return;
-
+        
         let heightM = data.height / 10;
         let weightKg = data.weight / 10;
-
+        
         if (isImperial) {
             // Convert to ft/in and lbs
             let totalInches = heightM * 39.3701;
             let ft = Math.floor(totalInches / 12);
             let inc = Math.round(totalInches % 12);
             document.getElementById('poke-height').innerText = `${ft}'${inc}"`;
-
+            
             let lbs = (weightKg * 2.20462).toFixed(1);
             document.getElementById('poke-weight').innerText = `${lbs} lbs`;
         } else {
@@ -1849,9 +1851,9 @@
         }
     }
 
-
-
-
+    
+    
+        
     // Init settings on load
     adjustSpacer();
   </script>
