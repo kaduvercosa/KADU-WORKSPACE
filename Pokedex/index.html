@@ -717,6 +717,20 @@
         document.documentElement.style.setProperty('--text-accent', textAccent);
     }
 
+    function getMainSpriteUrl(pokemonData, isShiny) {
+        if (!pokemonData || !pokemonData.sprites) return '';
+        
+        if (spriteStyle === 'animated') {
+            return isShiny ? 
+                (pokemonData.sprites.other?.showdown?.front_shiny || pokemonData.sprites.front_shiny) : 
+                (pokemonData.sprites.other?.showdown?.front_default || pokemonData.sprites.front_default);
+        } else {
+            return isShiny ? 
+                (pokemonData.sprites.other['official-artwork'].front_shiny || pokemonData.sprites.front_shiny) : 
+                (pokemonData.sprites.other['official-artwork'].front_default || pokemonData.sprites.front_default);
+        }
+    }
+
     // Modal Control Universal
     function openModal(id) { document.getElementById(id).classList.add('show-modal'); }
     function closeModal(id) { document.getElementById(id).classList.remove('show-modal'); }
@@ -1241,13 +1255,15 @@
         
         if (toTranslate.length > 0) {
           try {
-            let joined = toTranslate.join('\n');
+            let joined = toTranslate.join('
+');
             const transUrl = 'https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=pt&dt=t&q=' + encodeURIComponent(joined);
             const transRes = await fetch(transUrl); 
             const transData = await transRes.json();
             let translatedStr = '';
             transData[0].forEach(part => { translatedStr += part[0]; });
-            let tempArr = translatedStr.split('\n').map(s => s.trim());
+            let tempArr = translatedStr.split('
+').map(s => s.trim());
             
             if(tempArr.length === toTranslate.length) {
                 translatedArr = tempArr;
@@ -1298,7 +1314,9 @@
            let flavorEntry = speciesData.flavor_text_entries.find(f => f.language.name === 'pt-BR' || f.language.name === 'pt');
            let needsTranslation = false;
            if (!flavorEntry) { flavorEntry = speciesData.flavor_text_entries.find(f => f.language.name === 'en'); needsTranslation = true; }
-           let synopsis = flavorEntry ? flavorEntry.flavor_text.replace(/[\f\n\r]/g, ' ') : 'Sem descrição.';
+           let synopsis = flavorEntry ? flavorEntry.flavor_text.replace(/[
+
+]/g, ' ') : 'Sem descrição.';
            
            if (needsTranslation && flavorEntry) {
              try {
@@ -1308,7 +1326,7 @@
                synopsis = translated;
              } catch(e) { console.error("Error translating synopsis:", e); }
            }
-           document.getElementById('poke-desc').innerText = '\"' + synopsis + '\"';
+           document.getElementById('poke-desc').innerText = '"' + synopsis + '"';
            
            let rarity = 'Comum'; let rColor = '';
            if (speciesData.is_mythical) { rarity = 'Mítico'; rColor = '#D97706'; } 
@@ -1353,7 +1371,8 @@
         
         setTimeout(() => { document.body.classList.remove('loading'); window.scrollTo({ top: 0, behavior: 'smooth' }); adjustSpacer(); }, 100);
       } catch (e) { 
-        alert('Erro 404: Não encontramos o Pokémon/ID -> "' + cleanQuery + '". Verifique o link!'); 
+        console.error("Erro capturado no fetchPokemon:", e);
+        alert('Erro: Não encontramos o Pokémon/ID -> "' + cleanQuery + '". Verifique o console para detalhes!'); 
         document.body.classList.remove('loading'); 
       }
     }
@@ -1565,7 +1584,9 @@
             const res = await fetch(`https://pokeapi.co/api/v2/ability/${rawName}`);
             const data = await res.json();
             let entry = data.flavor_text_entries.find(e => e.language.name === 'en');
-            let desc = entry ? entry.flavor_text.replace(/[\f\n\r]/g, ' ') : 'Sem descrição.';
+            let desc = entry ? entry.flavor_text.replace(/[
+
+]/g, ' ') : 'Sem descrição.';
             
             try {
                const transUrl = 'https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=pt&dt=t&q=' + encodeURIComponent(desc);
@@ -1591,7 +1612,9 @@
             const data = await res.json();
             
             let entry = data.flavor_text_entries.find(e => e.language.name === 'en');
-            let desc = entry ? entry.flavor_text.replace(/[\f\n\r]/g, ' ') : 'Sem descrição.';
+            let desc = entry ? entry.flavor_text.replace(/[
+
+]/g, ' ') : 'Sem descrição.';
             
             try {
                const transUrl = 'https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=pt&dt=t&q=' + encodeURIComponent(desc);
